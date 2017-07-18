@@ -773,6 +773,7 @@ void CTestmainView::Init_B_LMNE(float	coefficient, B_LMNE* p_blmne)
 ************************************************************/
 void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char rangetype,CDC &MemDC)
 {
+	TRACE(L"Hello World");
 	unsigned int i;
 	unsigned char res = 0, scatter = 0;	//电阻抗信号，光散射信号
 	unsigned char rangeFlag = ' ', doubtFlag = ' ';
