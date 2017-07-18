@@ -156,6 +156,7 @@ public:
 	 CString unit_info[28];
 
 	 afx_msg void OnDeleteRecord();
+
 	 afx_msg void OnBnClickedResultReturn();
 	 
 };
