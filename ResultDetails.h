@@ -114,7 +114,7 @@ private:
 
 public:
 	void			Init_B_LMNE(float	coefficient, B_LMNE* p_blmne);
-	void			LmneGraphPaint(sample_info *psampledata, const unsigned char rangetype);
+	void			LmneGraphPaint(sample_info *psampledata, const unsigned char rangetype, CDC &MemDC);
 	void			PrintLMNEChart(sample_info *psampledata);
 	virtual void	OnInitialUpdate();
 	virtual void	OnPrint(CDC* pDC, CPrintInfo* pInfo);

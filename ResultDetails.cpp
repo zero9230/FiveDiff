@@ -209,7 +209,6 @@ void CResultDetails::OnPaint()
 	InitPaitientInfo(patientdata);*/
 	
 	PrintLMNEChart(sampledata);
-	LmneGraphPaint(sampledata, patientdata->rangetype);
 
 
 }
@@ -593,7 +592,7 @@ void CResultDetails::Init_B_LMNE(float	coefficient, B_LMNE* p_blmne)
 *Data Access:	读全局变量
 *History:	create	lgq		2010.12.31
 ************************************************************/
-void CResultDetails::LmneGraphPaint(sample_info *psampledata, const unsigned char rangetype)
+void CResultDetails::LmneGraphPaint(sample_info *psampledata, const unsigned char rangetype, CDC &MemDC)
 {
 	unsigned int i;
 	unsigned char res = 0, scatter = 0;	//电阻抗信号，光散射信号
@@ -607,12 +606,19 @@ void CResultDetails::LmneGraphPaint(sample_info *psampledata, const unsigned cha
 	pWnd->GetClientRect(&rect); // 获取控件屏幕坐标
 	CDC* pDC = pWnd->GetDC();
 
+	for (int j = 0; j < 1000; j++){
+		MemDC.SetPixel(j * LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - j * LMNE_HEIGHT / 255, RGB(0, 255, 0));
+		//		TRACE("***///%d\n",j);
+	}
+
+
 	if ((*psampledata).coeoflmne > 1.3)
 		psampledata->coeoflmne = 1.3;
 	else if ((*psampledata).coeoflmne < 0.7)
 		psampledata->coeoflmne = 0.7;
 
 	Init_B_LMNE((*psampledata).coeoflmne, &m_blmne);
+
 	//SetTextColor(hdc, COLOR_black);
 	if ((*psampledata).wbcdata.wbc[0] == '*')//未做测试
 	{
@@ -805,115 +811,118 @@ void CResultDetails::LmneGraphPaint(sample_info *psampledata, const unsigned cha
 
 	//SetTextColor(hdc, COLOR_red);
 	//WBC警告信息
-	if (2 == (*psampledata).lmneflg[0])
-		//TextOut(hdc, 265, 65, "NO");
-		if (2 == (*psampledata).lmneflg[1])
-			//TextOut(hdc, 265, 83, "LL");
-			if (2 == (*psampledata).lmneflg[2])
-				//TextOut(hdc, 265, 101, "LL1");
-				if (2 == (*psampledata).lmneflg[3])
-					//TextOut(hdc, 265, 119, "NL");
-					if (2 == (*psampledata).lmneflg[4])
-						//TextOut(hdc, 265, 137, "MN");
-						if (2 == (*psampledata).lmneflg[5])
-							//TextOut(hdc, 265, 155, "RM");
-							if (2 == (*psampledata).lmneflg[6])
-								//TextOut(hdc, 265, 173, "LN");
-								if (2 == (*psampledata).lmneflg[7])
-									//TextOut(hdc, 265, 191, "RN");
-									if (2 == (*psampledata).lmneflg[8])
-										//TextOut(hdc, 265, 209, "NE");
+	/*	if (2 == (*psampledata).lmneflg[0])
+	//TextOut(hdc, 265, 65, "NO");
+	if (2 == (*psampledata).lmneflg[1])
+	//TextOut(hdc, 265, 83, "LL");
+	if (2 == (*psampledata).lmneflg[2])
+	//TextOut(hdc, 265, 101, "LL1");
+	if (2 == (*psampledata).lmneflg[3])
+	//TextOut(hdc, 265, 119, "NL");
+	if (2 == (*psampledata).lmneflg[4])
+	//TextOut(hdc, 265, 137, "MN");
+	if (2 == (*psampledata).lmneflg[5])
+	//TextOut(hdc, 265, 155, "RM");
+	if (2 == (*psampledata).lmneflg[6])
+	//TextOut(hdc, 265, 173, "LN");
+	if (2 == (*psampledata).lmneflg[7])
+	//TextOut(hdc, 265, 191, "RN");
+	if (2 == (*psampledata).lmneflg[8])
+	//TextOut(hdc, 265, 209, "NE");*/
 
-										//------------------------------------------------
-										//LMNE散点图		
-										//将对0x00的特殊处理去除,恢复原始数据
-										for (i = 0; i < MATRIX_DATA_MAX - 1; i++){
-											graphbuff[i] = (*psampledata).lmnegraph[i] - 1;
-											graphbuff[i] = graphbu[i];
-										}
+	//------------------------------------------------
+	//LMNE散点图		
+	//将对0x00的特殊处理去除,恢复原始数据
+	for (i = 0; i < MATRIX_DATA_MAX - 1; i++){
+		graphbuff[i] = (*psampledata).lmnegraph[i] - 1;
+		//	TRACE("***///%d\n", graphbuff[i]);
+	}
+
 	for (i = 0; i < MATRIX_POINT_MAX - 1; i++)
 	{
 		res = graphbuff[(i << 1)];
 		scatter = graphbuff[(i << 1) + 1];
+		//		TRACE("***///%d\n", res);
+		//		TRACE("///***%d\n", scatter);
 		if (scatter >= m_blmne.Y_NE)
 		{
 			if (res < m_blmne.X_NOE)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_lightwhite);
 			else
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(255, 0, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(255, 0, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_red);
 		}
 		else if (scatter >= m_blmne.Y_RMN)
 		{
 			if (res < m_blmne.X_NON)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_lightwhite);
 			else if (res < m_blmne.X_LN)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_green);
 			else if (m_blmne.X_RN)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_green);
 			else
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_green);
 		}
 		else if (scatter >= m_blmne.Y_NL)
 		{
 			if (res < m_blmne.X_NON)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_lightwhite);
 			else if (res < m_blmne.X_LN)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_green);
 			else if (res < m_blmne.X_LMN)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_green);
 			else if (res < m_blmne.X_MN)
 			{
 				if ((res - m_blmne.X_LMN)*(m_blmne.Y_RMN - m_blmne.Y_NL) < (m_blmne.X_MN - m_blmne.X_LMN)*(scatter - m_blmne.Y_NL))
-					pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
+					MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 250, 0));
 				//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_green);
 				else
-					pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
+					MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
 				//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_magenta);
 			}
 			else if (res < m_blmne.X_RM)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_magenta);
 			else
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_magenta);
 		}
 		else
 		{
 			if (res < m_blmne.X_NOL)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_lightwhite);
 			else if (res < m_blmne.X_LL)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 255));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 255));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_blue);
 			else if (res< m_blmne.X_AL)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 255));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 255));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_blue);
 			else if (res < m_blmne.X_LMU)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 255));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 255));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_blue);
 			else if (res < m_blmne.X_LMD)
 			{
 				if ((m_blmne.X_LMD - res*m_blmne.Y_NL) >(m_blmne.X_LMD - m_blmne.X_LMU)*scatter)
-					pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter * LMNE_HEIGHT / 255, RGB(0, 0, 255));
+					MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter * LMNE_HEIGHT / 255, RGB(0, 0, 255));
 				//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter * LMNE_HEIGHT / 255, COLOR_blue);
 				else
-					pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter* LMNE_HEIGHT / 255, RGB(230, 30, 70));
+					MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter* LMNE_HEIGHT / 255, RGB(230, 30, 70));
 				//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter* LMNE_HEIGHT / 255, COLOR_magenta);
 			}
 			else if (res < m_blmne.X_RM)
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_magenta);
 			else
-				pDC->SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
 			//SetPixel(hdc, res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, COLOR_magenta);
 		}
 	}
@@ -925,31 +934,49 @@ void CResultDetails::PrintLMNEChart(sample_info *psampledata)
 	CWnd* pWnd = GetDlgItem(IDC_RESULT_CHART);
 	pWnd->GetClientRect(&rect); // 获取控件屏幕坐标
 	CDC* pDC = pWnd->GetDC();
-	pDC->SelectStockObject(WHITE_BRUSH);
-	pDC->Rectangle(rect);
+
+	CDC MemDC;
+	CBitmap bmp;
+	MemDC.CreateCompatibleDC(pDC);
+	bmp.CreateCompatibleBitmap(pDC, 267, 282);
+	MemDC.SelectObject(&bmp);
+
+	MemDC.FillSolidRect(rect.left, rect.top, 267, 282, RGB(255, 255, 255));
+	//	MemDC.MoveTo(0, 0);
+	//	MemDC.LineTo(100, 100);
+	MemDC.SetViewportOrg(0, 280 - rect.Height());
+
+
+
+	MemDC.SetViewportOrg(0, 0);
+	MemDC.SelectStockObject(WHITE_BRUSH);
+	MemDC.Rectangle(rect);
 	CPen cpen, pen;
 	pen.CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
-	pDC->SelectObject(&pen);
-	pDC->SetViewportOrg(0, 0);
-	pDC->LineTo(0, rect.Height());
-	pDC->LineTo(rect.Width(), rect.Height());
-	pDC->LineTo(rect.Width(), 0);
-	pDC->LineTo(0, 0);
+	MemDC.SelectObject(&pen);
+	MemDC.SetViewportOrg(0, 0);
+	MemDC.LineTo(0, rect.Height());
+	MemDC.LineTo(rect.Width(), rect.Height());
+	MemDC.LineTo(rect.Width(), 0);
+	MemDC.LineTo(0, 0);
 	pen.~CPen();
+
 	pen.CreatePen(PS_SOLID, 1, RGB(96, 96, 96));
-	pDC->SelectObject(&pen);
-	pDC->SetViewportOrg(0, rect.Height());
-	pDC->LineTo(255, 0);
-	pDC->LineTo(255, -255);
-	pDC->LineTo(0, -255);
-	pDC->LineTo(0, 0);
-	pDC->TextOut(0, -280, "LMNE:");
-	pDC->MoveTo(255, 0);
-	pDC->LineTo(265, 0);
-	pDC->LineTo(265, -255);
-	pDC->LineTo(255, -255);
+	MemDC.SelectObject(&pen);
+	MemDC.SetViewportOrg(0, 280);
+	MemDC.LineTo(255, 0);
+	MemDC.LineTo(255, -255);
+	MemDC.LineTo(0, -255);
+	MemDC.LineTo(0, 0);
+	MemDC.TextOut(0, -280, "LMNE:");
+	MemDC.MoveTo(255, 0);
+	MemDC.LineTo(265, 0);
+	MemDC.LineTo(265, -255);
+	MemDC.LineTo(255, -255);
+
 	unsigned char i;
-	int 	x1, x2, y1, y2;
+
+	int 		x1, x2, y1, y2;
 	B_LMNE		m_blmne;
 	double		coe_w = LMNE_WIDTH / 255.0;
 	double		coe_h = LMNE_HEIGHT / 255.0;
@@ -966,16 +993,16 @@ void CResultDetails::PrintLMNEChart(sample_info *psampledata)
 	y1 = LMNE_BOTTOM;
 	x2 = x1;
 	y2 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 2 (NON,NL)->(NON,NE)
 	x1 = m_blmne.X_NON * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
 	x2 = x1;
 	y2 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 	//line 3 (LL,0)->(LL,NL)
 	x1 = m_blmne.X_LL * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM;
@@ -983,8 +1010,8 @@ void CResultDetails::PrintLMNEChart(sample_info *psampledata)
 	y2 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
 	for (i = 0; i * 3 < y1 - y2;)
 	{
-		pDC->MoveTo(x1, y2 + i * 3);
-		pDC->LineTo(x1, y2 + i * 3 + 3);
+		MemDC.MoveTo(x1, y2 + i * 3);
+		MemDC.LineTo(x1, y2 + i * 3 + 3);
 		i += 2;	// ....  ....  ....
 	}
 	//line 4 (LN,NL)->(LN,NE)
@@ -994,8 +1021,8 @@ void CResultDetails::PrintLMNEChart(sample_info *psampledata)
 	y2 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
 	for (i = 0; i * 3 < y1 - y2;)
 	{
-		pDC->MoveTo(x1, y2 + i * 3);
-		pDC->LineTo(x1, y2 + i * 3 + 3);
+		MemDC.MoveTo(x1, y2 + i * 3);
+		MemDC.LineTo(x1, y2 + i * 3 + 3);
 		i += 2;
 	}
 
@@ -1004,16 +1031,16 @@ void CResultDetails::PrintLMNEChart(sample_info *psampledata)
 	y1 = LMNE_BOTTOM - m_blmne.Y_NE*coe_h;
 	x2 = x1;
 	y2 = LMNE_BOTTOM - LMNE_HEIGHT;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 6/10 (LMN,NL)->(MN,RMN)
 	x1 = m_blmne.X_LMN * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
 	x2 = m_blmne.X_MN * coe_w + LMNE_LEFT;
 	y2 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 7 (AL,0)->(AL,NL)
 	x1 = m_blmne.X_AL * coe_w + LMNE_LEFT;
@@ -1022,8 +1049,8 @@ void CResultDetails::PrintLMNEChart(sample_info *psampledata)
 	y2 = LMNE_BOTTOM - m_blmne.Y_NL*coe_h;
 	for (i = 0; i * 3 < y1 - y2;)
 	{
-		pDC->MoveTo(x1, y2 + i * 3);
-		pDC->LineTo(x1, y2 + i * 3 + 3);
+		MemDC.MoveTo(x1, y2 + i * 3);
+		MemDC.LineTo(x1, y2 + i * 3 + 3);
 		i += 2;
 	}
 
@@ -1032,49 +1059,56 @@ void CResultDetails::PrintLMNEChart(sample_info *psampledata)
 	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
 	x2 = m_blmne.X_LMD * coe_w + LMNE_LEFT;
 	y2 = LMNE_BOTTOM;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 11 (RM,0)->(RM,RMN)
 	x1 = m_blmne.X_RM * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM;
 	x2 = x1;
 	y2 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 12 (RN,RMN)->(RN,NE)
 	x1 = m_blmne.X_RN * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
 	x2 = x1;
 	y2 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 13 (NOL,NL)->(LMU,NL)
 	x1 = m_blmne.X_NOL * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
 	x2 = m_blmne.X_LMU * coe_w + LMNE_LEFT;
 	y2 = y1;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 14 (MN,RMN)->(256,RMN)
 	x1 = m_blmne.X_MN * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
 	x2 = LMNE_WIDTH + LMNE_LEFT;
 	y2 = y1;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
 	//line 15 (NON,NE)->(256,NE)
 	x1 = m_blmne.X_NON * coe_w + LMNE_LEFT;
 	y1 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
 	x2 = LMNE_WIDTH + LMNE_LEFT;
 	y2 = y1;
-	pDC->MoveTo(x1, y1);
-	pDC->LineTo(x2, y2);
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
 
+
+	LmneGraphPaint(sampledata, patientdata->rangetype, MemDC);
+
+	MemDC.SetViewportOrg(0, 0);
+	pDC->BitBlt(0, rect.Height() - 280, 267, 282, &MemDC, 0, 0, SRCCOPY);
+	MemDC.DeleteDC();
+	bmp.DeleteObject();
 	GetDlgItem(IDC_RESULT_CHART)->EnableWindow(FALSE);
 }
 
