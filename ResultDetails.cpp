@@ -209,7 +209,7 @@ void CResultDetails::OnPaint()
 	InitPaitientInfo(patientdata);*/
 	
 	PrintLMNEChart(sampledata);
-	LmneGraphPaint(sampledata, patientdata->rangetype);
+//	LmneGraphPaint(sampledata, patientdata->rangetype);
 
 
 }
