@@ -607,10 +607,10 @@ void CResultDetails::LmneGraphPaint(sample_info *psampledata, const unsigned cha
 	pWnd->GetClientRect(&rect); // 获取控件屏幕坐标
 	CDC* pDC = pWnd->GetDC();
 
-	for (int j = 0; j < 1000; j++){
-		MemDC.SetPixel(j * LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - j * LMNE_HEIGHT / 255, RGB(0, 255, 0));
-		//		TRACE("***///%d\n",j);
-	}
+	//for (int j = 0; j < 1000; j++){
+	//	MemDC.SetPixel(j * LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - j * LMNE_HEIGHT / 255, RGB(0, 255, 0));
+	//	//		TRACE("***///%d\n",j);
+	//}
 
 
 	if ((*psampledata).coeoflmne > 1.3)

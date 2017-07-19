@@ -219,6 +219,7 @@ void CTestmainView::InitControl()
 
 }
 
+//表格批量初始化，调用其余的表格初始化函数
 BOOL CTestmainView::InitForm(sample_info* psampledata)
 {
 	InitWBCForm(psampledata);
@@ -293,6 +294,7 @@ BOOL CTestmainView::InitWBCForm(sample_info* psampledata)
 			showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i+28]);
 		m_WBCresultList.SetItemText(i, 4, showbuffer);
 		//m_WBCresultList.SetItemText(i, 5, _T("Flagi"));
+		m_WBCresultList.SetItemText(i, 5, _T(" "));
 
 	}
 
@@ -505,6 +507,7 @@ BOOL CTestmainView::InitRBCForm(sample_info* psampledata)
 		m_RBCresultList.SetItemText(i, 3, showbuffer);
 		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i+preCount + 28]);
 		m_RBCresultList.SetItemText(i, 4, showbuffer);
+		m_RBCresultList.SetItemText(i, 5, _T(" "));
 	}
 	m_RBCresultList.SetItemText(0, 1, (CString)psampledata->rbcdata.rbc);
 	m_RBCresultList.SetItemText(1, 1, (CString)psampledata->rbcdata.hgb);
@@ -519,15 +522,56 @@ BOOL CTestmainView::InitRBCForm(sample_info* psampledata)
 }
 BOOL CTestmainView::UpdateRBCForm(sample_info* psampledata)
 {
+	uchar type = systemcfg.range.type;
+	int wbcNum = 15;
 	m_RBCresultList.SetItemText(0, 1, ChartsToCString((psampledata->rbcdata.rbc), sizeof(psampledata->rbcdata.rbc) / sizeof(char)));
+	if (atof(psampledata->rbcdata.rbc)<systemcfg.range.normal[type][0 + wbcNum])
+		m_RBCresultList.SetItemText(0, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.rbc)>systemcfg.range.normal[type][0 + wbcNum])
+		m_RBCresultList.SetItemText(0, 5, _T("H"));
+
 	m_RBCresultList.SetItemText(1, 1, ChartsToCString((psampledata->rbcdata.hgb), sizeof(psampledata->rbcdata.hgb) / sizeof(char)));
+	if (atof(psampledata->rbcdata.hgb)<systemcfg.range.normal[type][1 + wbcNum])
+		m_RBCresultList.SetItemText(1, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.hgb)>systemcfg.range.normal[type][1 + wbcNum])
+		m_RBCresultList.SetItemText(1, 5, _T("H"));
+
 	m_RBCresultList.SetItemText(2, 1, ChartsToCString((psampledata->rbcdata.hct), sizeof(psampledata->rbcdata.hct) / sizeof(char)));
+	if (atof(psampledata->rbcdata.hct)<systemcfg.range.normal[type][2 + wbcNum])
+		m_RBCresultList.SetItemText(2, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.hct)>systemcfg.range.normal[type][2 + wbcNum])
+		m_RBCresultList.SetItemText(2, 5, _T("H"));
+
 	m_RBCresultList.SetItemText(3, 1, ChartsToCString((psampledata->rbcdata.mcv), sizeof(psampledata->rbcdata.mcv) / sizeof(char)));
+	if (atof(psampledata->rbcdata.mcv)<systemcfg.range.normal[type][3 + wbcNum])
+		m_RBCresultList.SetItemText(3, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.mcv)>systemcfg.range.normal[type][3 + wbcNum])
+		m_RBCresultList.SetItemText(3, 5, _T("H"));
+
 	m_RBCresultList.SetItemText(4, 1, ChartsToCString((psampledata->rbcdata.mch), sizeof(psampledata->rbcdata.mch) / sizeof(char)));
+	if (atof(psampledata->rbcdata.mch)<systemcfg.range.normal[type][4 + wbcNum])
+		m_RBCresultList.SetItemText(4, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.mch)>systemcfg.range.normal[type][4 + wbcNum])
+		m_RBCresultList.SetItemText(4, 5, _T("H"));
+
 	m_RBCresultList.SetItemText(5, 1, ChartsToCString((psampledata->rbcdata.mchc), sizeof(psampledata->rbcdata.mchc) / sizeof(char)));
+	if (atof(psampledata->rbcdata.mchc)<systemcfg.range.normal[type][5 + wbcNum])
+		m_RBCresultList.SetItemText(5, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.mchc)>systemcfg.range.normal[type][5 + wbcNum])
+		m_RBCresultList.SetItemText(5, 5, _T("H"));
+
 	m_RBCresultList.SetItemText(6, 1, ChartsToCString((psampledata->rbcdata.rdwcv), sizeof(psampledata->rbcdata.rdwcv) / sizeof(char)));
+	if (atof(psampledata->rbcdata.rdwcv)<systemcfg.range.normal[type][6 + wbcNum])
+		m_RBCresultList.SetItemText(6, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.rdwcv)>systemcfg.range.normal[type][6 + wbcNum])
+		m_RBCresultList.SetItemText(6, 5, _T("H"));
 	//MessageBox((CString)psampledata->rbcdata.rdwcv);
 	m_RBCresultList.SetItemText(7, 1, ChartsToCString((psampledata->rbcdata.rdwsd), sizeof(psampledata->rbcdata.rdwsd) / sizeof(char)));
+	if (atof(psampledata->rbcdata.rdwsd)<systemcfg.range.normal[type][7 + wbcNum])
+		m_RBCresultList.SetItemText(7, 5, _T("L"));
+	else if (atof(psampledata->rbcdata.rdwsd)>systemcfg.range.normal[type][7 + wbcNum])
+		m_RBCresultList.SetItemText(7, 5, _T("H"));
+
 	return TRUE;
 }
 
@@ -570,6 +614,7 @@ BOOL CTestmainView::InitPLTForm(sample_info* psampledata)
 	m_PLTresultList.SetItemText(0, 3, showbuffer);
 	showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][23 + 28]);
 	m_PLTresultList.SetItemText(0, 4, showbuffer);
+	m_PLTresultList.SetItemText(0, 5, _T(" "));
 
 	m_PLTresultList.InsertItem(1, _T("MPV"));
 	m_PLTresultList.SetItemText(1, 2, _T("fL"));
@@ -577,6 +622,7 @@ BOOL CTestmainView::InitPLTForm(sample_info* psampledata)
 	m_PLTresultList.SetItemText(1, 3, showbuffer);
 	showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][24 + 28]);
 	m_PLTresultList.SetItemText(1, 4, showbuffer);
+	m_PLTresultList.SetItemText(1, 5, _T(" "));
 
 	m_PLTresultList.InsertItem(2, _T("PDW"));
 	m_PLTresultList.SetItemText(2, 2, _T("fL"));
@@ -584,6 +630,7 @@ BOOL CTestmainView::InitPLTForm(sample_info* psampledata)
 	m_PLTresultList.SetItemText(2, 3, showbuffer);
 	showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][25 + 28]);
 	m_PLTresultList.SetItemText(2, 4, showbuffer);
+	m_PLTresultList.SetItemText(2, 5, _T(" "));
 
 	m_PLTresultList.InsertItem(3, _T("PCT"));
 	m_PLTresultList.SetItemText(3, 2, _T("%"));
@@ -591,6 +638,7 @@ BOOL CTestmainView::InitPLTForm(sample_info* psampledata)
 	m_PLTresultList.SetItemText(3, 3, showbuffer);
 	showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][26 + 28]);
 	m_PLTresultList.SetItemText(3, 4, showbuffer);
+	m_PLTresultList.SetItemText(3, 5, _T(" "));
 
 	m_PLTresultList.InsertItem(4, _T("P-LCR"));
 	m_PLTresultList.SetItemText(4, 2, _T("%"));
@@ -598,6 +646,7 @@ BOOL CTestmainView::InitPLTForm(sample_info* psampledata)
 	m_PLTresultList.SetItemText(4, 3, showbuffer);
 	showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][27 + 28]);
 	m_PLTresultList.SetItemText(4, 4, showbuffer);
+	m_PLTresultList.SetItemText(4, 5, _T(" "));
 
 	//CString showbuffer;
 	//showbuffer.Format(L"%0.1f", atof(psampledata->pltdata.plt)/10);
@@ -615,13 +664,38 @@ BOOL CTestmainView::InitPLTForm(sample_info* psampledata)
 //**//**待添加flag判断
 BOOL CTestmainView::UpdatePLTForm(sample_info* psampledata)
 {
-
+	uchar type = systemcfg.range.type;
+	int preNum = 23
+		;
 	m_PLTresultList.SetItemText(0, 1, ChartsToCString((psampledata->pltdata.plt), sizeof(psampledata->pltdata.plt) / sizeof(char)));
-	m_PLTresultList.SetItemText(1, 1, ChartsToCString((psampledata->pltdata.mpv), sizeof(psampledata->pltdata.mpv) / sizeof(char)));
-	m_PLTresultList.SetItemText(2, 1, ChartsToCString((psampledata->pltdata.pdw), sizeof(psampledata->pltdata.pdw) / sizeof(char)));
-	m_PLTresultList.SetItemText(3, 1, ChartsToCString((psampledata->pltdata.pct), sizeof(psampledata->pltdata.pct) / sizeof(char)));
-	m_PLTresultList.SetItemText(4, 1, ChartsToCString((psampledata->pltdata.plcr), sizeof(psampledata->pltdata.plcr) / sizeof(char)));
+	if (atof(psampledata->pltdata.plt)<systemcfg.range.normal[type][0 + preNum])
+		m_PLTresultList.SetItemText(0, 5, _T("L"));
+	else if (atof(psampledata->pltdata.plt)>systemcfg.range.normal[type][0 + preNum])
+		m_PLTresultList.SetItemText(0, 5, _T("H"));
 
+	m_PLTresultList.SetItemText(1, 1, ChartsToCString((psampledata->pltdata.mpv), sizeof(psampledata->pltdata.mpv) / sizeof(char)));
+	if (atof(psampledata->pltdata.mpv)<systemcfg.range.normal[type][1 + preNum])
+		m_PLTresultList.SetItemText(1, 5, _T("L"));
+	else if (atof(psampledata->pltdata.mpv)>systemcfg.range.normal[type][1 + preNum])
+		m_PLTresultList.SetItemText(1, 5, _T("H"));
+
+	m_PLTresultList.SetItemText(2, 1, ChartsToCString((psampledata->pltdata.pdw), sizeof(psampledata->pltdata.pdw) / sizeof(char)));
+	if (atof(psampledata->pltdata.pdw)<systemcfg.range.normal[type][2 + preNum])
+		m_PLTresultList.SetItemText(2, 5, _T("L"));
+	else if (atof(psampledata->pltdata.pdw)>systemcfg.range.normal[type][2 + preNum])
+		m_PLTresultList.SetItemText(2, 5, _T("H"));
+
+	m_PLTresultList.SetItemText(3, 1, ChartsToCString((psampledata->pltdata.pct), sizeof(psampledata->pltdata.pct) / sizeof(char)));
+	if (atof(psampledata->pltdata.pct)<systemcfg.range.normal[type][3 + preNum])
+		m_PLTresultList.SetItemText(3, 5, _T("L"));
+	else if (atof(psampledata->pltdata.pct)>systemcfg.range.normal[type][3 + preNum])
+		m_PLTresultList.SetItemText(3, 5, _T("H"));
+
+	m_PLTresultList.SetItemText(4, 1, ChartsToCString((psampledata->pltdata.plcr), sizeof(psampledata->pltdata.plcr) / sizeof(char)));
+	if (atof(psampledata->pltdata.plcr)<systemcfg.range.normal[type][4 + preNum])
+		m_PLTresultList.SetItemText(4, 5, _T("L"));
+	else if (atof(psampledata->pltdata.plcr)>systemcfg.range.normal[type][4 + preNum])
+		m_PLTresultList.SetItemText(4, 5, _T("H"));
 
 	return TRUE;
 }
@@ -997,7 +1071,7 @@ void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char
 	//将对0x00的特殊处理去除,恢复原始数据
 	for (i = 0; i < MATRIX_DATA_MAX - 1; i++){
 		graphbuff[i] = (*psampledata).lmnegraph[i] - 1;
-		graphbu[i] = graphbuff[i];
+	//	graphbu[i] = graphbuff[i];
 	}
 
 	for (i = 0; i < MATRIX_POINT_MAX - 1; i++)
