@@ -241,8 +241,9 @@ static UINT indicators[] =
 CMainFrame::CMainFrame()
 {
 	m_nCurrType = theApp.GetInt(_T("ViewType"), ID_SHORTCUT_FIRST);
-	m_nTestMode = theApp.GetInt(_T("TestMode"), 1);//初始测试模式默认为WHOLEDIFF
-
+	//m_nTestMode = theApp.GetInt(_T("TestMode"),0);//初始测试模式默认为WHOLEDIFF
+	m_nTestMode = 1;
+	TRACE(L"#####m_nTestMode=%d#########\n", m_nTestMode);
 	m_bAutoMenuEnable = TRUE;       //关键部分
 }
 
@@ -297,7 +298,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	comboButton.SelectItem(m_nTestMode < 0 ? (int)comboButton.GetCount() + m_nTestMode : m_nTestMode);
-
+	
+	
+	
 	m_wndToolBar.ReplaceButton(ID_TEST_MODE_COMBO, comboButton);
 
 	m_wndToolBar.SetToolBarBtnText (m_wndToolBar.CommandToIndex (ID_CHART_EXPORT), NULL, TRUE, TRUE);
@@ -1128,6 +1131,7 @@ void CMainFrame::OnTestModeCombo()
 			}
 		}
 	}
+	
 	TRACE1(".................m_nTestMode=%d........\n", m_nTestMode);
 	theApp.WriteInt(_T("TestMode"), m_nTestMode);
 }

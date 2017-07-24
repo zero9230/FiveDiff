@@ -933,6 +933,11 @@
 #define IDC_SCROLLBAR2                  1855
 #define IDC_TEST_TEST                   1856
 #define IDC_QUALITYCONTROL_TAB          1858
+#define IDC_EDIT_NAME                   1860
+#define IDC_EDIT_GENDER                 1861
+#define IDC_BUTTON_SEARCH               1862
+#define IDC_EDIT_NAME2                  1863
+#define IDC_EDIT_ID                     1863
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1099,7 +1104,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        288
 #define _APS_NEXT_COMMAND_VALUE         33002
-#define _APS_NEXT_CONTROL_VALUE         1859
+#define _APS_NEXT_CONTROL_VALUE         1863
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

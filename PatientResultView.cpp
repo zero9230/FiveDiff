@@ -7,12 +7,13 @@
 #include "Includes_app.h"
 
 // CPatientResultView
-
+bool is_search = false;
 IMPLEMENT_DYNCREATE(CPatientResultView, CBCGPChartExampleView)
 
 CPatientResultView::CPatientResultView()
 : CBCGPChartExampleView(CPatientResultView::IDD)
 , m_patientname(_T(""))
+, m_patientGender(_T(""))
 {
 
 }
@@ -26,7 +27,8 @@ void CPatientResultView::DoDataExchange(CDataExchange* pDX)
 	CBCGPChartExampleView::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_PatientResultList);
 	DDX_Control(pDX, IDC_DAILY_RESULT2, m_daily_result);
-	DDX_Text(pDX, IDC_EDIT1, m_patientname);
+	DDX_Text(pDX, IDC_EDIT_NAME, m_patientname);
+	DDX_Text(pDX, IDC_EDIT_GENDER, m_patientGender);
 }
 
 
@@ -34,7 +36,9 @@ BEGIN_MESSAGE_MAP(CPatientResultView, CFormView)
 	ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_DAILY_RESULT2, &CPatientResultView::OnDailyResult2)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CPatientResultView::OnNMDblclkList1)
-	ON_BN_CLICKED(IDC_PATIENT_RESULT2, &CPatientResultView::OnBnClickedPatientResult2)
+//	ON_BN_CLICKED(IDC_PATIENT_RESULT2, &CPatientResultView::OnBnClickedPatientResult2)
+//ON_BN_CLICKED(IDC_BUTTON3, &CPatientResultView::OnBnClickedButton3)
+ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView::OnBnClickedButtonSearch)
 END_MESSAGE_MAP()
 
 
@@ -72,7 +76,7 @@ BOOL CPatientResultView::InitPatientResultForm()
 	_RecordsetPtr m_pRs;
 
 	_variant_t var;
-
+	is_search = false;
 	CString filename;
 	filename.Format(L"appdata.accdb");
 
@@ -244,7 +248,6 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 	POSITION pos = m_PatientResultList.GetFirstSelectedItemPosition();
 
-
 	if (pos == NULL)
 		TRACE("No items were selected!\n");
 	else
@@ -252,8 +255,10 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		int nItem = m_PatientResultList.GetNextSelectedItem(pos);//获得病人信息编号
 		TRACE1("Item %d was selected!\n", nItem);
 		CString selectnum = m_PatientResultList.GetItemText(nItem, 1);
-		ThisResult2.nownum = nItem;
-
+		if (is_search == true)
+			ThisResult2.nownum = ThisRelation.ado_pos[nItem];
+		else
+			ThisResult2.nownum = nItem;
 	}
 	if (m_PatientResultList.GetNextSelectedItem(pos) < m_PatientResultList.GetItemCount())
 	{
@@ -261,6 +266,7 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		CRect rect;
 		pMf->GetClentRectEx(rect);
 
+		/**********以下过程进行界面切换**************/
 		CRuntimeClass* pClass = RUNTIME_CLASS(CResultDetails);
 		CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
 
@@ -268,8 +274,11 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		this->m_pResultDetails2 = (CResultDetails*)pView;
 		m_pResultDetails2->pThisResult = &ThisResult2;
 
-
+		//必然在此处触发断言失败！
+		//MessageBox(L"Before failure");
 		ASSERT_VALID(pView);
+		//MessageBox(L"After  failure");
+
 		CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
 
 		CCreateContext newContext;
@@ -278,7 +287,6 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		newContext.m_pLastView = NULL;
 		newContext.m_pCurrentFrame = NULL;
 		newContext.m_pCurrentDoc = pCurrentDoc;
-
 
 		if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
 			rect, pMf, AFX_IDW_PANE_FIRST + 10, &newContext))
@@ -295,7 +303,108 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
-void CPatientResultView::OnBnClickedPatientResult2()
+//void CPatientResultView::OnBnClickedPatientResult2()
+//{
+//	// TODO:  在此添加控件通知处理程序代码
+//}
+
+
+//void CPatientResultView::OnBnClickedButton3()
+//{
+//	// TODO:  在此添加控件通知处理程序代码
+//}
+
+
+void CPatientResultView::OnBnClickedButtonSearch()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	CString patient_num;
+	GetDlgItem(IDC_EDIT_ID)->GetWindowText(patient_num);
+
+	CRect rect;
+	int i = 0;
+	CString select_name_sample = L"select * from patientdata where name ='" + m_patientname + "'";
+	CString strNum = "";
+	CString strtemp = "20";
+	CString strSex[3] = { "男", "女", "" };
+
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+
+	_variant_t var;
+
+	CString filename;
+	filename.Format(L"appdata.accdb");
+
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return;
+	ExeSql(m_pDB, m_pRs, select_name_sample);
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+			return;
+		}
+
+		bool bo = false;
+		int pos;
+		//	bool search_flag = false;
+		is_search = false;
+		int ado_num = 0;
+		while (!m_pRs->adoEOF)
+		{
+			var = m_pRs->GetCollect("number");
+			if (var.vt != VT_NULL)
+				strNum = (LPCSTR)_bstr_t(var);
+
+			strNum = strtemp + strNum;
+
+			pos = strNum.Find(patient_num, 0);
+			if (pos != -1 && patient_num != "")
+				bo = true;
+
+			if (bo == true)
+			{
+				bo = false;
+				if (i == 0)
+				{
+					m_PatientResultList.DeleteAllItems();
+					is_search = true;
+				}
+				m_PatientResultList.InsertItem(i, _T(""));
+				m_PatientResultList.SetItemText(i, 1, strNum);
+				m_PatientResultList.SetItemText(i, 4, m_patientname);
+
+				var = m_pRs->GetCollect("sex");
+				CString sextemp;
+				if (var.vt != VT_NULL)
+				{
+					sextemp = (LPCSTR)_bstr_t(var);
+					sextemp = strSex[_ttoi(sextemp)];
+				}
+				m_PatientResultList.SetItemText(i, 5, sextemp);
+				ThisRelation.list_pos[i] = i;
+				ThisRelation.ado_pos[i] = ado_num;
+				ThisResult2.numofrs[i] = strNum;
+
+				//now_num = i;
+				//MessageBox(L"zhaodao");
+				i++;
+			}
+			ThisResult2.totalnums = m_PatientResultList.GetItemCount();
+			m_pRs->MoveNext();
+			ado_num++;
+
+		}
+		if (m_pRs->adoEOF && is_search == false)
+			MessageBox(L"can not find!");
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
 }

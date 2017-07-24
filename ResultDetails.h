@@ -20,6 +20,10 @@ typedef struct{
 }ResultToDisplay;
 typedef	ResultToDisplay*	pResultToDisplay;
 
+typedef struct{
+	int list_pos[1000];
+	int ado_pos[1000];
+}Relation;
 // CResultDetails ¥∞ÃÂ ”Õº
 
 class CResultDetails : public CBCGPChartExampleView

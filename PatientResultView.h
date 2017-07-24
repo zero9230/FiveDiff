@@ -39,6 +39,7 @@ public:
 	CBCGPButton			m_daily_result;
 	CResultDetails*		m_pResultDetails2;
 	ResultToDisplay 	ThisResult2;
+	Relation            ThisRelation;
 
 	BOOL  InitPatientResultForm();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -48,7 +49,10 @@ public:
 	afx_msg void OnDailyResult2();
 	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 	CString m_patientname;
-	afx_msg void OnBnClickedPatientResult2();
+//	afx_msg void OnBnClickedPatientResult2();
+//	afx_msg void OnBnClickedButton3();
+	CString m_patientGender;
+	afx_msg void OnBnClickedButtonSearch();
 };
 
 
