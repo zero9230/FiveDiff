@@ -938,6 +938,7 @@
 #define IDC_BUTTON_SEARCH               1862
 #define IDC_EDIT_NAME2                  1863
 #define IDC_EDIT_ID                     1863
+#define IDC_BUTTON_QUIT                 1863
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1104,7 +1105,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        288
 #define _APS_NEXT_COMMAND_VALUE         33002
-#define _APS_NEXT_CONTROL_VALUE         1863
+#define _APS_NEXT_CONTROL_VALUE         1864
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

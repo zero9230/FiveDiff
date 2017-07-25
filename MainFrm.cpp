@@ -1784,6 +1784,7 @@ void CMainFrame::OnClose()
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 
 	KillTimer(CLOCK_TIMER);
+	exit(0);
 	CFrameWnd::OnClose();
 }
 

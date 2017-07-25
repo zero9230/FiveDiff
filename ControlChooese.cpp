@@ -11,9 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CControlChooese, CDialogEx)
 
-CControlChooese::CControlChooese(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CControlChooese::IDD, pParent)
-	, m_ControltypeRadio(0)
+CControlChooese::CControlChooese(CWnd* pParent /*=NULL*/): CDialogEx(CControlChooese::IDD, pParent)	, m_ControltypeRadio(0)
 {
 	VERIFY(textfont.CreateFont(
 		15,                        // nHeight
@@ -78,7 +76,7 @@ END_MESSAGE_MAP()
 void CControlChooese::OnClose()
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-
+	//MessageBox(L"close here!");
 	CDialogEx::OnClose();
 }
 
@@ -275,7 +273,7 @@ void CControlChooese::OnFilebutton7()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	Controlfile = 6;
-	CDialogEx::OnClose();
+	CDialogEx::OnOK();
 }
 
 
