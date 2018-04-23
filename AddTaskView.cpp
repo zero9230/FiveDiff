@@ -252,6 +252,7 @@ bool CAddTaskView::GetTaskInfo()
 	memset(m_task.time, 0, sizeof(m_task.time));
 	sprintf(m_task.time, "%s", W2A(testtime));
 
+	//样品编号获取规则：若没有手动输入，则自动生成编号（由sampledata）中最后编号和日期决定
 	GetDlgItem(IDC_ADDTASK_SAMPLENUM)->GetWindowText(number);
 	if (number == "")
 	{

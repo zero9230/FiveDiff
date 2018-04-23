@@ -50,7 +50,6 @@ void CPerfusionView::OnPrimeDiluent()
 	PrimeReagent("PRIME  DILUENT---------#\n", SPI_CMD_PRIME_DILUENT);
 }
 
-
 void CPerfusionView::OnPrimeRinse()
 {
 	// TODO:  在此添加控件通知处理程序代码
@@ -58,14 +57,12 @@ void CPerfusionView::OnPrimeRinse()
 	PrimeReagent("PRIME  RINSE---------#\n", SPI_CMD_PRIME_WBCRINSE);
 }
 
-
 void CPerfusionView::OnPrimeLmnefix()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	RinseMode = 2;
 	PrimeReagent("PRIME  LMNEFIX---------#\n", SPI_CMD_PRIME_LMNEFIX);
 }
-
 
 void CPerfusionView::OnPrimeWbclyse()
 {
@@ -82,14 +79,12 @@ void CPerfusionView::OnPrimeHgblyse()
 	PrimeReagent("PRIME  HGBLYSE---------#\n", SPI_CMD_PRIME_HGBLYSE);
 }
 
-
 void CPerfusionView::OnPrimeAll()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	RinseMode = 5;
 	PrimeReagent("PRIME  ALL---------#\n", SPI_CMD_PRIMEALL);
 }
-
 
 void CPerfusionView::OnPrimeReversedprime()
 {
@@ -104,20 +99,43 @@ void CPerfusionView::PrimeReagent(char* Mess, uchar CMD)
 	key_status = FALSE;
 	DSP_status = Busy;
 	sdata_cmd[0] = CMD;
-	if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD)==0)
+	if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
 	{
-		GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(FALSE);
-		GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(FALSE);
-		GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(FALSE);
-		GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(FALSE);
-		GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(FALSE);
-		GetDlgItem(IDC_PRIME_ALL)->EnableWindow(FALSE);
-		GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(FALSE);
-		GetDlgItem(IDOK)->EnableWindow(FALSE);
-		GetDlgItem(IDCANCEL)->EnableWindow(FALSE);
-		SetTimer(POLLTIME, 1000, 0);
+		MessageBox(L"命令发送不成功！", L"ERROR", MB_OK);
 	}
+	else
+	{
+		SetTimer(POLLTIME, 1000, 0);
+		SetWindowDisable();
+		
+	}
+
 }
+
+void CPerfusionView::SetWindowEnable(){
+	GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
+	GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
+	GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
+	GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
+	GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
+	GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
+	GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
+	GetDlgItem(IDOK)->EnableWindow(TRUE);
+	GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+}
+
+void CPerfusionView::SetWindowDisable(){
+	GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PRIME_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(FALSE);
+	GetDlgItem(IDOK)->EnableWindow(FALSE);
+	GetDlgItem(IDCANCEL)->EnableWindow(FALSE);
+}
+
 
 void CPerfusionView::OnTimer(UINT_PTR nIDEvent)
 {
@@ -131,11 +149,13 @@ void CPerfusionView::OnTimer(UINT_PTR nIDEvent)
 		PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 		PC_RECEIVE_FRAME(rdata_state, SPI_TYPE_STATE);
 		SendMessage(WM_ACKSPI, rdata_state[0], 0);
+		SetWindowEnable();
+		break;
 	}
 	default:
 		return;
 	}
-	CDialogEx::OnTimer(nIDEvent);
+	//CDialogEx::OnTimer(nIDEvent);
 }
 
 

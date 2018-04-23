@@ -12,6 +12,7 @@
 #include "ReportGenerator\ReportGenerator.h"
 #include "ReportGenerator\DrawPicture.h"
 #include "Includes_app.h"
+#include "afxwin.h"
 
 typedef struct{
 	CString			numofrs[1000];
@@ -62,7 +63,7 @@ public:
 	CBCGPListBox		m_RBCFlag;
 	CBCGPListBox		m_PLTFlag;
 	CBCGPListBox		m_RETFlag;
-	CBCGPComboBox		m_Result_sex;
+	CBCGPComboBox		m_sex_combo;
 
 	CReportGenerator	m_reportGenerator;
 
@@ -154,15 +155,18 @@ public:
 
 
 	 CString	itemhead;
-	 CString items_fullname[28];
 
-	 CString items_shortname[28] ;
+	 CString items_fullname[28];
+	 CString items_shortname[28] ;	 
 	 CString unit_info[28];
+	
+
 
 	 afx_msg void OnDeleteRecord();
 
 	 afx_msg void OnBnClickedResultReturn();
 	 
+	 CComboBox m_doctor_combo;
 };
 
 

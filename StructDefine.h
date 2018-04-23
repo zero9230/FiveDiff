@@ -317,6 +317,19 @@ struct Patient_data_struct
 };
 typedef struct Patient_data_struct patient_info;
 
+//医生信息数据结构，成员主要包括系统信息与人工输入信息
+struct Doctor_data_struct
+{
+	long			 id;				//id
+	//int			 row;			//行号
+	
+	char		 name[21];		//姓名长度，可以输10个汉字，或20个英文字符
+	char		 memo[100];		//备注，100个字节
+
+};
+typedef struct Doctor_data_struct doctor_info;
+
+
 //----------------------------------------
 //白细胞参数数据结构
 struct wbc_data

@@ -98,10 +98,24 @@ BOOL CQualityTargetValueView::OnInitDialog()
 	}
 	SetDlgItemText(IDC_STATIC0, item_temp);
 	GetDlgItem(IDC_STATIC0)->SetFont(&textfont);
-
+	
+	haveeditcreate = false;
+	QcLjFileExist = 0;
 	InitTargetValueList();
-	GetDlgItem(IDC_PROJECT_EDIT)->EnableWindow(false);
-	GetDlgItem(IDC_PROJECTTARGET_EDIT)->EnableWindow(false);
+	GetQcFile();
+	
+	
+	//if (nRow == 0)
+	//	QcLjFileExist = 0;
+	//else{
+	//	QcLjFileExist = 1;
+	//	MessageBox(L"FillForm");
+	//	FillForm();
+	//}
+	
+
+	GetDlgItem(IDC_PROJECT_EDIT)->EnableWindow(false);//项目名
+	GetDlgItem(IDC_PROJECTTARGET_EDIT)->EnableWindow(false);//靶值
 	GetDlgItem(IDC_PROJECT_EDIT)->SetWindowText(m_TargetValueList.GetItemText(item_focused, 0));
 	GetDlgItem(IDC_PROJECTTARGET_EDIT)->SetWindowText(m_TargetValueList.GetItemText(item_focused, 2));
 
@@ -141,7 +155,7 @@ void CQualityTargetValueView::InitTargetValueList()
 
 
 	// 为列表视图控件添加四列
-	m_TargetValueList.InsertColumn(0, _T("项目"), LVCFMT_CENTER, rect.Width() * 1 / 8, 0);
+	m_TargetValueList.InsertColumn(0, _T("项目"), LVCFMT_CENTER, rect.Width() * 1 /8, 0);
 	m_TargetValueList.InsertColumn(1, _T("下限"), LVCFMT_CENTER, rect.Width() * 1 / 4, 1);
 	m_TargetValueList.InsertColumn(2, _T("靶值"), LVCFMT_CENTER, rect.Width() * 1 / 4, 2);
 	m_TargetValueList.InsertColumn(3, _T("上限"), LVCFMT_CENTER, rect.Width() * 1 / 4, 3);
@@ -188,8 +202,6 @@ void CQualityTargetValueView::InitTargetValueList()
 	m_TargetValueList.SetItemText(25, 4, L"%");
 }
 
-
-
 void CQualityTargetValueView::createEdit(NM_LISTVIEW  *pEditCtrl, CEdit *createdit, int &Item, int &SubItem, bool &havecreat)
 {
 	Item = pEditCtrl->iItem;//将点中的单元格的行赋值给“刚编辑过的行”以便后期处理
@@ -213,14 +225,23 @@ void CQualityTargetValueView::createEdit(NM_LISTVIEW  *pEditCtrl, CEdit *created
 void CQualityTargetValueView::distroyEdit(CListCtrl *list, CEdit* distroyedit, int &Item, int &SubItem)
 {
 	CString meditdata;
-	distroyedit->GetWindowTextW(meditdata);
+	try{
+		
+		distroyedit->GetWindowTextW(meditdata);
+		
+	}
+	catch (_com_error &e)
+	{
+		TRACE("distroyedit->GetWindowTextW异常");
+	}
 	list->SetItemText(Item, SubItem, meditdata);//获得相应单元格字符
 	distroyedit->DestroyWindow();//销毁对象，有创建就要有销毁，不然会报错
+
 }
 
-
-void CQualityTargetValueView::OnNMClickQualityTargetvalueList(NMHDR *pNMHDR, LRESULT *pResult)
+void CQualityTargetValueView::OnNMClickQualityTargetvalueList(NMHDR *pNMHDR, LRESULT *pResult)//点击靶值编辑某一条目的响应函数
 {
+	//UpdateData(true);
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO:  在此添加控件通知处理程序代码
 	NM_LISTVIEW  *pEditCtrl = (NM_LISTVIEW *)pNMHDR;
@@ -228,6 +249,8 @@ void CQualityTargetValueView::OnNMClickQualityTargetvalueList(NMHDR *pNMHDR, LRE
 	item_focused = pEditCtrl->iItem;
 	GetDlgItem(IDC_PROJECT_EDIT)->SetWindowText(m_TargetValueList.GetItemText(item_focused, 0));
 	GetDlgItem(IDC_PROJECTTARGET_EDIT)->SetWindowText(m_TargetValueList.GetItemText(item_focused, 2));
+	//GetDlgItem(IDC_PROJECTTARGET_EDIT)->SetWindowText(m_TargetValueList.GetItemText(item_focused, 1));
+	//GetDlgItem(IDC_PROJECTRANGE_EDIT)->SetWindowText(m_TargetValueList.GetItemText(item_focused, 2));
 
 	if (pEditCtrl->iItem == -1)//点击到非工作区
 	{
@@ -237,7 +260,7 @@ void CQualityTargetValueView::OnNMClickQualityTargetvalueList(NMHDR *pNMHDR, LRE
 			haveeditcreate = false;
 		}
 	}
-	else if ((pEditCtrl->iItem >= 0 && pEditCtrl->iItem <= 25) && (pEditCtrl->iSubItem ==2))//如果不是性别选项
+	else if ((pEditCtrl->iItem >= 0 && pEditCtrl->iItem <= 25) && (pEditCtrl->iSubItem == 2))//如果光标在靶值栏，则赋予编辑框
 	{
 		if (haveeditcreate == true)
 		{
@@ -255,7 +278,7 @@ void CQualityTargetValueView::OnNMClickQualityTargetvalueList(NMHDR *pNMHDR, LRE
 		else
 		{
 			e_Item = pEditCtrl->iItem;//将点中的单元格的行赋值给“刚编辑过的行”以便后期处理
-			e_SubItem = pEditCtrl->iSubItem;//将点中的单元格的行赋值给“刚编辑过的行”以便后期处理
+			e_SubItem = pEditCtrl->iSubItem;//将点中的单元格的列赋值给“刚编辑过的列”以便后期处理
 			createEdit(pEditCtrl, &m_QualityTargetEdit, e_Item, e_SubItem, haveeditcreate);//创建编辑框
 		}
 	}
@@ -281,84 +304,91 @@ void CQualityTargetValueView::OnNMClickQualityTargetvalueList(NMHDR *pNMHDR, LRE
 }
 
 
+//将页面中的信息装配入结构体，准备保存
+//此函数会增加多余的空格，注意修补
 void CQualityTargetValueView::GetQcLimitData()
 {
-	qcLjEditData.qctype = Controltype;
-	qcLjEditData.filenum =Controlfile;
+	qcLjEditData.qctype = Controltype + 48;
+	qcLjEditData.filenum =Controlfile + 48;
+	
 
 	USES_CONVERSION;
-
+	
 	strcpy(qcLjEditData.Number, W2A(tempLjNumber));
 	strcpy(qcLjEditData.Deadline, W2A(tempLjDeadline));
 
-	strcpy(qcLjEditData.wbctarget.wbc, W2A(m_TargetValueList.GetItemText(0, 3)));
-	strcpy(qcLjEditData.wbctarget.lymp, W2A(m_TargetValueList.GetItemText(1, 3)));
-	strcpy(qcLjEditData.wbctarget.neup, W2A(m_TargetValueList.GetItemText(2, 3)));
-	strcpy(qcLjEditData.wbctarget.monop, W2A(m_TargetValueList.GetItemText(3, 3)));
-	strcpy(qcLjEditData.wbctarget.eosp, W2A(m_TargetValueList.GetItemText(4, 3)));
-	strcpy(qcLjEditData.wbctarget.basp, W2A(m_TargetValueList.GetItemText(5, 3)));
-	strcpy(qcLjEditData.wbctarget.alyp, W2A(m_TargetValueList.GetItemText(6, 3)));
-	strcpy(qcLjEditData.wbctarget.licp, W2A(m_TargetValueList.GetItemText(7, 3)));
-	strcpy(qcLjEditData.wbctarget.lym, W2A(m_TargetValueList.GetItemText(8, 3)));
-	strcpy(qcLjEditData.wbctarget.neu, W2A(m_TargetValueList.GetItemText(9, 3)));
-	strcpy(qcLjEditData.wbctarget.mono, W2A(m_TargetValueList.GetItemText(10, 3)));
-	strcpy(qcLjEditData.wbctarget.eos, W2A(m_TargetValueList.GetItemText(11, 3)));
-	strcpy(qcLjEditData.wbctarget.bas, W2A(m_TargetValueList.GetItemText(12, 3)));
-	strcpy(qcLjEditData.wbctarget.aly, W2A(m_TargetValueList.GetItemText(13, 3)));
-	strcpy(qcLjEditData.wbctarget.lic, W2A(m_TargetValueList.GetItemText(14, 3)));
-	strcpy(qcLjEditData.rbctarget.rbc, W2A(m_TargetValueList.GetItemText(15, 3)));
-	strcpy(qcLjEditData.rbctarget.hgb, W2A(m_TargetValueList.GetItemText(16, 3)));
-	strcpy(qcLjEditData.rbctarget.hct, W2A(m_TargetValueList.GetItemText(17, 3)));
-	strcpy(qcLjEditData.rbctarget.mcv, W2A(m_TargetValueList.GetItemText(18, 3)));
-	strcpy(qcLjEditData.rbctarget.mch, W2A(m_TargetValueList.GetItemText(19, 3)));
-	strcpy(qcLjEditData.rbctarget.mchc,W2A(m_TargetValueList.GetItemText(20, 3)));
-	strcpy(qcLjEditData.rbctarget.rdw, W2A(m_TargetValueList.GetItemText(21, 3)));
-	strcpy(qcLjEditData.plttarget.plt, W2A(m_TargetValueList.GetItemText(22, 3)));
-	strcpy(qcLjEditData.plttarget.mpv, W2A(m_TargetValueList.GetItemText(23, 3)));
-	strcpy(qcLjEditData.plttarget.pdw, W2A(m_TargetValueList.GetItemText(24, 3)));
-	strcpy(qcLjEditData.plttarget.pct, W2A(m_TargetValueList.GetItemText(25, 3)));
+	strcpy(qcLjEditData.wbctarget.wbc, W2A(m_TargetValueList.GetItemText(0, 2).Trim()));//第二栏为靶值
 
-	strcpy(qcLjEditData.wbcsd.wbc, W2A(TargetLimit[0]));
-	strcpy(qcLjEditData.wbcsd.lymp, W2A(TargetLimit[1]));
-	strcpy(qcLjEditData.wbcsd.neup, W2A(TargetLimit[2]));
-	strcpy(qcLjEditData.wbcsd.monop, W2A(TargetLimit[3]));
-	strcpy(qcLjEditData.wbcsd.eosp, W2A(TargetLimit[4]));
-	strcpy(qcLjEditData.wbcsd.basp, W2A(TargetLimit[5]));
-	strcpy(qcLjEditData.wbcsd.alyp, W2A(TargetLimit[6]));
-	strcpy(qcLjEditData.wbcsd.licp, W2A(TargetLimit[7]));
-	strcpy(qcLjEditData.wbcsd.lym, W2A(TargetLimit[8]));
-	strcpy(qcLjEditData.wbcsd.neu, W2A(TargetLimit[9]));
-	strcpy(qcLjEditData.wbcsd.mono, W2A(TargetLimit[10]));
-	strcpy(qcLjEditData.wbcsd.eos, W2A(TargetLimit[11]));
-	strcpy(qcLjEditData.wbcsd.bas, W2A(TargetLimit[12]));
-	strcpy(qcLjEditData.wbcsd.aly, W2A(TargetLimit[13]));
-	strcpy(qcLjEditData.wbcsd.lic, W2A(TargetLimit[14]));
-	strcpy(qcLjEditData.rbcsd.rbc, W2A(TargetLimit[15]));
-	strcpy(qcLjEditData.rbcsd.hgb, W2A(TargetLimit[16]));
-	strcpy(qcLjEditData.rbcsd.hct, W2A(TargetLimit[17]));
-	strcpy(qcLjEditData.rbcsd.mcv, W2A(TargetLimit[18]));
-	strcpy(qcLjEditData.rbcsd.mch, W2A(TargetLimit[19]));
-	strcpy(qcLjEditData.rbcsd.mchc, W2A(TargetLimit[20]));
-	strcpy(qcLjEditData.rbcsd.rdw, W2A(TargetLimit[21]));
-	strcpy(qcLjEditData.pltsd.plt, W2A(TargetLimit[22]));
-	strcpy(qcLjEditData.pltsd.mpv, W2A(TargetLimit[23]));
-	strcpy(qcLjEditData.pltsd.pdw, W2A(TargetLimit[24]));
-	strcpy(qcLjEditData.pltsd.pct, W2A(TargetLimit[25]));
+	strcpy(qcLjEditData.wbctarget.lymp, W2A(m_TargetValueList.GetItemText(1, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.neup, W2A(m_TargetValueList.GetItemText(2, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.monop, W2A(m_TargetValueList.GetItemText(3, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.eosp, W2A(m_TargetValueList.GetItemText(4, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.basp, W2A(m_TargetValueList.GetItemText(5, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.alyp, W2A(m_TargetValueList.GetItemText(6, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.licp, W2A(m_TargetValueList.GetItemText(7, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.lym, W2A(m_TargetValueList.GetItemText(8, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.neu, W2A(m_TargetValueList.GetItemText(9, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.mono, W2A(m_TargetValueList.GetItemText(10, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.eos, W2A(m_TargetValueList.GetItemText(11, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.bas, W2A(m_TargetValueList.GetItemText(12, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.aly, W2A(m_TargetValueList.GetItemText(13, 2).Trim()));
+	strcpy(qcLjEditData.wbctarget.lic, W2A(m_TargetValueList.GetItemText(14, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.rbc, W2A(m_TargetValueList.GetItemText(15, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.hgb, W2A(m_TargetValueList.GetItemText(16, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.hct, W2A(m_TargetValueList.GetItemText(17, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.mcv, W2A(m_TargetValueList.GetItemText(18, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.mch, W2A(m_TargetValueList.GetItemText(19, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.mchc,W2A(m_TargetValueList.GetItemText(20, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.rdw, W2A(m_TargetValueList.GetItemText(21, 2).Trim()));
+	strcpy(qcLjEditData.plttarget.plt, W2A(m_TargetValueList.GetItemText(22, 2).Trim()));
+	strcpy(qcLjEditData.plttarget.mpv, W2A(m_TargetValueList.GetItemText(23, 2).Trim()));
+	strcpy(qcLjEditData.plttarget.pdw, W2A(m_TargetValueList.GetItemText(24, 2).Trim()));
+	strcpy(qcLjEditData.plttarget.pct, W2A(m_TargetValueList.GetItemText(25, 2).Trim()));
+
+	strcpy(qcLjEditData.wbcsd.wbc, W2A(TargetLimit[0].Trim()));
+	strcpy(qcLjEditData.wbcsd.lymp, W2A(TargetLimit[1].Trim()));
+	strcpy(qcLjEditData.wbcsd.neup, W2A(TargetLimit[2].Trim()));
+	strcpy(qcLjEditData.wbcsd.monop, W2A(TargetLimit[3].Trim()));
+	strcpy(qcLjEditData.wbcsd.eosp, W2A(TargetLimit[4].Trim()));
+	strcpy(qcLjEditData.wbcsd.basp, W2A(TargetLimit[5].Trim()));
+	strcpy(qcLjEditData.wbcsd.alyp, W2A(TargetLimit[6].Trim()));
+	strcpy(qcLjEditData.wbcsd.licp, W2A(TargetLimit[7].Trim()));
+	strcpy(qcLjEditData.wbcsd.lym, W2A(TargetLimit[8].Trim()));
+	strcpy(qcLjEditData.wbcsd.neu, W2A(TargetLimit[9].Trim()));
+	strcpy(qcLjEditData.wbcsd.mono, W2A(TargetLimit[10].Trim()));
+	strcpy(qcLjEditData.wbcsd.eos, W2A(TargetLimit[11].Trim()));
+	strcpy(qcLjEditData.wbcsd.bas, W2A(TargetLimit[12].Trim()));
+	strcpy(qcLjEditData.wbcsd.aly, W2A(TargetLimit[13].Trim()));
+	strcpy(qcLjEditData.wbcsd.lic, W2A(TargetLimit[14].Trim()));
+	strcpy(qcLjEditData.rbcsd.rbc, W2A(TargetLimit[15].Trim()));
+	strcpy(qcLjEditData.rbcsd.hgb, W2A(TargetLimit[16].Trim()));
+	strcpy(qcLjEditData.rbcsd.hct, W2A(TargetLimit[17].Trim()));
+	strcpy(qcLjEditData.rbcsd.mcv, W2A(TargetLimit[18].Trim()));
+	strcpy(qcLjEditData.rbcsd.mch, W2A(TargetLimit[19].Trim()));
+	strcpy(qcLjEditData.rbcsd.mchc, W2A(TargetLimit[20].Trim()));
+	strcpy(qcLjEditData.rbcsd.rdw, W2A(TargetLimit[21].Trim()));
+	strcpy(qcLjEditData.pltsd.plt, W2A(TargetLimit[22].Trim()));
+	strcpy(qcLjEditData.pltsd.mpv, W2A(TargetLimit[23].Trim()));
+	strcpy(qcLjEditData.pltsd.pdw, W2A(TargetLimit[24].Trim()));
+	strcpy(qcLjEditData.pltsd.pct, W2A(TargetLimit[25].Trim()));
 }
 
+//保存页面中的信息（靶值确定的响应函数）
 void CQualityTargetValueView::OnQualitytargetConfirm()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_QUALITY_NUMBER)->GetWindowText(tempLjNumber);
 	GetDlgItem(IDC_QUALITY_DEADLINE)->GetWindowText(tempLjDeadline);
-	if (tempLjNumber == "" || tempLjDeadline == "")
+
+	//数据校验
+	if (tempLjNumber.Trim() == "" || tempLjDeadline.Trim() == "")
 	{
 		MessageBox(L"信息不能为空!",L"警告!");
 		return;
 	}
-	for (int i = 0; i < 26; i++)
+	for (int i = 0; i < 1; i++)//i<26
 	{
-		if (_wtof(m_TargetValueList.GetItemText(i, 3))<0.00001)
+		if (_wtof(m_TargetValueList.GetItemText(i, 2))<0.00001)
 		{
 			MessageBox(L"靶值不能为0!", L"警告!");
 			return;
@@ -369,12 +399,26 @@ void CQualityTargetValueView::OnQualitytargetConfirm()
 			return;
 		}
 	}
+	
+	////测试语句
+	//for (int i = 0; i < 1; i++){
+	//	_wtof(m_TargetValueList.GetItemText(i, 2));
+	//	_wtof(TargetLimit[i]);
+	//}
+	
 	GetQcLimitData();
+
+	//qcLjEditData.qctype=Controltype+48;
+	//TRACE("\n@@@@@@@Controltype=%d\n",Controltype);
+	//
+	//qcLjEditData.filenum = Controlfile + 48;
+	//TRACE("\n@@@@@@@Controlfile=%d\n", Controlfile);
 
 	if (QcLjFileExist == 1)
 		//CreateQcLjEditFileExistDlg(hDlg, &qcLjEditData, &rc);
 	{
-		CDialog  m_QualityFileExitDlg;
+		//CDialog  m_QualityFileExitDlg;
+		CQualityFileExit m_QualityFileExitDlg;
 		m_QualityFileExitDlg.DoModal();
 	}
 	else//文件未使用
@@ -387,7 +431,7 @@ void CQualityTargetValueView::OnQualitytargetConfirm()
 		//else if (systemcfg.language == ENGLISH)
 		//	CreateWarningBoxNonCHDlg(hDlg, "Successfully", "Presentation");
 	}
-	else if (rc != -5)
+	else if (rc == -5)
 	{
 		if (systemcfg.language == CHINESE)
 			MessageBox(L"保存失败",L"提示", MB_OK | MB_ICONINFORMATION);
@@ -395,7 +439,6 @@ void CQualityTargetValueView::OnQualitytargetConfirm()
 			CreateWarningBoxNonCHDlg(hDlg, "Failed", "Presentation");*/
 	}
 }
-
 
 void CQualityTargetValueView::OnRangeConfirm()
 {
@@ -405,7 +448,7 @@ void CQualityTargetValueView::OnRangeConfirm()
 	
 	
 	USES_CONVERSION;
-	GetDlgItem(IDC_PROJECTRANGE_EDIT)->GetWindowText(Content);
+	GetDlgItem(IDC_PROJECTRANGE_EDIT)->GetWindowText(Content);//获取控件中的限制范围
 	if (Content == "")
 	{
 		MessageBox(L"限制范围输入为空");
@@ -419,14 +462,15 @@ void CQualityTargetValueView::OnRangeConfirm()
 	CString targettemp;
 	float   TargetLimit1, TargetLimit2;
 	CString CTargetLimit1, CTargetLimit2;
-	targettemp=m_TargetValueList.GetItemText(item_focused, 2);
-	TargetLimit1=_wtof(targettemp) - _wtof(Content);
-	TargetLimit2=_wtof(targettemp) + _wtof(Content);
+	targettemp=m_TargetValueList.GetItemText(item_focused, 2);//获取控件中的靶值
+	TargetLimit1=_wtof(targettemp) - _wtof(Content);//下限
+	TargetLimit2=_wtof(targettemp) + _wtof(Content);//上限
 	CTargetLimit1.Format(L"%.2f",TargetLimit1);
 	CTargetLimit2.Format(L"%.2f",TargetLimit2);
 
-	m_TargetValueList.SetItemText(0, 1, CTargetLimit1);
-	m_TargetValueList.SetItemText(0, 3, CTargetLimit2);
+	//此处需要将偏差值写入对应行
+	m_TargetValueList.SetItemText(item_focused, 1, CTargetLimit1);
+	m_TargetValueList.SetItemText(item_focused, 3, CTargetLimit2);
 }
 
 bool CQualityTargetValueView::JudgmentValid(CString Content)
@@ -465,66 +509,160 @@ bool CQualityTargetValueView::JudgmentValid(CString Content)
 	return true;
 }
 
-
+//获取质控文件，标志位QcLjFileExist、表单中属性获得值
+//此处数据库操作和页面逻辑/业务逻辑糅杂在一起了，合理情况应该将他们分开
 bool CQualityTargetValueView::GetQcFile()
 {
-
 	CString filename;
 	CString	qctypetemp;
 	CString qcFileNumtemp;
 	filename.Format(_T("appdata.accdb"));
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
+	
 	_variant_t var;
+	CString strTemp;
 	int temprow;
 
 	qctypetemp.Format( L"%d",Controltype);
 	qcFileNumtemp.Format(L"%d",Controlfile);
 	CString inital_target = _T("select * from qceditdata where qctype ='") + qctypetemp +"'and filenum ='" + qcFileNumtemp + "';";
-	if (OpenDataBase(filename, m_pDB, m_pRs) != -1)
+
+	if (-1 == OpenDataBase(filename, m_pDB, m_pRs)){
+		//MessageBox(L"Open Failure!");
+		return false;
+	}
+	ExeSql(m_pDB, m_pRs, inital_target);
+	try
 	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+			
+		}
+		else
+		{
+			TRACE("\n表内数据为空!\n");			
+			//return FALSE;//由于此处需要将表格中的数据置为空，所以不可直接返回
+		}		
 		temprow = int(m_pRs->GetRecordCount());
-		if (temprow == 0)
+		
+		//TRACE("\n###temprow=%d\n",temprow);
+		//TRACE("\n###nRow=%d", nRow);
+		nRow = temprow;
+		if (temprow == 0)//有效行数为0，则填入空值
 		{
 			QcLjFileExist = 0;
-			tempLjNumber="";
-			tempLjDeadline="";
+			tempLjNumber = "";
+			tempLjDeadline = "";
+			GetDlgItem(IDC_QUALITY_NUMBER)->SetWindowText(tempLjNumber);
+			GetDlgItem(IDC_QUALITY_DEADLINE)->SetWindowText(tempLjDeadline);
 			for (int i = 0; i < 26; i++)
 			{
-				Qctarget[26]="";
-				TargetLimit[26]="";
+				Qctarget[i] = "";
+				TargetLimit[i] = "";
+				m_TargetValueList.SetItemText(i, 2, Qctarget[i]);
+				m_TargetValueList.SetItemText(i, 1, TargetLimit[i]);
+				m_TargetValueList.SetItemText(i, 3, TargetLimit[i]);
 			}
 		}
 		else
 		{
 			QcLjFileExist = 1;
+			
 			var = m_pRs->GetCollect("number");
 			if (var.vt != VT_NULL)
 			{
-				int qctype = m_pRs->GetCollect("number");
-				tempLjNumber.Format(L"%d",qctype);
+				strTemp = m_pRs->GetCollect("number");
+				tempLjNumber = (LPCSTR)_bstr_t(var);
+				GetDlgItem(IDC_QUALITY_NUMBER)->SetWindowText(tempLjNumber);
+				//填入批号
 			}
 			var = m_pRs->GetCollect("deadline");
 			if (var.vt != VT_NULL)
 			{
 				int qctype = m_pRs->GetCollect("deadline");
 				tempLjDeadline.Format(L"%d", qctype);
+				GetDlgItem(IDC_QUALITY_DEADLINE)->SetWindowText(tempLjDeadline);
+				//填入截止日期
 			}
-			for (int j = 0; j < 26;j++)
-			{
-				var = m_pRs->GetFields()->GetItem((long)j+5)->Value;//读取当前记录质控26个项目的靶值
-				Qctarget[j] = var;
-			}
+			
+			//填入靶值
 			for (int j = 0; j < 26; j++)
 			{
-				var = m_pRs->GetFields()->GetItem((long)j +26+ 5)->Value;//读取当前记录质控26个项目的偏差值
-				TargetLimit[j]=var;
+				var = m_pRs->GetFields()->GetItem((long)j + 5)->Value;//读取当前记录质控26个项目的靶值
+				Qctarget[j] = var;
+				m_TargetValueList.SetItemText(j, 2, Qctarget[j]);
 			}
+			//填入上限和下限
+			for (int j = 0; j < 26; j++)
+			{
+				var = m_pRs->GetFields()->GetItem((long)j + 26 + 5)->Value;//读取当前记录质控26个项目的偏差值
+				TargetLimit[j] = var;
+
+				double lowLimit = _wtof(Qctarget[j]) - _wtof(TargetLimit[j]);
+				double highimit = _wtof(Qctarget[j]) + _wtof(TargetLimit[j]);
+				CString str;
+				str.Format(L"%.2lf", lowLimit);
+				m_TargetValueList.SetItemText(j, 1, str);
+				str.Format(L"%.2lf", highimit);
+				m_TargetValueList.SetItemText(j, 3, str);
+			}
+
 		}
 		CloseDataBase(m_pDB, m_pRs);
-		return true;
+		return TRUE;
 	}
-	else return false;
+	catch (_com_error &e)
+	{
+		TRACE("GetQCFile异常");
+	}
+	return false;
+
+	//if (OpenDataBase(filename, m_pDB, m_pRs) != -1)
+	//{
+	//	temprow = int(m_pRs->GetRecordCount());
+	//	if (temprow == 0)
+	//	{
+	//		QcLjFileExist = 0;
+	//		tempLjNumber="";
+	//		tempLjDeadline="";
+	//		for (int i = 0; i < 26; i++)
+	//		{
+	//			Qctarget[26]="";
+	//			TargetLimit[26]="";
+	//		}
+	//	}
+	//	else
+	//	{
+	//		QcLjFileExist = 1;
+	//		var = m_pRs->GetCollect("number");
+	//		if (var.vt != VT_NULL)
+	//		{
+	//			int qctype = m_pRs->GetCollect("number");
+	//			tempLjNumber.Format(L"%d",qctype);
+	//		}
+	//		var = m_pRs->GetCollect("deadline");
+	//		if (var.vt != VT_NULL)
+	//		{
+	//			int qctype = m_pRs->GetCollect("deadline");
+	//			tempLjDeadline.Format(L"%d", qctype);
+	//		}
+	//		for (int j = 0; j < 26;j++)
+	//		{
+	//			var = m_pRs->GetFields()->GetItem((long)j+5)->Value;//读取当前记录质控26个项目的靶值
+	//			Qctarget[j] = var;
+	//		}
+	//		for (int j = 0; j < 26; j++)
+	//		{
+	//			var = m_pRs->GetFields()->GetItem((long)j +26+ 5)->Value;//读取当前记录质控26个项目的偏差值
+	//			TargetLimit[j]=var;
+	//		}
+	//	}
+	//	CloseDataBase(m_pDB, m_pRs);
+	//	return true;
+	//}
+	//else return false;
+	/***************************************************/
 	//int rc;
 	//unsigned int i;
 	//unsigned nRow = 0, nColumn = 0;
@@ -567,4 +705,76 @@ bool CQualityTargetValueView::GetQcFile()
 	//		strcpy(qcLjParam[i - 4], dbResult[nColumn + i]);    //nColumn*tempRow+i	
 	//}
 }
+
+void CQualityTargetValueView::UpdateView()
+{
+		CString item_temp;
+	switch (Controltype)
+	{
+	case 0:
+		item_temp.Format(L"L-J靶值编辑（文件 %02u）", Controlfile + 1);
+		break;
+	case 1:
+		item_temp.Format(L"X靶值编辑（文件 %02u）", Controlfile + 1);
+		break;
+	case 2:
+		item_temp.Format(L"X-R靶值编辑（文件 %02u）", Controlfile + 1);
+		break;
+	default:
+		break;
+	}
+	SetDlgItemText(IDC_STATIC0, item_temp);
+	GetDlgItem(IDC_STATIC0)->SetFont(&textfont);
+	GetQcFile();
 	
+}
+	
+//int CQualityTargetValueView::GetEditFileCount(int controlType, int fileNum)
+//{
+//	CString getEditFileCount;
+//	CString filename;
+//	int rownum = 0;
+//	filename.Format(_T("appdata.accdb"));
+//	_ConnectionPtr m_pDB;
+//	_RecordsetPtr m_pRs;
+//	_variant_t var;
+//
+//	getEditFileCount.Format(L"select * from qceditdata where qctype ='%d' and filenum ='%d';", controlType, fileNum);
+//
+//	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+//		return -1;
+//	ExeSql(m_pDB, m_pRs, getEditFileCount);
+//	rownum = int(m_pRs->GetRecordCount());
+//
+//	try
+//	{
+//		if (!m_pRs->BOF){
+//			m_pRs->MoveFirst();
+//		}
+//		else
+//		{
+//			TRACE("表内数据为空\n");
+//			return -1;
+//		}
+//		//while (!m_pRs->adoEOF)
+//		//{
+//		//	for (int i = 0; i < 26; i++)
+//		//	{
+//		//		var = m_pRs->GetFields()->GetItem(4 + i)->Value;//这是向那个变量填值？
+//		//		if (var.vt != VT_NULL){
+//		//			lowerlimit[i] = var;
+//		//		}
+//		//		var = m_pRs->GetFields()->GetItem(4 + 26 + i)->Value;
+//		//		if (var.vt != VT_NULL){
+//		//			upperlimit[i] = var;
+//		//		}
+//		//	}
+//		//}
+//	}
+//	catch (_com_error &e)
+//	{
+//		TRACE("GetNumDea函数程序异常\n");
+//	}
+//	CloseDataBase(m_pDB, m_pRs);
+//	return rownum;
+//}

@@ -54,12 +54,13 @@ END_MESSAGE_MAP()
 // CWorkstationTasksheet 消息处理程序
 
 
-void CWorkstationTasksheet::InitTaskList()
+bool CWorkstationTasksheet::InitTaskList()
 {
 	// 获取编程语言列表视图控件的位置和大小   
 	CRect m_rect;
 	GetClientRect(&m_rect);
 
+	int i=0;
 	m_rect.top += 20;
 	m_rect.bottom -= 35;
 	m_rect.left += 0;
@@ -87,6 +88,89 @@ void CWorkstationTasksheet::InitTaskList()
 	m_WorkstationTasklist.InsertColumn(7, _T("检测模式"), LVCFMT_CENTER, rect.Width() / 7, 7);
 	m_WorkstationTasklist.InsertColumn(8, _T("科室"), LVCFMT_CENTER, rect.Width() / 14, 8);
 	m_WorkstationTasklist.InsertColumn(9, _T("状态"), LVCFMT_CENTER, rect.Width() / 14, 9);
+
+	
+	//此处从数据库获取tasksheet的记录
+	CString select_tasksheet = L"select * from tasksheet ";
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+	_variant_t var;
+	CString varStr;//用于将var转为string的中间变量，方便显示
+	CString filename;
+	CString index;//序号
+	filename.Format(L"appdata.accdb");
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return false;
+	ExeSql(m_pDB, m_pRs, select_tasksheet);
+	
+	try{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+			return FALSE;
+		}
+		while (!m_pRs->adoEOF)
+		{
+			
+			m_WorkstationTasklist.InsertItem(i, _T(""));
+			
+
+			
+			index.Format(L"%d", i);
+			m_WorkstationTasklist.SetItemText(i, 0, index);
+
+			var = m_pRs->GetCollect("number");			
+			if (var.vt != VT_NULL)
+				varStr = (LPCSTR)_bstr_t(var);
+			m_WorkstationTasklist.SetItemText(i, 1, varStr);
+
+			var = m_pRs->GetCollect("name");
+			if (var.vt != VT_NULL)
+				varStr = (LPCSTR)_bstr_t(var);
+			m_WorkstationTasklist.SetItemText(i, 2, varStr);
+
+			var = m_pRs->GetCollect("sex");
+			if (var.vt != VT_NULL)
+				varStr = (LPCSTR)_bstr_t(var);
+			m_WorkstationTasklist.SetItemText(i, 3, varStr);
+
+			var = m_pRs->GetCollect("age");
+			if (var.vt != VT_NULL)
+				varStr = (LPCSTR)_bstr_t(var);
+			m_WorkstationTasklist.SetItemText(i, 4, varStr);
+
+			var = m_pRs->GetCollect("barcode");
+			if (var.vt != VT_NULL)
+				varStr = (LPCSTR)_bstr_t(var);
+			m_WorkstationTasklist.SetItemText(i, 5, varStr);
+
+			var = m_pRs->GetCollect("time");
+			if (var.vt != VT_NULL)
+				varStr = (LPCSTR)_bstr_t(var);
+			m_WorkstationTasklist.SetItemText(i, 6, varStr);
+
+			var = m_pRs->GetCollect("status");
+			if (var.vt != VT_NULL)
+				varStr = (LPCSTR)_bstr_t(var);
+			m_WorkstationTasklist.SetItemText(i, 9, varStr);
+
+
+			i++;
+			m_pRs->MoveNext();
+
+		}
+
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+	return TRUE;
+
+
 }
 
 
@@ -111,7 +195,7 @@ int CWorkstationTasksheet::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-
+//程序初始化入口
 BOOL CWorkstationTasksheet::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -246,6 +330,32 @@ void CWorkstationTasksheet::AddSingleTask(task_info* taskdata)
 	m_WorkstationTasklist.SetItemText(TaskNum, 8, department);
 	m_WorkstationTasklist.SetItemText(TaskNum, 9, status);
 	TaskNum++;
+	//MessageBox(status);
+	CString year = testtime.Left(4);
+	CString month = testtime.Mid(4, 2);
+	CString day = testtime.Right(2);
+	CString date = year + "/" + month + "/" + day;
+	//MessageBox(year);
+	//MessageBox(month);
+	//MessageBox(day);
+
+	//此处为将工作单中的数据添加到数据库中
+	// 此处需要注意，mode和status如何设计尚未查明，以及department属性未在数据库中设计
+	//需要维护样品编号的连续性
+
+	CString insert_tasksheet = L"insert into [tasksheet](row,[number],name,sex,age,barcode,[time],mode,status) values('"+NO+"','"+number+"','"+name+"','"+sex+"','"+age+"','"+barcode+"','"+date+"','1','1');";
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+
+	_variant_t var;
+	CString filename;
+	filename.Format(L"appdata.accdb");
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return;
+	ExeSql(m_pDB, m_pRs, insert_tasksheet);
+	MessageBox(L"add task successfully !");
+
+	CloseDataBase(m_pDB, m_pRs);
 }
 
 
@@ -262,10 +372,22 @@ void CWorkstationTasksheet::OnBnClickedDeletetask()
 	else
 	{
 		int nItem = m_WorkstationTasklist.GetNextSelectedItem(pos);
+		CString nItemTemp;
+		nItemTemp.Format(_T("%d"), m_WorkstationTasklist.GetItemCount());
+		MessageBox(nItemTemp);
+
+		
 		TRACE1("Item %d was selected!\n", nItem);
+		
+		//此处代码执行删除目标记录，并且维护编号number
 		if (nItem < m_WorkstationTasklist.GetItemCount())
 		{
-			int sum = m_alltask.size();
+
+
+
+
+
+			//int sum = m_alltask.size();
 			auto it = m_alltask.begin() + nItem;
 			it=m_alltask.erase(it);
 			TaskNum--;
@@ -280,6 +402,7 @@ void CWorkstationTasksheet::OnBnClickedDeletetask()
 	}
 }
 
+//将数据库和内存中的数据同步显示到UI控件中
 void CWorkstationTasksheet::UpdateTaskList(vector<task_info> taskdata)
 {
 
@@ -359,6 +482,7 @@ void CWorkstationTasksheet::OnCancel()
 	CDialogEx::OnCancel();
 }
 
+//number：任务下标；process：状态标号
 void CWorkstationTasksheet::UpdateTaskStatus(int number,int process)
 {
 	// TODO:  在此添加专用代码和/或调用基类
@@ -400,19 +524,24 @@ void CWorkstationTasksheet::OnBnClickedStartexecution()
 		MessageBox(L"无任务!", L"提示!", MB_OK | MB_ICONINFORMATION);
 		return;
 	}
-	if (!CheckDifferent())
+	if (CheckDifferent())//判重
 	{
 		if (MessageBox(L"有重复样品，请确认是否继续!", L"提示!", MB_OKCANCEL | MB_ICONINFORMATION) != IDOK)
 		{
+			
 			return;
 		}
 	}
-	startnum = m_alltask[0].number;
+	
+	MessageBox(L"before1");
+	startnum = m_alltask[0].number;//此处有问题
+	
 	LockTheButton();
+	
 	SendMessage(WM_STARTNEXTTASK,(WPARAM)startnum,0);
 	//
 }
-
+//判断是否有重复样品，以条码号为判断标准，有重复返回true，无重复返回false
 bool CWorkstationTasksheet::CheckDifferent()
 {
 	int sum = m_WorkstationTasklist.GetItemCount();
@@ -420,18 +549,18 @@ bool CWorkstationTasksheet::CheckDifferent()
 	map<CString,bool> barcode;
 	for (int i = 0; i < sum; i++)
 	{
-		if (barcode.find(m_WorkstationTasklist.GetItemText(i, 5)) == barcode.end() )
+		if (barcode.find(m_WorkstationTasklist.GetItemText(i, 5)) == barcode.end() )//当前的map中没有找到重复元素
 		{
-			barcode[m_WorkstationTasklist.GetItemText(i, 5)]=true;
+			barcode[m_WorkstationTasklist.GetItemText(i, 5)]=true;//将该元素（已去重）加入集合中
 		}
 		else
 		{
-			if(m_WorkstationTasklist.GetItemText(i, 5) != "")
-				return false;
+			if(m_WorkstationTasklist.GetItemText(i, 5) != "")//重复的元素不是空字符串，则是确实的重复条码，确定为重复
+				return true;
 			else continue;
 		}
 	}
-	return true;
+	return false;
 }
 
 void CWorkstationTasksheet::LockTheButton()

@@ -20,7 +20,7 @@ void DataTransmission::doGetNormalData(int	loop_times, uchar CMD, uchar DataType
 	{
 		sdata_cmd[0] = CMD;
 		PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
-		if (0 == PC_RECEIVE_FRAME(target, DataType))
+		if (0 == PC_RECEIVE_FRAME(target, DataType))//正常得到数据，返回0
 			break;
 	}
 	if (i == loop_times)

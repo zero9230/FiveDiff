@@ -94,11 +94,14 @@ BOOL CQualityRadarView::OnInitDialog()
 	SetDlgItemText(IDC_STATIC0, item_temp);
 	GetDlgItem(IDC_STATIC0)->SetFont(&textfont);
 
+	GetLatestResult(Controltype, Controlfile);
+	GetQcEditInfo(Controltype, Controlfile);
+
 	OnInitRadarChart1();
 	OnInitRadarChart2();
 	OnInitRadarChart3();
 	OnInitRadarChart4();
-	OnInitRadarChart5();
+	//OnInitRadarChart5();
 	OnInitQualityMaterialList();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -109,23 +112,36 @@ void CQualityRadarView::OnInitRadarChart1()
 	CBCGPChartVisualObject* pChart = m_RadarChart1.GetChart();
 	ASSERT_VALID(pChart);
 
+	pChart->CleanUpChartData();
+
 	pChart->SetChartType(BCGPChartPolar);
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 	CBCGPChartSeries* pSeries2 = pChart->CreateSeries(_T("Series 2"));
 
-	pSeries1->AddDataPoint("WBC", 15.);
-	pSeries1->AddDataPoint("LYM%", 10.);
-	pSeries1->AddDataPoint("NEU%", 8.);
-	pSeries1->AddDataPoint("MONO%", 22.);
-	pSeries1->AddDataPoint("EOS%", 22.);
-	pSeries1->AddDataPoint("BASO%",18.);
+	pSeries1->RemoveAllDataPoints();
 
-	pSeries2->AddDataPoint(9.);
-	pSeries2->AddDataPoint(15.);
-	pSeries2->AddDataPoint(19.);
-	pSeries2->AddDataPoint(21.);
-	pSeries2->AddDataPoint(23.);
+	pSeries1->AddDataPoint("WBC", data[0]);
+	pSeries1->AddDataPoint("LYM%", data[1]);
+	pSeries1->AddDataPoint("NEU%", data[2]);
+	pSeries1->AddDataPoint("MONO%", data[3]);
+	pSeries1->AddDataPoint("EOS%", data[4]);
+	pSeries1->AddDataPoint("BASO%", data[5]);
+	pSeries1->AddDataPoint("ALY%%", data[6]);
+	pSeries1->AddDataPoint("LIC%", data[7]);
+
+	//pSeries1->AddDataPoint("WBC", 15.);
+	//pSeries1->AddDataPoint("LYM%", 10.);
+	//pSeries1->AddDataPoint("NEU%", 8.);
+	//pSeries1->AddDataPoint("MONO%", 22.);
+	//pSeries1->AddDataPoint("EOS%", 22.);
+	//pSeries1->AddDataPoint("BASO%",18.);
+
+	//pSeries2->AddDataPoint(9.);
+	//pSeries2->AddDataPoint(15.);
+	//pSeries2->AddDataPoint(19.);
+	//pSeries2->AddDataPoint(21.);
+	//pSeries2->AddDataPoint(23.);
 
 	pChart->SetThemeOpacity(30);
 
@@ -149,23 +165,34 @@ void CQualityRadarView::OnInitRadarChart2()
 {
 	CBCGPChartVisualObject* pChart = m_RadarChart2.GetChart();
 	ASSERT_VALID(pChart);
+	pChart->CleanUpChartData();
 
 	pChart->SetChartType(BCGPChartPolar);
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 	CBCGPChartSeries* pSeries2 = pChart->CreateSeries(_T("Series 2"));
 
-	pSeries1->AddDataPoint("PLT", 15.);
-	pSeries1->AddDataPoint("MPV", 10.);
-	pSeries1->AddDataPoint("PDW", 8.);
-	pSeries1->AddDataPoint("PCT", 22.);
-	pSeries1->AddDataPoint("P-LCR", 22.);
+	pSeries1->RemoveAllDataPoints();
 
-	pSeries2->AddDataPoint(9.);
-	pSeries2->AddDataPoint(15.);
-	pSeries2->AddDataPoint(19.);
-	pSeries2->AddDataPoint(21.);
-	pSeries2->AddDataPoint(23.);
+	pSeries1->AddDataPoint("LYM", data[8]);
+	pSeries1->AddDataPoint("NEU", data[9]);
+	pSeries1->AddDataPoint("MONO", data[10]);
+	pSeries1->AddDataPoint("EOS", data[11]);
+	pSeries1->AddDataPoint("BASO", data[12]);	
+	pSeries1->AddDataPoint("ALY", data[13]);
+	pSeries1->AddDataPoint("LIC", data[14]);
+	
+	//pSeries1->AddDataPoint("PLT", 15.);
+	//pSeries1->AddDataPoint("MPV", 10.);
+	//pSeries1->AddDataPoint("PDW", 8.);
+	//pSeries1->AddDataPoint("PCT", 22.);
+	//pSeries1->AddDataPoint("P-LCR", 22.);
+
+	//pSeries2->AddDataPoint(9.);
+	//pSeries2->AddDataPoint(15.);
+	//pSeries2->AddDataPoint(19.);
+	//pSeries2->AddDataPoint(21.);
+	//pSeries2->AddDataPoint(23.);
 
 
 	pChart->SetThemeOpacity(30);
@@ -189,23 +216,34 @@ void CQualityRadarView::OnInitRadarChart3()
 {
 	CBCGPChartVisualObject* pChart = m_RadarChart3.GetChart();
 	ASSERT_VALID(pChart);
+	pChart->CleanUpChartData();
 
 	pChart->SetChartType(BCGPChartPolar);
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 	CBCGPChartSeries* pSeries2 = pChart->CreateSeries(_T("Series 2"));
 
-	pSeries1->AddDataPoint("RBC", 15.);
-	pSeries1->AddDataPoint("HGB", 10.);
-	pSeries1->AddDataPoint("HCT", 8.);
-	pSeries1->AddDataPoint("MCV", 22.);
-	pSeries1->AddDataPoint("MCH", 22.);
+	pSeries1->RemoveAllDataPoints();
 
-	pSeries2->AddDataPoint(9.);
-	pSeries2->AddDataPoint(15.);
-	pSeries2->AddDataPoint(19.);
-	pSeries2->AddDataPoint(21.);
-	pSeries2->AddDataPoint(23.);
+	pSeries1->AddDataPoint("RBC", data[15]);
+	pSeries1->AddDataPoint("HGB", data[16]);
+	pSeries1->AddDataPoint("HCT", data[17]);
+	pSeries1->AddDataPoint("MCV", data[18]);
+	pSeries1->AddDataPoint("MCH", data[19]);
+	pSeries1->AddDataPoint("MCHC", data[20]);
+	pSeries1->AddDataPoint("RDW", data[21]);
+
+	//pSeries1->AddDataPoint("RBC", 15.);
+	//pSeries1->AddDataPoint("HGB", 10.);
+	//pSeries1->AddDataPoint("HCT", 8.);
+	//pSeries1->AddDataPoint("MCV", 22.);
+	//pSeries1->AddDataPoint("MCH", 22.);
+
+	//pSeries2->AddDataPoint(9.);
+	//pSeries2->AddDataPoint(15.);
+	//pSeries2->AddDataPoint(19.);
+	//pSeries2->AddDataPoint(21.);
+	//pSeries2->AddDataPoint(23.);
 
 
 	pChart->SetThemeOpacity(30);
@@ -230,24 +268,32 @@ void CQualityRadarView::OnInitRadarChart4()
 {
 	CBCGPChartVisualObject* pChart = m_RadarChart4.GetChart();
 	ASSERT_VALID(pChart);
+	pChart->CleanUpChartData();
 
 	pChart->SetChartType(BCGPChartPolar);
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 	CBCGPChartSeries* pSeries2 = pChart->CreateSeries(_T("Series 2"));
 
-	pSeries1->AddDataPoint("MCHC", 15.);
-	pSeries1->AddDataPoint("RDW-CV", 10.);
-	pSeries1->AddDataPoint("RDW-SD", 8.);
-	pSeries1->AddDataPoint("ALY%", 22.);
-	pSeries1->AddDataPoint("LIC%", 22.);
-	pSeries1->AddDataPoint("LIC#", 22.);
+	pSeries1->RemoveAllDataPoints();
 
-	pSeries2->AddDataPoint(9.);
-	pSeries2->AddDataPoint(15.);
-	pSeries2->AddDataPoint(19.);
-	pSeries2->AddDataPoint(21.);
-	pSeries2->AddDataPoint(23.);
+	pSeries1->AddDataPoint("PLT", data[22]);
+	pSeries1->AddDataPoint("MPV", data[23]);
+	pSeries1->AddDataPoint("PDW", data[24]);
+	pSeries1->AddDataPoint("PCT", data[25]);
+
+	//pSeries1->AddDataPoint("MCHC", 15.);
+	//pSeries1->AddDataPoint("RDW-CV", 10.);
+	//pSeries1->AddDataPoint("RDW-SD", 8.);
+	//pSeries1->AddDataPoint("ALY%", 22.);
+	//pSeries1->AddDataPoint("LIC%", 22.);
+	//pSeries1->AddDataPoint("LIC#", 22.);
+
+	//pSeries2->AddDataPoint(9.);
+	//pSeries2->AddDataPoint(15.);
+	//pSeries2->AddDataPoint(19.);
+	//pSeries2->AddDataPoint(21.);
+	//pSeries2->AddDataPoint(23.);
 
 
 	pChart->SetThemeOpacity(30);
@@ -271,24 +317,27 @@ void CQualityRadarView::OnInitRadarChart5()
 {
 	CBCGPChartVisualObject* pChart = m_RadarChart5.GetChart();
 	ASSERT_VALID(pChart);
+	pChart->CleanUpChartData();
 
 	pChart->SetChartType(BCGPChartPolar);
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 	CBCGPChartSeries* pSeries2 = pChart->CreateSeries(_T("Series 2"));
+	
+	pSeries1->RemoveAllDataPoints();
 
-	pSeries1->AddDataPoint("LYM#", 15.);
-	pSeries1->AddDataPoint("NEU#", 10.);
-	pSeries1->AddDataPoint("MONO#", 8.);
-	pSeries1->AddDataPoint("EOS#", 22.);
-	pSeries1->AddDataPoint("BASO#", 22.);
-	pSeries1->AddDataPoint("ALY#", 22.);
+	//pSeries1->AddDataPoint("LYM#", 15.);
+	//pSeries1->AddDataPoint("NEU#", 10.);
+	//pSeries1->AddDataPoint("MONO#", 8.);
+	//pSeries1->AddDataPoint("EOS#", 22.);
+	//pSeries1->AddDataPoint("BASO#", 22.);
+	//pSeries1->AddDataPoint("ALY#", 22.);
 
-	pSeries2->AddDataPoint(9.);
-	pSeries2->AddDataPoint(15.);
-	pSeries2->AddDataPoint(19.);
-	pSeries2->AddDataPoint(21.);
-	pSeries2->AddDataPoint(23.);
+	//pSeries2->AddDataPoint(9.);
+	//pSeries2->AddDataPoint(15.);
+	//pSeries2->AddDataPoint(19.);
+	//pSeries2->AddDataPoint(21.);
+	//pSeries2->AddDataPoint(23.);
 
 
 	pChart->SetThemeOpacity(30);
@@ -337,9 +386,7 @@ void CQualityRadarView::OnUpdateChart(int num)
 	pChart->ShowDataMarkers();
 	pChart->SetLegendPosition(BCGPChartLayout::LP_NONE);
 	//double dblDataLabelAngle = (m_nDataLabelAngle - 2) * 45;
-
 	//pChart->ShowDataLabels(m_bShowDataLabels, TRUE, TRUE, dblDataLabelAngle);
-
 	for (int i = 0; i < pChart->GetSeriesCount(); i++)
 	{
 		CBCGPChartPolarSeries* pSeries = DYNAMIC_DOWNCAST(CBCGPChartPolarSeries, pChart->GetSeries(i));
@@ -389,11 +436,24 @@ BOOL CQualityRadarView::OnInitQualityMaterialList()
 	m_QualityMaterialList.InsertItem(0, _T("LYM%"));
 	m_QualityMaterialList.SetItemText(0, 0, _T("质控图"));
 	m_QualityMaterialList.SetItemText(0, 1, _T("级别2（当前）"));
-	m_QualityMaterialList.SetItemText(0, 2, _T("QC-30340802"));
-	m_QualityMaterialList.SetItemText(0, 3, _T("2016/07/20"));
+	m_QualityMaterialList.SetItemText(0, 2, (number));
+	m_QualityMaterialList.SetItemText(0, 3, (deadline));
 
 	//AfxMessageBox(_T("1213"));
 	return TRUE;
+}
+
+BOOL  CQualityRadarView::OnUpdateQualityMaterialList(){
+	m_QualityMaterialList.DeleteAllItems();
+
+	m_QualityMaterialList.InsertItem(0, _T("LYM%"));
+	m_QualityMaterialList.SetItemText(0, 0, _T("质控图"));
+	m_QualityMaterialList.SetItemText(0, 1, _T("级别2（当前）"));
+	m_QualityMaterialList.SetItemText(0, 2, (number));
+	m_QualityMaterialList.SetItemText(0, 3, (deadline));
+
+	return true;
+
 }
 
 HBRUSH CQualityRadarView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
@@ -420,4 +480,150 @@ void CQualityRadarView::OnClose()
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 
 	CDialogEx::OnClose();
+}
+
+void CQualityRadarView::UpdateView()
+{
+	CString item_temp;
+	switch (Controltype)
+	{
+	case 0:
+		item_temp.Format(L"L-J质控雷达图（文件 %02u）", Controlfile + 1);
+		break;
+	case 1:
+		item_temp.Format(L"X质控雷达图（文件 %02u）", Controlfile + 1);
+		break;
+	case 2:
+		item_temp.Format(L"X-R质控雷达图（文件 %02u）", Controlfile + 1);
+		break;
+	default:
+		break;
+	}
+	SetDlgItemText(IDC_STATIC0, item_temp);
+	GetDlgItem(IDC_STATIC0)->SetFont(&textfont);
+
+	GetLatestResult(Controltype, Controlfile);
+	GetQcEditInfo(Controltype, Controlfile);
+
+	OnInitRadarChart1();
+	OnInitRadarChart2();
+	OnInitRadarChart3();
+	OnInitRadarChart4();
+	//OnInitRadarChart5();
+	OnUpdateQualityMaterialList();
+}
+
+//查询质控测试结果，获得最近一条质控测试结果，用于雷达图显示
+int CQualityRadarView::GetLatestResult(int controltype, int controlfile)
+{
+	CString select_latest_result;
+	CString filename;
+	int rownum = 0;
+	filename.Format(_T("appdata.accdb"));
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+	_variant_t var;
+	CString strTemp;
+	int k = 0;
+
+	for (int i = 0; i < 26; i++){//将数据容器data初始清空
+		data[i] = 0;
+	}
+
+	select_latest_result.Format(L"select * from qcresultdata where qctype = '%d' and filenum = '%d' order by [date] desc,[time] desc;", controltype, controlfile);
+
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return -1;
+	ExeSql(m_pDB, m_pRs, select_latest_result);
+	rownum = int(m_pRs->GetRecordCount());
+
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空\n");
+			return -1;
+		}
+		while ((!m_pRs->adoEOF))//只查询最近一条
+		{
+
+			for (int i = 0; i < 26; i++)
+			{
+				var = m_pRs->GetFields()->GetItem((long)2 + i)->Value;
+				if (var.vt != VT_NULL){
+					strTemp = (LPCSTR)_bstr_t(var);
+					data[i] = _wtof(strTemp);
+				}
+			}
+			k++;
+			m_pRs->MoveNext();
+			break;
+		}
+	}
+	catch (_com_error &e)
+	{
+		TRACE("GetLatestResult函数程序异常\n");
+	}
+	CloseDataBase(m_pDB, m_pRs);
+	return rownum;
+}
+
+//查询质控编辑文件，获得质控批号和截止日期
+int CQualityRadarView::GetQcEditInfo(int controltype, int controlfile){
+	CString select_qc_edit_info;
+	CString filename;
+	int rownum = 0;
+	filename.Format(_T("appdata.accdb"));
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+	_variant_t var;
+	CString strTemp;
+
+	select_qc_edit_info.Format(L"select * from qceditdata where qctype = '%d' and filenum = '%d';", controltype, controlfile);
+
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return -1;
+	ExeSql(m_pDB, m_pRs, select_qc_edit_info);
+	rownum = int(m_pRs->GetRecordCount());
+
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空\n");
+			return -1;
+		}
+		while ((!m_pRs->adoEOF))
+		{
+			if (var.vt != VT_NULL)
+			{
+				strTemp = m_pRs->GetCollect("number");
+				_tcscpy(number.GetBuffer(strTemp.GetLength() + 1), strTemp);
+				
+				//填入批号
+			}
+			var = m_pRs->GetCollect("deadline");
+			if (var.vt != VT_NULL)
+			{
+				strTemp = m_pRs->GetCollect("deadline");
+				_tcscpy(deadline.GetBuffer(strTemp.GetLength() + 1), strTemp);
+				//填入截止日期
+			}
+			m_pRs->MoveNext();
+			break;
+		}
+	}
+	catch (_com_error &e)
+	{
+		TRACE("GetQcEditInfo函数程序异常\n");
+	}
+	CloseDataBase(m_pDB, m_pRs);
+	return 0;
+
 }

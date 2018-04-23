@@ -4,16 +4,18 @@
 #include "stdafx.h"
 #include "BCGPChartExample.h"
 #include "TestmainView.h"
+
 //#include "MainFrm.h"
 //#include "Includes_app.h"
 #include "ThreadAS.h"
 #include "Resource.h"
+#include "MainFrm.h"
 
 // CTestmainView
 extern bool Allow_ASOnLine;
 extern bool AS_OnLine;				//自动进样系统与主机建立连接-1(START)，未建立连接-0(OVER)
 extern bool ASCur_EN;				//当前测试使能。1有效才能工作。请求血样，否则不请求血样(执行自动维护或提示数据库满，需临时暂停)
-
+doctor_info* CTestmainView::doctordata = NULL;
 
 //开机空白测试数据
 bool			StartupBlankTestsflag = FALSE;				//为1时表示目前正在进行开机空白测试，需做两次
@@ -41,16 +43,14 @@ IMPLEMENT_DYNCREATE(CTestmainView, CBCGPChartExampleView)
 #define LMNE_WIDTH		255//540-340  [0,255]->[340,540]
 #define LMNE_HEIGHT		255
 
-
-
 CTestmainView::CTestmainView()
- : CBCGPChartExampleView(CTestmainView::IDD)
+: CBCGPChartExampleView(CTestmainView::IDD)
 {
 
 	BlockErr_Flag;
-	i =0;
-	BlockErrStore =0;
-	NumChanged	= FALSE;
+	i = 0;
+	BlockErrStore = 0;
+	NumChanged = FALSE;
 	//AfxMessageBox(_T("12"));
 }
 
@@ -60,7 +60,7 @@ CTestmainView::~CTestmainView()
 	//KillTimer(ERROR_TIMER);
 	//KillTimer(CHECKERR_TIMER);
 	//KillTimer(POLL_TIMER);
-	
+
 }
 void CTestmainView::DoDataExchange(CDataExchange* pDX)
 {
@@ -88,8 +88,8 @@ void CTestmainView::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CTestmainView, CBCGPChartExampleView)
 
-//	ON_WM_ERASEBKGND()
-//	ON_STN_CLICKED(IDC_CHART4, &CTestmainView::OnStnClickedChart4)
+	//	ON_WM_ERASEBKGND()
+	//	ON_STN_CLICKED(IDC_CHART4, &CTestmainView::OnStnClickedChart4)
 	//ON_MESSAGE(WM_MEASUREITEM + WM_REFLECT_BASE, &CTestmainView::MeasureItem)
 	//ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_ERASEBKGND()
@@ -103,7 +103,7 @@ BEGIN_MESSAGE_MAP(CTestmainView, CBCGPChartExampleView)
 	ON_MESSAGE(WM_AUTOCLEAN, &CTestmainView::OnAutoclean)
 	ON_MESSAGE(WM_CONCENCLEAN, &CTestmainView::OnConcenclean)
 	ON_MESSAGE(WM_MAINTEST, &CTestmainView::OnMaintest)
-	
+
 	ON_MESSAGE(WM_GETBARCODE, &CTestmainView::OnGetbarcode)
 	ON_WM_DESTROY()
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CTestmainView::OnLvnItemchangedList1)
@@ -111,6 +111,10 @@ BEGIN_MESSAGE_MAP(CTestmainView, CBCGPChartExampleView)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST4, &CTestmainView::OnLvnItemchangedList4)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST5, &CTestmainView::OnLvnItemchangedList5)
 	ON_EN_CHANGE(IDC_TESTMAIN_BARCODE, &CTestmainView::OnEnChangeTestmainBarcode)
+	//ON_BN_CLICKED(IDC_BUTTON1, &CTestmainView::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &CTestmainView::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CTestmainView::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CTestmainView::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -137,6 +141,7 @@ void CTestmainView::OnInitialUpdate()
 {
 	CBCGPChartExampleView::OnInitialUpdate();
 	// TODO:  在此添加专用代码和/或调用基类
+	loadDoctors();
 	InitControl();
 	InitData();
 	InitForm(&sampledata);
@@ -168,7 +173,7 @@ void CTestmainView::OnInitialUpdate()
 				baudrate = 115200;
 
 			/*if ((ret = OpenCom(0, "/dev/ttyS1", baudrate)) == -1)
-				return -1;*/
+			return -1;*/
 			//----------------------------------------
 			//联机软件线程
 			CreateThread(NULL, 0, ThreadPC, NULL, 0, &dw2);    		//创建联机软件线程
@@ -209,6 +214,32 @@ void CTestmainView::OnInitialUpdate()
 		Sleep(1000);//等待线程创建好了   
 	}
 
+}
+
+int CTestmainView::loadDoctors()
+{
+	CString			zStatement;
+	CString			filename;
+	_ConnectionPtr  m_pDB;
+	_RecordsetPtr	m_pRs;
+
+	filename.Format(_T("appdata.accdb"));
+	//打开数据库
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+	{
+		return -1;
+	}
+	//根据编号获取病人信息表对应记录
+	CString numofrs;
+	//numofrs = pThisResult->numofrs[pThisResult->nownum];
+	CString select_doctordata = _T("select * from doctordata'");// where number = '") + numofrs + "';";
+	//CString select_sampledata = _T("select * from sampledata'");// where number = '") + numofrs + "';";
+
+	ExeSql(m_pDB, m_pRs, select_doctordata);
+	loaddoctor(m_pDB, m_pRs, *doctordata);
+	//根据编号获取样本数据表的对应记录
+
+	CloseDataBase(m_pDB, m_pRs);
 }
 
 void CTestmainView::InitControl()
@@ -274,24 +305,24 @@ BOOL CTestmainView::InitWBCForm(sample_info* psampledata)
 	//uchar LL, UL;
 
 	CString itemName[] = { _T("WBC"), _T("LYM%"), _T("NEU%"), _T("MONO%"), _T("EOS%"),
-						   _T("BASO%"), _T("ALY%"), _T("LIC%"), _T("LYM%"), _T("NEU#"),
-						   _T("MONO#"), _T("EOS#"), _T("BASO#"), _T("ALY#"), _T("LIC#") };
+		_T("BASO%"), _T("ALY%"), _T("LIC%"), _T("LYM%"), _T("NEU#"),
+		_T("MONO#"), _T("EOS#"), _T("BASO#"), _T("ALY#"), _T("LIC#") };
 	CString unit[] = { _T("10^9/L"), _T("%"), _T("%"), _T("%"), _T("%"),
-						_T("%"), _T("%"), _T("%"), _T("10^9/L"), _T("10^9/L"),
-						_T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L") };
+		_T("%"), _T("%"), _T("%"), _T("10^9/L"), _T("10^9/L"),
+		_T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L") };
 	int itemCount = 15;
 	//CString showbuffer;
 	////showbuffer.Format(L"%0.1f", atof(psampledata->pltdata.plt)/10);
 	//showbuffer.Format(L"%0.1f", atof(psampledata->pltdata.plt));
 	CString showbuffer;
-	
+
 	// 在WBC列表视图控件中插入列表项，并设置列表子项文本   
 	for (int i = 0; i < itemCount; i++){
 		m_WBCresultList.InsertItem(i, itemName[i]);
 		m_WBCresultList.SetItemText(i, 2, unit[i]);
-			showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i]);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i]);
 		m_WBCresultList.SetItemText(i, 3, showbuffer);
-			showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i+28]);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + 28]);
 		m_WBCresultList.SetItemText(i, 4, showbuffer);
 		//m_WBCresultList.SetItemText(i, 5, _T("Flagi"));
 		m_WBCresultList.SetItemText(i, 5, _T(" "));
@@ -299,54 +330,55 @@ BOOL CTestmainView::InitWBCForm(sample_info* psampledata)
 	}
 
 	/*
-	// 在WBC列表视图控件中插入列表项，并设置列表子项文本   
+	// 在WBC列表视图控件中插入列表项，并设置列表子项文本
 	m_WBCresultList.InsertItem(0, _T("WBC"));
-		m_WBCresultList.SetItemText(0, 2, _T("10^9/L"));
+	m_WBCresultList.SetItemText(0, 2, _T("10^9/L"));
 	m_WBCresultList.InsertItem(1, _T("LYM%"));
-		m_WBCresultList.SetItemText(1, 2, _T("%"));
+	m_WBCresultList.SetItemText(1, 2, _T("%"));
 	m_WBCresultList.InsertItem(2, _T("NEU%"));
-		m_WBCresultList.SetItemText(2, 2, _T("%"));
+	m_WBCresultList.SetItemText(2, 2, _T("%"));
 	m_WBCresultList.InsertItem(3, _T("MONO%"));
-		m_WBCresultList.SetItemText(3, 2, _T("%"));
+	m_WBCresultList.SetItemText(3, 2, _T("%"));
 	m_WBCresultList.InsertItem(4, _T("EOS%"));
-		m_WBCresultList.SetItemText(4, 2, _T("%"));
+	m_WBCresultList.SetItemText(4, 2, _T("%"));
 	m_WBCresultList.InsertItem(5, _T("BASO%"));
-		m_WBCresultList.SetItemText(5, 2, _T("%"));
+	m_WBCresultList.SetItemText(5, 2, _T("%"));
 	m_WBCresultList.InsertItem(6, _T("ALY%"));
-		m_WBCresultList.SetItemText(6, 2, _T("%"));
+	m_WBCresultList.SetItemText(6, 2, _T("%"));
 	m_WBCresultList.InsertItem(7, _T("LIC%"));
-		m_WBCresultList.SetItemText(7, 2, _T("%"));
+	m_WBCresultList.SetItemText(7, 2, _T("%"));
 	m_WBCresultList.InsertItem(8, _T("LYM%"));
-		m_WBCresultList.SetItemText(8, 2, _T("10^9/L"));
+	m_WBCresultList.SetItemText(8, 2, _T("10^9/L"));
 	m_WBCresultList.InsertItem(9, _T("NEU#"));
-		m_WBCresultList.SetItemText(9, 2, _T("10^9/L"));
+	m_WBCresultList.SetItemText(9, 2, _T("10^9/L"));
 	m_WBCresultList.InsertItem(10, _T("MONO#"));
-		m_WBCresultList.SetItemText(10, 2, _T("10^9/L"));
+	m_WBCresultList.SetItemText(10, 2, _T("10^9/L"));
 	m_WBCresultList.InsertItem(11, _T("EOS#"));
-		m_WBCresultList.SetItemText(11, 2, _T("10^9/L"));
+	m_WBCresultList.SetItemText(11, 2, _T("10^9/L"));
 	m_WBCresultList.InsertItem(12, _T("BASO#"));
-		m_WBCresultList.SetItemText(12, 2, _T("10^9/L"));
+	m_WBCresultList.SetItemText(12, 2, _T("10^9/L"));
 	m_WBCresultList.InsertItem(13, _T("ALY#"));
-		m_WBCresultList.SetItemText(13, 2, _T("10^9/L"));
+	m_WBCresultList.SetItemText(13, 2, _T("10^9/L"));
 	m_WBCresultList.InsertItem(14, _T("LIC#"));
-		m_WBCresultList.SetItemText(14, 2, _T("10^9/L"));
-		*/
-		m_WBCresultList.SetItemText(0, 1, (CString)psampledata->wbcdata.wbc);
-		m_WBCresultList.SetItemText(1, 1, (CString)psampledata->wbcdata.lymp);
-		m_WBCresultList.SetItemText(2, 1, (CString)psampledata->wbcdata.neup);
-		m_WBCresultList.SetItemText(3, 1, (CString)psampledata->wbcdata.monop);
-		m_WBCresultList.SetItemText(4, 1, (CString)psampledata->wbcdata.eosp);
-		m_WBCresultList.SetItemText(5, 1, (CString)psampledata->wbcdata.basp);
-		m_WBCresultList.SetItemText(6, 1, (CString)psampledata->wbcdata.alyp);
-		m_WBCresultList.SetItemText(7, 1, (CString)psampledata->wbcdata.licp);
-		m_WBCresultList.SetItemText(8, 1, (CString)psampledata->wbcdata.lym);
-		m_WBCresultList.SetItemText(9, 1, (CString)psampledata->wbcdata.neu);
-		m_WBCresultList.SetItemText(10, 1, (CString)psampledata->wbcdata.mono);
-		m_WBCresultList.SetItemText(11, 1, (CString)psampledata->wbcdata.eos);
-		m_WBCresultList.SetItemText(12, 1, (CString)psampledata->wbcdata.bas);
-		m_WBCresultList.SetItemText(13, 1, (CString)psampledata->wbcdata.aly);
-		m_WBCresultList.SetItemText(14, 1, (CString)psampledata->wbcdata.lic);
-		//AfxMessageBox(_T("1213"));
+	m_WBCresultList.SetItemText(14, 2, _T("10^9/L"));
+	*/
+	m_WBCresultList.SetItemText(0, 1, (CString)psampledata->wbcdata.wbc);
+	//MessageBox((CString)psampledata->wbcdata.wbc);
+	m_WBCresultList.SetItemText(1, 1, (CString)psampledata->wbcdata.lymp);
+	m_WBCresultList.SetItemText(2, 1, (CString)psampledata->wbcdata.neup);
+	m_WBCresultList.SetItemText(3, 1, (CString)psampledata->wbcdata.monop);
+	m_WBCresultList.SetItemText(4, 1, (CString)psampledata->wbcdata.eosp);
+	m_WBCresultList.SetItemText(5, 1, (CString)psampledata->wbcdata.basp);
+	m_WBCresultList.SetItemText(6, 1, (CString)psampledata->wbcdata.alyp);
+	m_WBCresultList.SetItemText(7, 1, (CString)psampledata->wbcdata.licp);
+	m_WBCresultList.SetItemText(8, 1, (CString)psampledata->wbcdata.lym);
+	m_WBCresultList.SetItemText(9, 1, (CString)psampledata->wbcdata.neu);
+	m_WBCresultList.SetItemText(10, 1, (CString)psampledata->wbcdata.mono);
+	m_WBCresultList.SetItemText(11, 1, (CString)psampledata->wbcdata.eos);
+	m_WBCresultList.SetItemText(12, 1, (CString)psampledata->wbcdata.bas);
+	m_WBCresultList.SetItemText(13, 1, (CString)psampledata->wbcdata.aly);
+	m_WBCresultList.SetItemText(14, 1, (CString)psampledata->wbcdata.lic);
+	//AfxMessageBox(_T("1213"));
 	return TRUE;
 }
 BOOL CTestmainView::UpdateWBCForm(sample_info* psampledata)
@@ -356,91 +388,91 @@ BOOL CTestmainView::UpdateWBCForm(sample_info* psampledata)
 	m_WBCresultList.SetItemText(0, 1, ChartsToCString((psampledata->wbcdata.wbc), sizeof(psampledata->wbcdata.wbc) / sizeof(char)));
 	if (atof(psampledata->wbcdata.wbc)<systemcfg.range.normal[type][0])
 		m_WBCresultList.SetItemText(0, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.wbc)>systemcfg.range.normal[type][0])
-		m_WBCresultList.SetItemText(0, 5, _T("H"));	
+	else if (atof(psampledata->wbcdata.wbc)>systemcfg.range.normal[type][0 + 28])
+		m_WBCresultList.SetItemText(0, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(1, 1, ChartsToCString((psampledata->wbcdata.lymp), sizeof(psampledata->wbcdata.lymp) / sizeof(char)));
 	if (atof(psampledata->wbcdata.lymp)<systemcfg.range.normal[type][1])
 		m_WBCresultList.SetItemText(1, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.lymp)>systemcfg.range.normal[type][1])
+	else if (atof(psampledata->wbcdata.lymp)>systemcfg.range.normal[type][1 + 28])
 		m_WBCresultList.SetItemText(1, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(2, 1, ChartsToCString((psampledata->wbcdata.neup), sizeof(psampledata->wbcdata.neup) / sizeof(char)));
 	if (atof(psampledata->wbcdata.neup)<systemcfg.range.normal[type][2])
 		m_WBCresultList.SetItemText(2, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.neup)>systemcfg.range.normal[type][2])
+	else if (atof(psampledata->wbcdata.neup)>systemcfg.range.normal[type][2 + 28])
 		m_WBCresultList.SetItemText(2, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(3, 1, ChartsToCString((psampledata->wbcdata.monop), sizeof(psampledata->wbcdata.monop) / sizeof(char)));
 	if (atof(psampledata->wbcdata.monop)<systemcfg.range.normal[type][3])
 		m_WBCresultList.SetItemText(3, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.monop)>systemcfg.range.normal[type][3])
+	else if (atof(psampledata->wbcdata.monop)>systemcfg.range.normal[type][3 + 28])
 		m_WBCresultList.SetItemText(3, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(4, 1, ChartsToCString((psampledata->wbcdata.eosp), sizeof(psampledata->wbcdata.eosp) / sizeof(char)));
 	if (atof(psampledata->wbcdata.eosp)<systemcfg.range.normal[type][4])
 		m_WBCresultList.SetItemText(4, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.eosp)>systemcfg.range.normal[type][4])
+	else if (atof(psampledata->wbcdata.eosp)>systemcfg.range.normal[type][4 + 28])
 		m_WBCresultList.SetItemText(4, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(5, 1, ChartsToCString((psampledata->wbcdata.basp), sizeof(psampledata->wbcdata.basp) / sizeof(char)));
 	if (atof(psampledata->wbcdata.basp)<systemcfg.range.normal[type][5])
 		m_WBCresultList.SetItemText(5, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.basp)>systemcfg.range.normal[type][5])
+	else if (atof(psampledata->wbcdata.basp)>systemcfg.range.normal[type][5 + 28])
 		m_WBCresultList.SetItemText(5, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(6, 1, ChartsToCString((psampledata->wbcdata.alyp), sizeof(psampledata->wbcdata.alyp) / sizeof(char)));
 	if (atof(psampledata->wbcdata.alyp)<systemcfg.range.normal[type][6])
 		m_WBCresultList.SetItemText(6, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.alyp)>systemcfg.range.normal[type][6])
+	else if (atof(psampledata->wbcdata.alyp)>systemcfg.range.normal[type][6 + 28])
 		m_WBCresultList.SetItemText(6, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(7, 1, ChartsToCString((psampledata->wbcdata.licp), sizeof(psampledata->wbcdata.licp) / sizeof(char)));
 	if (atof(psampledata->wbcdata.licp)<systemcfg.range.normal[type][7])
 		m_WBCresultList.SetItemText(7, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.licp)>systemcfg.range.normal[type][7])
+	else if (atof(psampledata->wbcdata.licp)>systemcfg.range.normal[type][7 + 28])
 		m_WBCresultList.SetItemText(7, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(8, 1, ChartsToCString((psampledata->wbcdata.lym), sizeof(psampledata->wbcdata.lym) / sizeof(char)));
 	if (atof(psampledata->wbcdata.lym)<systemcfg.range.normal[type][8])
 		m_WBCresultList.SetItemText(8, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.lym)>systemcfg.range.normal[type][8])
+	else if (atof(psampledata->wbcdata.lym)>systemcfg.range.normal[type][8 + 28])
 		m_WBCresultList.SetItemText(8, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(9, 1, ChartsToCString((psampledata->wbcdata.neu), sizeof(psampledata->wbcdata.neu) / sizeof(char)));
 	if (atof(psampledata->wbcdata.neu)<systemcfg.range.normal[type][9])
 		m_WBCresultList.SetItemText(9, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.neu)>systemcfg.range.normal[type][9])
+	else if (atof(psampledata->wbcdata.neu)>systemcfg.range.normal[type][9 + 28])
 		m_WBCresultList.SetItemText(9, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(10, 1, ChartsToCString((psampledata->wbcdata.mono), sizeof(psampledata->wbcdata.mono) / sizeof(char)));
 	if (atof(psampledata->wbcdata.mono)<systemcfg.range.normal[type][10])
 		m_WBCresultList.SetItemText(10, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.mono)>systemcfg.range.normal[type][10])
+	else if (atof(psampledata->wbcdata.mono)>systemcfg.range.normal[type][10 + 28])
 		m_WBCresultList.SetItemText(10, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(11, 1, ChartsToCString((psampledata->wbcdata.eos), sizeof(psampledata->wbcdata.eos) / sizeof(char)));
 	if (atof(psampledata->wbcdata.eos)<systemcfg.range.normal[type][11])
 		m_WBCresultList.SetItemText(11, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.eos)>systemcfg.range.normal[type][11])
+	else if (atof(psampledata->wbcdata.eos)>systemcfg.range.normal[type][11 + 28])
 		m_WBCresultList.SetItemText(11, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(12, 1, ChartsToCString((psampledata->wbcdata.bas), sizeof(psampledata->wbcdata.bas) / sizeof(char)));
 	if (atof(psampledata->wbcdata.bas)<systemcfg.range.normal[type][12])
 		m_WBCresultList.SetItemText(12, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.bas)>systemcfg.range.normal[type][12])
+	else if (atof(psampledata->wbcdata.bas)>systemcfg.range.normal[type][12 + 28])
 		m_WBCresultList.SetItemText(12, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(13, 1, ChartsToCString((psampledata->wbcdata.aly), sizeof(psampledata->wbcdata.aly) / sizeof(char)));
 	if (atof(psampledata->wbcdata.aly)<systemcfg.range.normal[type][13])
 		m_WBCresultList.SetItemText(13, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.aly)>systemcfg.range.normal[type][13])
+	else if (atof(psampledata->wbcdata.aly)>systemcfg.range.normal[type][13 + 28])
 		m_WBCresultList.SetItemText(13, 5, _T("H"));
 
 	m_WBCresultList.SetItemText(14, 1, ChartsToCString((psampledata->wbcdata.lic), sizeof(psampledata->wbcdata.lic) / sizeof(char)));
 	if (atof(psampledata->wbcdata.lic)<systemcfg.range.normal[type][14])
 		m_WBCresultList.SetItemText(14, 5, _T("L"));
-	else if (atof(psampledata->wbcdata.lic)>systemcfg.range.normal[type][14])
+	else if (atof(psampledata->wbcdata.lic)>systemcfg.range.normal[type][14 + 28])
 		m_WBCresultList.SetItemText(14, 5, _T("H"));
 
 	return TRUE;
@@ -454,7 +486,7 @@ BOOL CTestmainView::InitRBCForm(sample_info* psampledata)
 	m_RBCresultList.GetClientRect(&rect);
 	// 为列表视图控件添加全行选中和栅格风格   
 	m_RBCresultList.SetExtendedStyle(m_RBCresultList.GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-	m_RBCresultList.SetRowHeigt(20);
+	//m_RBCresultList.SetRowHeigt(20);
 
 	m_RBCresultList.DeleteAllItems();//清空列表刷新
 	m_RBCresultList.DeleteColumn(0);
@@ -464,6 +496,7 @@ BOOL CTestmainView::InitRBCForm(sample_info* psampledata)
 	m_RBCresultList.DeleteColumn(4);
 	m_RBCresultList.DeleteColumn(5);
 	// 为RBC列表视图控件添加四列  
+
 	m_RBCresultList.InsertColumn(0, _T("RBC项目"), LVCFMT_CENTER, rect.Width() / 6, 0);
 	m_RBCresultList.InsertColumn(1, _T("数据"), LVCFMT_CENTER, rect.Width() / 6, 1);
 	m_RBCresultList.InsertColumn(2, _T("单位"), LVCFMT_CENTER, rect.Width() / 6, 2);
@@ -472,9 +505,9 @@ BOOL CTestmainView::InitRBCForm(sample_info* psampledata)
 	m_RBCresultList.InsertColumn(5, _T("Flag"), LVCFMT_CENTER, rect.Width() / 6, 5);
 
 	CString itemNames[] = { _T("RBC"), _T("HGB"), _T("HCT"), _T("MCV"),
-						_T("MCH"), _T("MCHC"), _T("RDW-CV"), _T("RDW-SD") };
-	CString unit[] = { _T("10^12/L"), _T("g/L"), _T("%"), _T("fL"), 
-						_T("pg"), _T("g/L"), _T("%"), _T("fL") };
+		_T("MCH"), _T("MCHC"), _T("RDW-CV"), _T("RDW-SD") };
+	CString unit[] = { _T("10^12/L"), _T("g/L"), _T("%"), _T("fL"),
+		_T("pg"), _T("g/L"), _T("%"), _T("fL") };
 
 	uchar type = systemcfg.range.type;
 	CString showbuffer;
@@ -482,7 +515,7 @@ BOOL CTestmainView::InitRBCForm(sample_info* psampledata)
 	int rbcNum = 8;
 
 	// 在RBC列表视图控件中插入列表项，并设置列表子项文本
-		
+
 	//m_RBCresultList.InsertItem(0, _T("RBC"));
 	//m_RBCresultList.SetItemText(0, 2, _T("10^12/L"));
 	//m_RBCresultList.InsertItem(1, _T("HGB"));
@@ -503,12 +536,13 @@ BOOL CTestmainView::InitRBCForm(sample_info* psampledata)
 	for (int i = 0; i < rbcNum; i++){
 		m_RBCresultList.InsertItem(i, itemNames[i]);
 		m_RBCresultList.SetItemText(i, 2, unit[i]);
-		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i+preCount]);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + preCount]);
 		m_RBCresultList.SetItemText(i, 3, showbuffer);
-		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i+preCount + 28]);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + preCount + 28]);
 		m_RBCresultList.SetItemText(i, 4, showbuffer);
 		m_RBCresultList.SetItemText(i, 5, _T(" "));
 	}
+
 	m_RBCresultList.SetItemText(0, 1, (CString)psampledata->rbcdata.rbc);
 	m_RBCresultList.SetItemText(1, 1, (CString)psampledata->rbcdata.hgb);
 	m_RBCresultList.SetItemText(2, 1, (CString)psampledata->rbcdata.hct);
@@ -527,49 +561,49 @@ BOOL CTestmainView::UpdateRBCForm(sample_info* psampledata)
 	m_RBCresultList.SetItemText(0, 1, ChartsToCString((psampledata->rbcdata.rbc), sizeof(psampledata->rbcdata.rbc) / sizeof(char)));
 	if (atof(psampledata->rbcdata.rbc)<systemcfg.range.normal[type][0 + wbcNum])
 		m_RBCresultList.SetItemText(0, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.rbc)>systemcfg.range.normal[type][0 + wbcNum])
+	else if (atof(psampledata->rbcdata.rbc)>systemcfg.range.normal[type][0 + wbcNum + 28])
 		m_RBCresultList.SetItemText(0, 5, _T("H"));
 
 	m_RBCresultList.SetItemText(1, 1, ChartsToCString((psampledata->rbcdata.hgb), sizeof(psampledata->rbcdata.hgb) / sizeof(char)));
 	if (atof(psampledata->rbcdata.hgb)<systemcfg.range.normal[type][1 + wbcNum])
 		m_RBCresultList.SetItemText(1, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.hgb)>systemcfg.range.normal[type][1 + wbcNum])
+	else if (atof(psampledata->rbcdata.hgb)>systemcfg.range.normal[type][1 + wbcNum + 28])
 		m_RBCresultList.SetItemText(1, 5, _T("H"));
 
 	m_RBCresultList.SetItemText(2, 1, ChartsToCString((psampledata->rbcdata.hct), sizeof(psampledata->rbcdata.hct) / sizeof(char)));
 	if (atof(psampledata->rbcdata.hct)<systemcfg.range.normal[type][2 + wbcNum])
 		m_RBCresultList.SetItemText(2, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.hct)>systemcfg.range.normal[type][2 + wbcNum])
+	else if (atof(psampledata->rbcdata.hct)>systemcfg.range.normal[type][2 + wbcNum + 28])
 		m_RBCresultList.SetItemText(2, 5, _T("H"));
 
 	m_RBCresultList.SetItemText(3, 1, ChartsToCString((psampledata->rbcdata.mcv), sizeof(psampledata->rbcdata.mcv) / sizeof(char)));
 	if (atof(psampledata->rbcdata.mcv)<systemcfg.range.normal[type][3 + wbcNum])
 		m_RBCresultList.SetItemText(3, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.mcv)>systemcfg.range.normal[type][3 + wbcNum])
+	else if (atof(psampledata->rbcdata.mcv)>systemcfg.range.normal[type][3 + wbcNum + 28])
 		m_RBCresultList.SetItemText(3, 5, _T("H"));
 
 	m_RBCresultList.SetItemText(4, 1, ChartsToCString((psampledata->rbcdata.mch), sizeof(psampledata->rbcdata.mch) / sizeof(char)));
 	if (atof(psampledata->rbcdata.mch)<systemcfg.range.normal[type][4 + wbcNum])
 		m_RBCresultList.SetItemText(4, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.mch)>systemcfg.range.normal[type][4 + wbcNum])
+	else if (atof(psampledata->rbcdata.mch)>systemcfg.range.normal[type][4 + wbcNum + 28])
 		m_RBCresultList.SetItemText(4, 5, _T("H"));
 
 	m_RBCresultList.SetItemText(5, 1, ChartsToCString((psampledata->rbcdata.mchc), sizeof(psampledata->rbcdata.mchc) / sizeof(char)));
 	if (atof(psampledata->rbcdata.mchc)<systemcfg.range.normal[type][5 + wbcNum])
 		m_RBCresultList.SetItemText(5, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.mchc)>systemcfg.range.normal[type][5 + wbcNum])
+	else if (atof(psampledata->rbcdata.mchc)>systemcfg.range.normal[type][5 + wbcNum + 28])
 		m_RBCresultList.SetItemText(5, 5, _T("H"));
 
 	m_RBCresultList.SetItemText(6, 1, ChartsToCString((psampledata->rbcdata.rdwcv), sizeof(psampledata->rbcdata.rdwcv) / sizeof(char)));
 	if (atof(psampledata->rbcdata.rdwcv)<systemcfg.range.normal[type][6 + wbcNum])
 		m_RBCresultList.SetItemText(6, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.rdwcv)>systemcfg.range.normal[type][6 + wbcNum])
+	else if (atof(psampledata->rbcdata.rdwcv)>systemcfg.range.normal[type][6 + wbcNum + 28])
 		m_RBCresultList.SetItemText(6, 5, _T("H"));
 	//MessageBox((CString)psampledata->rbcdata.rdwcv);
 	m_RBCresultList.SetItemText(7, 1, ChartsToCString((psampledata->rbcdata.rdwsd), sizeof(psampledata->rbcdata.rdwsd) / sizeof(char)));
 	if (atof(psampledata->rbcdata.rdwsd)<systemcfg.range.normal[type][7 + wbcNum])
 		m_RBCresultList.SetItemText(7, 5, _T("L"));
-	else if (atof(psampledata->rbcdata.rdwsd)>systemcfg.range.normal[type][7 + wbcNum])
+	else if (atof(psampledata->rbcdata.rdwsd)>systemcfg.range.normal[type][7 + wbcNum + 28])
 		m_RBCresultList.SetItemText(7, 5, _T("H"));
 
 	return TRUE;
@@ -670,31 +704,31 @@ BOOL CTestmainView::UpdatePLTForm(sample_info* psampledata)
 	m_PLTresultList.SetItemText(0, 1, ChartsToCString((psampledata->pltdata.plt), sizeof(psampledata->pltdata.plt) / sizeof(char)));
 	if (atof(psampledata->pltdata.plt)<systemcfg.range.normal[type][0 + preNum])
 		m_PLTresultList.SetItemText(0, 5, _T("L"));
-	else if (atof(psampledata->pltdata.plt)>systemcfg.range.normal[type][0 + preNum])
+	else if (atof(psampledata->pltdata.plt)>systemcfg.range.normal[type][0 + preNum + 28])
 		m_PLTresultList.SetItemText(0, 5, _T("H"));
 
 	m_PLTresultList.SetItemText(1, 1, ChartsToCString((psampledata->pltdata.mpv), sizeof(psampledata->pltdata.mpv) / sizeof(char)));
 	if (atof(psampledata->pltdata.mpv)<systemcfg.range.normal[type][1 + preNum])
 		m_PLTresultList.SetItemText(1, 5, _T("L"));
-	else if (atof(psampledata->pltdata.mpv)>systemcfg.range.normal[type][1 + preNum])
+	else if (atof(psampledata->pltdata.mpv)>systemcfg.range.normal[type][1 + preNum + 28])
 		m_PLTresultList.SetItemText(1, 5, _T("H"));
 
 	m_PLTresultList.SetItemText(2, 1, ChartsToCString((psampledata->pltdata.pdw), sizeof(psampledata->pltdata.pdw) / sizeof(char)));
 	if (atof(psampledata->pltdata.pdw)<systemcfg.range.normal[type][2 + preNum])
 		m_PLTresultList.SetItemText(2, 5, _T("L"));
-	else if (atof(psampledata->pltdata.pdw)>systemcfg.range.normal[type][2 + preNum])
+	else if (atof(psampledata->pltdata.pdw)>systemcfg.range.normal[type][2 + preNum + 28])
 		m_PLTresultList.SetItemText(2, 5, _T("H"));
 
 	m_PLTresultList.SetItemText(3, 1, ChartsToCString((psampledata->pltdata.pct), sizeof(psampledata->pltdata.pct) / sizeof(char)));
 	if (atof(psampledata->pltdata.pct)<systemcfg.range.normal[type][3 + preNum])
 		m_PLTresultList.SetItemText(3, 5, _T("L"));
-	else if (atof(psampledata->pltdata.pct)>systemcfg.range.normal[type][3 + preNum])
+	else if (atof(psampledata->pltdata.pct)>systemcfg.range.normal[type][3 + preNum] + 28)
 		m_PLTresultList.SetItemText(3, 5, _T("H"));
 
 	m_PLTresultList.SetItemText(4, 1, ChartsToCString((psampledata->pltdata.plcr), sizeof(psampledata->pltdata.plcr) / sizeof(char)));
 	if (atof(psampledata->pltdata.plcr)<systemcfg.range.normal[type][4 + preNum])
 		m_PLTresultList.SetItemText(4, 5, _T("L"));
-	else if (atof(psampledata->pltdata.plcr)>systemcfg.range.normal[type][4 + preNum])
+	else if (atof(psampledata->pltdata.plcr)>systemcfg.range.normal[type][4 + preNum + 28])
 		m_PLTresultList.SetItemText(4, 5, _T("H"));
 
 	return TRUE;
@@ -726,26 +760,26 @@ BOOL CTestmainView::InitRETForm()
 
 	// 在RET列表视图控件中插入列表项，并设置列表子项文本
 	m_RETresultList.InsertItem(0, _T("RET%"));
-		m_RETresultList.SetItemText(0, 2, _T("10^9/L"));
+	m_RETresultList.SetItemText(0, 2, _T("10^9/L"));
 	m_RETresultList.InsertItem(1, _T("RET#"));
-		m_RETresultList.SetItemText(1, 2, _T("fL"));
+	m_RETresultList.SetItemText(1, 2, _T("fL"));
 	m_RETresultList.InsertItem(2, _T("RETL"));
-		m_RETresultList.SetItemText(2, 2, _T("fL"));
+	m_RETresultList.SetItemText(2, 2, _T("fL"));
 	m_RETresultList.InsertItem(3, _T("RETM"));
-		m_RETresultList.SetItemText(3, 2, _T("%"));
+	m_RETresultList.SetItemText(3, 2, _T("%"));
 	m_RETresultList.InsertItem(4, _T("RETH"));
-		m_RETresultList.SetItemText(4, 2, _T("%"));
+	m_RETresultList.SetItemText(4, 2, _T("%"));
 	m_RETresultList.InsertItem(5, _T("MFI"));
-		m_RETresultList.SetItemText(5, 2, _T("%"));
+	m_RETresultList.SetItemText(5, 2, _T("%"));
 	m_RETresultList.InsertItem(6, _T("IMM"));
-		m_RETresultList.SetItemText(6, 2, _T("%"));
+	m_RETresultList.SetItemText(6, 2, _T("%"));
 	m_RETresultList.InsertItem(7, _T("MRV"));
-		m_RETresultList.SetItemText(7, 2, _T("fL"));
+	m_RETresultList.SetItemText(7, 2, _T("fL"));
 	m_RETresultList.InsertItem(8, _T("IRF"));
-		m_RETresultList.SetItemText(8, 2, _T("%"));
+	m_RETresultList.SetItemText(8, 2, _T("%"));
 	m_RETresultList.InsertItem(9, _T("CRC"));
-		m_RETresultList.SetItemText(9, 2, _T("%"));
-		//AfxMessageBox(_T("1516"));
+	m_RETresultList.SetItemText(9, 2, _T("%"));
+	//AfxMessageBox(_T("1516"));
 	return TRUE;
 }
 BOOL CTestmainView::UpdateRETForm()
@@ -845,13 +879,13 @@ void CTestmainView::Init_B_LMNE(float	coefficient, B_LMNE* p_blmne)
 *Data Access:	读全局变量
 *History:	create	lgq		2010.12.31
 ************************************************************/
-void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char rangetype,CDC &MemDC)
+void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char rangetype, CDC &MemDC)
 {
 	TRACE(L"Hello World");
 	unsigned int i;
 	unsigned char res = 0, scatter = 0;	//电阻抗信号，光散射信号
 	unsigned char rangeFlag = ' ', doubtFlag = ' ';
-	 char showbuff[9] = { 0 };
+	char showbuff[9] = { 0 };
 	unsigned char graphbuff[MATRIX_DATA_MAX] = { 0 };
 
 	B_LMNE		m_blmne;
@@ -860,11 +894,11 @@ void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char
 	pWnd->GetClientRect(&rect); // 获取控件屏幕坐标
 	CDC* pDC = pWnd->GetDC();
 	//CDC MemDC;
-//	CBitmap bmp;
-//	MemDC.CreateCompatibleDC(pDC);
-//	bmp.CreateCompatibleBitmap(&MemDC,rect.Width(),rect.Height());
-//	MemDC.SelectObject(&bmp);
-//	MemDC.FillSolidRect(rect,RGB(255,255,255));
+	//	CBitmap bmp;
+	//	MemDC.CreateCompatibleDC(pDC);
+	//	bmp.CreateCompatibleBitmap(&MemDC,rect.Width(),rect.Height());
+	//	MemDC.SelectObject(&bmp);
+	//	MemDC.FillSolidRect(rect,RGB(255,255,255));
 
 	if ((*psampledata).coeoflmne > 1.3)
 		psampledata->coeoflmne = 1.3;
@@ -1071,7 +1105,7 @@ void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char
 	//将对0x00的特殊处理去除,恢复原始数据
 	for (i = 0; i < MATRIX_DATA_MAX - 1; i++){
 		graphbuff[i] = (*psampledata).lmnegraph[i] - 1;
-	//	graphbu[i] = graphbuff[i];
+		//	graphbu[i] = graphbuff[i];
 	}
 
 	for (i = 0; i < MATRIX_POINT_MAX - 1; i++)
@@ -1081,7 +1115,7 @@ void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char
 		if (scatter >= m_blmne.Y_NE)
 		{
 			if (res < m_blmne.X_NOE)
-				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));				
+				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(0, 0, 0));
 			else
 				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(255, 0, 0));
 		}
@@ -1139,7 +1173,7 @@ void CTestmainView::LmneGraphPaint(sample_info *psampledata, const unsigned char
 				MemDC.SetPixel(res*LMNE_WIDTH / 255 + LMNE_LEFT, LMNE_BOTTOM - scatter*LMNE_HEIGHT / 255, RGB(230, 30, 70));
 		}
 	}
-//	pDC->BitBlt(rect.left,rect.top,rect.Width(),rect.Height(),&MemDC,0,0,SRCCOPY);
+	//	pDC->BitBlt(rect.left,rect.top,rect.Width(),rect.Height(),&MemDC,0,0,SRCCOPY);
 	//MemDC.DeleteDC();
 	//bmp.DeleteObject();
 	//MemDC.MoveTo(0, -100);
@@ -1151,19 +1185,19 @@ void CTestmainView::PrintLMNEChart(sample_info *psampledata)//绘制LMNE的内框线
 	CWnd* pWnd = GetDlgItem(IDC_CHART);
 	pWnd->GetClientRect(&rect); // 获取控件屏幕坐标
 	CDC* pDC = pWnd->GetDC();
-	
+
 	CDC MemDC;
 	CBitmap bmp;
 	MemDC.CreateCompatibleDC(pDC);
-	bmp.CreateCompatibleBitmap(pDC,267,282);
+	bmp.CreateCompatibleBitmap(pDC, 267, 282);
 	MemDC.SelectObject(&bmp);
 
-	MemDC.FillSolidRect(rect.left,rect.top,267,282,RGB(255,255,255));
-//	MemDC.MoveTo(0, 0);
-//	MemDC.LineTo(100, 100);
-	MemDC.SetViewportOrg(0, 280-rect.Height());
+	MemDC.FillSolidRect(rect.left, rect.top, 267, 282, RGB(255, 255, 255));
+	//	MemDC.MoveTo(0, 0);
+	//	MemDC.LineTo(100, 100);
+	MemDC.SetViewportOrg(0, 280 - rect.Height());
 
-		
+
 
 	MemDC.SetViewportOrg(0, 0);
 	MemDC.SelectStockObject(WHITE_BRUSH);
@@ -1177,7 +1211,7 @@ void CTestmainView::PrintLMNEChart(sample_info *psampledata)//绘制LMNE的内框线
 	MemDC.LineTo(rect.Width(), 0);
 	MemDC.LineTo(0, 0);
 	pen.~CPen();
-	
+
 	pen.CreatePen(PS_SOLID, 1, RGB(96, 96, 96));
 	MemDC.SelectObject(&pen);
 	MemDC.SetViewportOrg(0, 280);
@@ -1186,13 +1220,14 @@ void CTestmainView::PrintLMNEChart(sample_info *psampledata)//绘制LMNE的内框线
 	MemDC.LineTo(0, -255);
 	MemDC.LineTo(0, 0);
 	MemDC.TextOut(0, -280, "LMNE:");
-	MemDC.MoveTo(255, 0);
-	MemDC.LineTo(265, 0);
-	MemDC.LineTo(265, -255);
-	MemDC.LineTo(255, -255);
+
+	//MemDC.MoveTo(255, 0);
+	//MemDC.LineTo(265, 0);
+	//MemDC.LineTo(265, -255);
+	//MemDC.LineTo(255, -255);
 
 	unsigned char i;
-	
+
 	int 		x1, x2, y1, y2;
 	B_LMNE		m_blmne;
 	double		coe_w = LMNE_WIDTH / 255.0;
@@ -1318,12 +1353,12 @@ void CTestmainView::PrintLMNEChart(sample_info *psampledata)//绘制LMNE的内框线
 	y2 = y1;
 	MemDC.MoveTo(x1, y1);
 	MemDC.LineTo(x2, y2);
-	
+
 	if (sampledata.mode == WHOLEDIFF || sampledata.mode == DILUENTDIFF)
 		LmneGraphPaint(&sampledata, patientdata.rangetype, MemDC);
 
 	MemDC.SetViewportOrg(0, 0);
-	pDC->BitBlt(0,rect.Height()-280, 267, 282, &MemDC, 0, 0, SRCCOPY);
+	pDC->BitBlt(0, rect.Height() - 280, 267, 282, &MemDC, 0, 0, SRCCOPY);
 	MemDC.DeleteDC();
 	bmp.DeleteObject();
 	GetDlgItem(IDC_CHART)->EnableWindow(FALSE);
@@ -1356,13 +1391,13 @@ void CTestmainView::PrintBASOChart(sample_info *psampledata)
 
 	pChart->SetChartType(BCGPChartArea, BCGP_CT_SIMPLE);
 	pChart->SetChartTitle(_T("BASO"));
-	pChart->ShowChartTitle(TRUE,TRUE);
+	pChart->ShowChartTitle(TRUE, TRUE);
 	pChart->SetLegendPosition(BCGPChartLayout::LP_NONE);
 	pChart->SetCurveType(BCGPChartFormatSeries::CCT_SPLINE);
 	pChart->SetColors((CBCGPChartTheme::ChartTheme)3);//0:蓝色；1：青色；2：墨色；3：绿色；4：天蓝色；5：橙黄；6：淡红； 7：black and yellow ；8：红色......
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
-	
+
 	//将对0x00的特殊处理去除
 	for (i = 0; i < 255; i++)	//255存的是结束标志，里边内容无需显示
 		graphbuff[i] = (psampledata->basograph[i] - 1);
@@ -1378,7 +1413,7 @@ void CTestmainView::PrintBASOChart(sample_info *psampledata)
 	SetObjectColors();
 
 	pChart->SetSeriesShadow();
-	
+
 	//AfxMessageBox(_T("2021"));
 
 }
@@ -1403,7 +1438,7 @@ void CTestmainView::UpdatePrintBASOChart(sample_info *psampledata, const unsigne
 		if (systemcfg.mode == 0 || systemcfg.mode == 2)
 		{
 			sprintf(showbuff, "%s%s", "   ", (*psampledata).wbcdata.basp);
-			m_WBCresultList.SetItemText( BASOP- WBCS, 3, (CString)showbuff);
+			m_WBCresultList.SetItemText(BASOP - WBCS, 3, (CString)showbuff);
 
 			if (systemcfg.unitWBC == 2)
 				sprintf(showbuff, "%s%.1f", "   ", 10 * atof((*psampledata).wbcdata.bas));
@@ -1529,7 +1564,7 @@ void CTestmainView::PrintRBCChart(sample_info *psampledata)
 	for (i = 0; i < 204; i++)
 	{
 		graphbuff[i] = graphbuff[i + (i + 2) / 4];
-		pSeries1->AddDataPoint(graphbuff[i ]);
+		pSeries1->AddDataPoint(graphbuff[i]);
 	}
 	pChart->Redraw();
 
@@ -1771,12 +1806,12 @@ void CTestmainView::PrintPLTChart(sample_info *psampledata)
 	pChart->SetColors((CBCGPChartTheme::ChartTheme)5);//0:蓝色；1：青色；2：墨色；3：绿色；4：天蓝色；5：橙黄；6：淡红； 7：black and yellow ；8：红色......
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
-	
+
 	//将对0x00的特殊处理去除		
 	for (i = 0; i < 255; i++)
 		graphbuff[i] = psampledata->pltgraph[i] - 1;
 
-	for (i = 0; i < 204;i++)
+	for (i = 0; i < 204; i++)
 	{
 		pSeries1->AddDataPoint(graphbuff[i]);
 	}
@@ -1980,7 +2015,7 @@ void CTestmainView::UpdatePrintPieChart()
 }
 
 void CTestmainView::InitWBCFlagBox()
-{	
+{
 
 
 }
@@ -2067,23 +2102,23 @@ void CTestmainView::SetObjectColors()
 void ClipChildren(HWND hwnd, HRGN parent)
 {
 	//HWND child = ::GetWindow(hwnd, GW_CHILD);
-//	while (child)
-//	{
-		RECT rect;
-		GetWindowRect(hwnd, &rect);
-		ScreenToClient(hwnd, (LPPOINT)&rect.left);
-		ScreenToClient(hwnd, (LPPOINT)&rect.right);
-		HRGN rgn = CreateRectRgnIndirect(&rect);
-		CombineRgn(parent, parent, rgn, RGN_DIFF);
-		DeleteObject(rgn);
-		//child = GetWindow(child, GW_HWNDNEXT);
+	//	while (child)
+	//	{
+	RECT rect;
+	GetWindowRect(hwnd, &rect);
+	ScreenToClient(hwnd, (LPPOINT)&rect.left);
+	ScreenToClient(hwnd, (LPPOINT)&rect.right);
+	HRGN rgn = CreateRectRgnIndirect(&rect);
+	CombineRgn(parent, parent, rgn, RGN_DIFF);
+	DeleteObject(rgn);
+	//child = GetWindow(child, GW_HWNDNEXT);
 	//}
 }
 //////////////////////////////////////////////////////////////////
 /*
 BOOL CTestmainView::OnCreate()
 {
-	return true;
+return true;
 
 }
 */
@@ -2103,45 +2138,45 @@ BOOL CTestmainView::OnEraseBkgnd(CDC* pDC)
 	FillRect(pDC->m_hDC, &clientRect, (HBRUSH)GetStockObject(WHITE_BRUSH));
 	*/
 	return TRUE;
-		//CBCGPChartExampleView::OnEraseBkgnd(pDC);
-	
-/*
+	//CBCGPChartExampleView::OnEraseBkgnd(pDC);
+
+	/*
 	CBCGPChartExampleView::OnEraseBkgnd(pDC);
 	pDC->TextOutW(300, 300, "ERASEING");
 	return true;
 	*/
-	
+
 }
 
 void CTestmainView::OnPaint()
 {
 	CPaintDC dc(this);
 	//CDC* pDC = GetDC();
-	
+
 	CRect rc;
 	GetClientRect(&rc);
 	//rc.OffsetRect(-rc.left - 2, -rc.top - 2);
 	CDC MemDC;
 	MemDC.CreateCompatibleDC(&dc);
 	CBitmap MemBitmap;
-	MemBitmap.CreateCompatibleBitmap(&dc, rc.Width()+2, rc.Height()+2);
+	MemBitmap.CreateCompatibleBitmap(&dc, rc.Width() + 2, rc.Height() + 2);
 	HBITMAP oldBmp = (HBITMAP)MemDC.SelectObject(&MemBitmap);
 	int Width = rc.Width() + 2;
 	int Height = rc.Height() + 2;
 	MemDC.FillSolidRect(rc.left, rc.top, Width, Height, RGB(255, 255, 255));
-	
+
 	SendMessage(WM_PRINT, (WPARAM)MemDC.m_hDC, (LPARAM)PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT);
-	
-    #ifdef TEST
+
+#ifdef TEST
 	MemDC.SelectObject(oldBmp);
 	OpenClipboard();
 	EmptyClipboard();
 	SetClipboardData(CF_BITMAP, MemBitmap);
 	CloseClipboard();
 	oldBmp = (HBITMAP)MemDC.SelectObject(&MemBitmap);
-    #endif
+#endif
 
-	dc.BitBlt(rc.left,rc.top,rc.Width(),rc.Height(),&MemDC,2,2,SRCCOPY);
+	dc.BitBlt(rc.left, rc.top, rc.Width(), rc.Height(), &MemDC, 2, 2, SRCCOPY);
 	//LmneGraphPaint(&sampledata, patientdata.rangetype,MemDC);
 
 	MemDC.SelectObject(oldBmp);
@@ -2154,7 +2189,7 @@ void CTestmainView::OnPaint()
 
 	UINT id = 0;
 	CWnd *pWnd = 0;
-	
+
 	pWnd = GetDlgItem(IDC_STATIC1);
 	pWnd->GetClientRect(&rc);
 	pWnd->ValidateRect(&rc);
@@ -2206,21 +2241,21 @@ void CTestmainView::OnPaint()
 	pWnd->GetClientRect(&rc);
 	pWnd->ValidateRect(&rc);
 
-	patientPaint(&patientdata);
+	//patientPaint(&patientdata);
 
 }
 
 void CTestmainView::patientPaint(patient_info *ppatientdata)
 {
 
-	CString technician, age, code, name,doctor;
-	name.Format(L"%s",ppatientdata->name);
-	technician.Format(L"%s",ppatientdata->technician);
+	CString technician, age, code, name, doctor;
+	name.Format(L"%s", ppatientdata->name);
+	technician.Format(L"%s", ppatientdata->technician);
 	age.Format(L"%s", ppatientdata->age);
 	code.Format(L"%s", ppatientdata->code);
 	doctor.Format(L"%s", ppatientdata->doctor);
 
-	
+
 	if (0 == ((ppatientdata)->sex))
 		m_sexcombo.SetCurSel(0);
 	else if (1 == (ppatientdata)->sex)
@@ -2228,6 +2263,7 @@ void CTestmainView::patientPaint(patient_info *ppatientdata)
 	else if (2 == (ppatientdata)->sex)
 		m_sexcombo.SetCurSel(2);
 
+	GetDlgItem(IDC_TESTMAIN_TECKNICIAN)->SetWindowText(technician);//姓名
 	GetDlgItem(IDC_TESTMAIN_NAME)->SetWindowText(name);//姓名
 	GetDlgItem(IDC_TESTMAIN_TECKNICIAN)->SetWindowText(technician);//科室
 	GetDlgItem(IDC_TESTMAIN_AGE)->SetWindowText(age);//年龄
@@ -2321,30 +2357,30 @@ void CTestmainView::GetASBarcode(char buffRe[])
 	//AfxMessageBox(_T("2930"));
 }
 
-void CTestmainView::CommonExecution( const char* Mess, uchar CMD, unsigned int m_ntime)
+void CTestmainView::CommonExecution(const char* Mess, uchar CMD, unsigned int m_ntime)
 {
 	//ARM_GPIOCMD(EN_RED);
 	TRACE(Mess);
 	DSP_status = Busy;
 	sdata_cmd[0] = CMD;
 	PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
-	SetTimer(POLLTIME2, m_ntime,0);
+	SetTimer(POLLTIME2, m_ntime, 0);
 	//AfxMessageBox(_T("3031"));
 }
 
-void CTestmainView::AutoClean( const char* Mess)
+void CTestmainView::AutoClean(const char* Mess)
 {
-	CommonExecution( Mess, SPI_CMD_AUTOCLEAN, SPI_POLL_TIME3000);
+	CommonExecution(Mess, SPI_CMD_AUTOCLEAN, SPI_POLL_TIME3000);
 }
 
 void  CTestmainView::ConcentratedCleaning_1(const char* Mess)
 {
-	CommonExecution( Mess, SPI_CMD_CONCENTRATE_CLEAN1, SPI_POLL_TIME1000);
+	CommonExecution(Mess, SPI_CMD_CONCENTRATE_CLEAN1, SPI_POLL_TIME1000);
 }
 
-void  CTestmainView::ConcentratedCleaning_2( const char* Mess)
+void  CTestmainView::ConcentratedCleaning_2(const char* Mess)
 {
-	CommonExecution( Mess, SPI_CMD_CONCENTRATE_CLEAN2, SPI_POLL_TIME1000);
+	CommonExecution(Mess, SPI_CMD_CONCENTRATE_CLEAN2, SPI_POLL_TIME1000);
 }
 
 void  CTestmainView::YealyMaintenance(const char* Mess)
@@ -2352,9 +2388,9 @@ void  CTestmainView::YealyMaintenance(const char* Mess)
 	CommonExecution(Mess, SPI_CMD_MONTHLYMAINTAIN, SPI_POLL_TIME3000);
 }
 
-void  CTestmainView::EM_RINSEBATHS( const char* Mess)
+void  CTestmainView::EM_RINSEBATHS(const char* Mess)
 {
-	CommonExecution( Mess, SPI_CMD_RINSEBATHS, SPI_POLL_TIME3000);
+	CommonExecution(Mess, SPI_CMD_RINSEBATHS, SPI_POLL_TIME3000);
 }
 
 void CTestmainView::UpdateTestMode(int nTheme)
@@ -2362,7 +2398,7 @@ void CTestmainView::UpdateTestMode(int nTheme)
 
 	if (nTheme != 3)
 	{
-		TRACE1("...............GetTestMode()=%d..............\n", ((CMainFrame*)AfxGetMainWnd())->GetTestMode()); 
+		TRACE1("...............GetTestMode()=%d..............\n", ((CMainFrame*)AfxGetMainWnd())->GetTestMode());
 		m_CRPresultList.SetItemText(0, 1, _T("*"));
 	}
 	else m_CRPresultList.SetItemText(0, 1, _T(""));
@@ -2410,18 +2446,20 @@ void CTestmainView::DisplayErrMess()
 	}
 	else
 	{
-
+		//InvalidateRect(hDlg, FAULT, TRUE);
 	}
+
+	UpdateErrMessage();
 	//AfxMessageBox(_T("3435"));
 }
-void CTestmainView::SendCmdToDSP( uchar CMD_Name)
+void CTestmainView::SendCmdToDSP(uchar CMD_Name)
 {
 	char Mess[50];
 
 	sdata_cmd[0] = CMD_Name;
 
 	PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
-	SetTimer( POLLTIME2, SPI_POLL_TIME3000,0);
+	SetTimer(POLLTIME2, SPI_POLL_TIME3000, 0);
 	//AfxMessageBox(_T("3536"));
 }
 
@@ -2432,7 +2470,7 @@ void CTestmainView::DealwithBlockErr(uchar CMD_Name, uchar ErrNum)
 		BlockErr_Flag = TRUE;
 
 		BlockErrStore = ErrNum;
-		SetTimer(CHECKERR_TIMER, 200,0);
+		SetTimer(CHECKERR_TIMER, 200, 0);
 	}
 	else
 		puts("CHECKERR_TIMER is open!");
@@ -2441,12 +2479,12 @@ void CTestmainView::DealwithBlockErr(uchar CMD_Name, uchar ErrNum)
 	//AfxMessageBox(_T("3637"));
 }
 
-void CTestmainView::AutoClean_MainWnd( RECT* STATUS)
+void CTestmainView::AutoClean_MainWnd(RECT* STATUS)
 {
 	if (DSP_status == Free)
 	{
 		//ActivateScreen();
-		TRACE( "..........active in the function autoclean_mainwnd..............\n");
+		TRACE("..........active in the function autoclean_mainwnd..............\n");
 
 		NumFromBoot = 0;	//归0
 
@@ -2461,25 +2499,38 @@ void CTestmainView::AutoClean_MainWnd( RECT* STATUS)
 
 void CTestmainView::GetPatientInfo(patient_info* ppatientdata)
 {
-	CString m_name, m_age, m_doctor, m_barcode;
+	CString m_number,m_sex,m_technician,m_name, m_age, m_doctor, m_barcode;
 
+	GetDlgItem(IDC_TESTMAIN_NUMBER)->GetWindowText(m_number);
 	GetDlgItem(IDC_TESTMAIN_NAME)->GetWindowText(m_name);
 	GetDlgItem(IDC_TESTMAIN_AGE)->GetWindowText(m_age);
-	GetDlgItem(IDC_TESTMAIN_BARCODE)->GetWindowText(m_barcode);
+	GetDlgItem(IDC_TESTMAIN_BARCODE)->GetWindowText(m_barcode);	
+	GetDlgItem(IDC_TESTMAIN_TECKNICIAN)->GetWindowText(m_technician);
 
 	USES_CONVERSION;
 	char* temp = W2A(m_name);
-	sprintf(ppatientdata->name, "%s", temp);
-	temp = W2A(m_age);
-	sprintf(ppatientdata->age,"%s",temp);
+	strcpy(ppatientdata->name, temp);
+
+	temp = W2A(m_age);	
+	strcpy(ppatientdata->age, temp);
+	//sprintf(ppatientdata->age, "%s", temp);
+
+
 	temp = W2A(m_barcode);
 	sprintf(ppatientdata->code, "%s", temp);
+
+	temp = W2A(m_technician);
+	strcpy(ppatientdata->technician, temp);
+	//sprintf(ppatientdata->technician, "%s", temp);
+		
+	ppatientdata->number = _ttoi(m_number);
 
 	ppatientdata->sex = m_sexcombo.GetCurSel();
 	CString doctortemp;
 	((CComboBox*)GetDlgItem(IDC_COMBO_DOCTOR))->GetWindowText(m_doctor);
 	temp = W2A(m_doctor);
 	sprintf(ppatientdata->doctor, "%s", temp);
+
 }
 
 void CTestmainView::Generatetask(task_info* ptaskdata)
@@ -2610,8 +2661,8 @@ afx_msg LRESULT CTestmainView::OnMainblanktest(WPARAM wParam, LPARAM lParam)
 	if (ErrorTimer_Flag)
 	{
 		ErrorTimer_Flag = FALSE;
-		KillTimer( ERROR_TIMER);
-	}	
+		KillTimer(ERROR_TIMER);
+	}
 	if (BlockErr_Flag)
 	{
 		BlockErr_Flag = FALSE;
@@ -2619,15 +2670,267 @@ afx_msg LRESULT CTestmainView::OnMainblanktest(WPARAM wParam, LPARAM lParam)
 	}
 	PC_status = WAITING_DATA;
 
-	SetTimer(SLEEP_TIMER1, 3000,0);	//FDparam 比SPI_STATE_DATAISOK早一点
+	SetTimer(SLEEP_TIMER1, 3000, 0);	//FDparam 比SPI_STATE_DATAISOK早一点
 	//AfxMessageBox(_T("4344"));
 	return 0;
 }
+
+extern HWND mainhwnd;
+void CTestmainView::UpdateErrMessage()
+{
+	int			messFlag=0;	//标志位，用于记录是否打开报警，0：关闭；1：打开
+	printf("errorShowMess++\n");
+	
+	if (systemcfg.language == CHINESE)
+	{
+		//错误信息在此更新，需更新时调用
+		switch (errorShowMess){
+		case 0:
+			::PostMessage(mainhwnd, WM_REAGENT_ALARM, errorShowMess, 1);
+			break;
+		case 11:
+			if (true == systemcfg2.warn_diluent){
+				messFlag = 1;
+				break;
+			}
+			else{
+				messFlag = 0;
+			}
+
+		case 12:
+			if (true == systemcfg2.warn_waste)
+			{
+				messFlag = 1;
+				break;
+			}
+			else
+				messFlag = 0;
+		case 13:
+			//messFlag = 1;
+			//break;
+		case 14:
+
+			if (true == systemcfg2.warn_rinse)
+			{
+				messFlag = 1;
+				break;
+			}
+			else
+				messFlag = 0;
+
+		case 15:
+			if (true == systemcfg2.warn_hgb)
+			{
+				messFlag = 1;
+				break;
+			}
+			else
+				messFlag = 0;
+		case 16:
+			if (true == systemcfg2.warn_fix)
+			{
+				messFlag = 1;
+				break;
+			}
+			else
+				messFlag = 0;
+		case 17:
+			if (true == systemcfg2.warn_baso)
+			{
+				messFlag = 1;
+				break;
+			}
+			else
+				messFlag = 0;
+		default:
+			break;
+
+		}
+	}
+		//if (0 == errorShowMess)
+		//{
+		//	::PostMessage(mainhwnd, WM_REAGENT_ALARM, errorShowMess, 1);
+		//}
+		//else
+		//{
+		//	//SetTextColor(*dcErr, COLOR_red);
+		//	if (11 == errorShowMess)//排废液时间过长
+		//	{
+		//		if (true == systemcfg2.warn_diluent)
+		//		{
+		//			messFlag = 1;
+		//		}
+		//		else
+		//			messFlag = 0;
+		//	}
+		//	else if (12 == errorShowMess)//排废液时间过长
+		//	{
+		//		if (true == systemcfg2.warn_waste)
+		//		{
+		//			messFlag = 1;
+		//			//ARM_GPIOCMD(EN_BUZZER);
+		//		}
+		//		else
+		//			messFlag = 0;
+		//	}
+		//	else if (13 == errorShowMess)
+		//	{
+		//		messFlag = 1;
+		//		//
+		//	}
+		//	//add by jxq 20170309
+		//	else if (14 == errorShowMess)
+		//	{
+		//		if (true == systemcfg2.warn_rinse)
+		//		{
+		//			messFlag = 1;
+		//			//ARM_GPIOCMD(EN_BUZZER);					
+		//		}
+		//		else
+		//			messFlag = 0;
+		//	}
+		//	else if (15 == errorShowMess)
+		//	{
+		//		//printf("15 == errorShowMess\n");
+		//		if (true == systemcfg2.warn_hgb)
+		//		{
+		//			messFlag = 1;
+		//		}
+		//		else
+		//			messFlag = 0;
+		//	}
+		//	else if (16 == errorShowMess)
+		//	{
+		//		if (true == systemcfg2.warn_fix)
+		//		{
+		//			messFlag = 1;
+		//		}
+		//		else
+		//			messFlag = 0;
+		//	}
+		//	else if (17 == errorShowMess)
+		//	{
+		//		if (true == systemcfg2.warn_baso)
+		//		{
+		//			messFlag = 1;
+		//		}
+		//		else
+		//			messFlag = 0;
+		//	}
+		//	else{// 缺省处理
+		//			//
+		//	}
+	if (messFlag == 1){
+		errorShowNum = 0;
+		ErrFlag = 0;
+		ErrorTimer_Flag = FALSE;
+		KillTimer(ERROR_TIMER);
+	}
+	else{
+
+	}
+	::PostMessage(mainhwnd, WM_REAGENT_ALARM, errorShowMess, messFlag);
+		//::PostMessage(mainhwnd, WM_REAGENT_ALARM, 5, 0);
+	
+
+	//else if (systemcfg.language == ENGLISH)
+	//{
+	//	if (0 == errorShowMess)
+	//	{
+	//		/*SetTextColor(*dcErr, COLOR_blue);
+	//		if(0 == logfile.regent.rinse && True == systemcfg2.warn_rinse)
+	//		ErrFun(ErroInfo_EN[0]);
+	//		else if(0 == logfile.regent.hgblyse && True == systemcfg2.warn_hgb)
+	//		ErrFun(ErroInfo_EN[1]);
+	//		else if(0 == logfile.regent.fix && True == systemcfg2.warn_fix)
+	//		ErrFun(ErroInfo_EN[2]);
+	//		else if(0 == logfile.regent.wbclyse && True == systemcfg2.warn_baso)
+	//		ErrFun(ErroInfo_EN[3]);
+	//		else
+	//		{
+	//		SetTextColor(*dcErr, COLOR_black);
+	//		ErrFun("NORMAL");
+	//		}*/
+	//		SetTextColor(*dcErr, COLOR_black);
+	//		ErrFun("NORMAL");
+	//	}
+	//	else
+	//	{
+	//		SetTextColor(*dcErr, COLOR_red);
+	//		if (errorShowMess> 0 && errorShowMess<11)
+	//			ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//		else if (11 == errorShowMess)//排废液时间过长
+	//		{
+	//			if (True == systemcfg2.warn_diluent)
+	//			{
+	//				ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//			}
+	//			else
+	//				ErrFun("NORMAL");
+	//		}
+	//		else if (12 == errorShowMess)//排废液时间过长
+	//		{
+	//			if (True == systemcfg2.warn_waste)
+	//			{
+	//				ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//			}
+	//			else
+	//				ErrFun("NORMAL");
+	//		}
+	//		else if (13 == errorShowMess)
+	//		{
+	//			ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//		}
+	//		//add by jxq 20170309
+	//		else if (14 == errorShowMess)
+	//		{
+	//			if (True == systemcfg2.warn_rinse)
+	//			{
+	//				ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//			}
+	//			else
+	//				ErrFun("NORMAL");
+	//		}
+	//		else if (15 == errorShowMess)
+	//		{
+	//			if (True == systemcfg2.warn_hgb)
+	//			{
+	//				ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//			}
+	//			else
+	//				ErrFun("NORMAL");
+	//		}
+	//		else if (16 == errorShowMess)
+	//		{
+	//			if (True == systemcfg2.warn_fix)
+	//			{
+	//				ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//			}
+	//			else
+	//				ErrFun("NORMAL");
+	//		}
+	//		else if (17 == errorShowMess)
+	//		{
+	//			if (True == systemcfg2.warn_baso)
+	//			{
+	//				ErrFun(MotorErrInfo_EN[errorShowMess - 1]);
+	//			}
+	//			else
+	//				ErrFun("NORMAL");
+	//		}
+	//		else//缺省处理
+	//			ErrFun("Unknown Error");
+	//	}
+	//}
+}
+
 
 afx_msg LRESULT CTestmainView::OnMaintest(WPARAM wParam, LPARAM lParam)
 {
 	//MessageBox(L"hello world");
 	TRACE("===============MainTest==========\n");
+	//UpdateErrMessage();
+
 	//hw_add:20150104
 	errorShowMess = 0;
 	//if(errorNumber > 0)
@@ -2639,7 +2942,7 @@ afx_msg LRESULT CTestmainView::OnMaintest(WPARAM wParam, LPARAM lParam)
 	if (BlockErr_Flag)
 	{
 		BlockErr_Flag = FALSE;
-		KillTimer( CHECKERR_TIMER);
+		KillTimer(CHECKERR_TIMER);
 	}
 	TimesofTest++;
 	logfile.totaltimesoftest++;
@@ -2664,17 +2967,18 @@ afx_msg LRESULT CTestmainView::OnMaintest(WPARAM wParam, LPARAM lParam)
 	statusShowMess = 1;
 	//InvalidateRect(hDlg, &STATUS, TRUE);
 	UpdateData(true);
+
 	if (3 == systemcfg3.structure)//自动进样
 	{
 		PC_status = WAITING_PUNCTURE_OVER;
 		//设定轮询控制机状态的定时器		
-		SetTimer(POLLTIME, SPI_POLL_TIME3000,0);    //轮询时间定时器		
+		SetTimer(POLLTIME, SPI_POLL_TIME3000, 0);    //轮询时间定时器		
 	}
 	else
 	{
 		PC_status = WAITING_DATA;
 
-		SetTimer(SLEEP_TIMER1, 3000,0);	//FDparam 比SPI_STATE_DATAISOK早一点
+		SetTimer(SLEEP_TIMER1, 3000, 0);	//FDparam 比SPI_STATE_DATAISOK早一点
 	}
 	return 0;
 }
@@ -2692,7 +2996,7 @@ afx_msg LRESULT CTestmainView::OnConcenclean(WPARAM wParam, LPARAM lParam)
 
 afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 {
-	switch (wParam)
+	switch (wParam)//*下位机传上来的spi参数
 	{
 		//"穿刺结束"
 	case SPI_STATE_PUNCTURE_OVER:	//自动进样模式下才用到
@@ -2708,10 +3012,11 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 	case SPI_STATE_ERROR_DRM:
 		TRACE(_T("SPI_STATE_ERROR_DRM"));
 		if (systemcfg.language == CHINESE)
-			MessageBox(_T("排液超时,请关机检查"), _T("警告!"),MB_OK | MB_ICONINFORMATION);
+			MessageBox(_T("排液超时,请关机检查"), _T("警告!"), MB_OK | MB_ICONINFORMATION);
 		else if (systemcfg.language == ENGLISH)
 			//CreateWarningBoxNonCHDlg(hDlg, "Drain over time,please shutdown and have a check", "Warning!");
-			MessageBox(_T("排液超时,请关机检查"), _T("警告!"), MB_OK | MB_ICONINFORMATION);
+			//MessageBox(_T("排液超时,请关机检查"), _T("警告!"), MB_OK | MB_ICONINFORMATION);
+			MessageBox(_T("Drain over time,please shutdown and have a check"), _T("Warning!"), MB_OK | MB_ICONINFORMATION);
 		while (1)
 			Sleep(10);
 		break;
@@ -2731,7 +3036,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 		if (PC_status != WAITING_DATA)
 			break;
 		PC_status = WAITING_TEST_OVER;
-		KillTimer( POLLTIME2);
+		KillTimer(POLLTIME2);
 		//------------------------------------------------------------------------------------------------
 		m_datatrans.GetNormalTestData(systemcfg.mode, &sampledata);
 		//------------------------------------------------------------------------------------------------
@@ -2810,10 +3115,13 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 				ErrorTimer_Flag = TRUE;
 
 				DisplayErrMess();//显示错误信息，待处理
-				SetTimer(ERROR_TIMER, 200,0);
+
+				//UpdateErrMessage();//此处更新错误信息
+
+				SetTimer(ERROR_TIMER, 200, 0);
 			}
 		}
-		SetTimer(UPDATE_STATUS, 200,0);	
+		//SetTimer(UPDATE_STATUS, 200, 0);
 		//------------------------------------------------------------------------------------------------
 		//数据接收成功，进行处理的过程
 		//分析数据
@@ -2865,21 +3173,21 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//向病人信息表插入病人编号，注册以和病人数据表记录同步
 			patientdata.row = sampledata.row;
 			patientdata.number = sampledata.number;
-			GetPatientInfo(&patientdata);//获取窗口病人信息
+			GetPatientInfo(&patientdata);//获取窗口病人信息//此处可能有乱码
 			AddPatientRecord(&patientdata);
 			/*if (1 == systemcfg.printercfg.mode)//如果打印模式为自动
 			{
-				PrintResults(&sampledata, &patientdata);
+			PrintResults(&sampledata, &patientdata);
 			}
 			if (!systemcfg.com.upload)	//自动上传
 			{
-				if (systemcfg2.PcConMode == 2)
-					PCNetSend(systemcfg2.ipaddr, systemcfg2.netport, &sampledata, &patientdata);
-				else
-				{
-					SendDataToPc_EN = 1;
-					psampledataToSend = &sampledata;
-				}
+			if (systemcfg2.PcConMode == 2)
+			PCNetSend(systemcfg2.ipaddr, systemcfg2.netport, &sampledata, &patientdata);
+			else
+			{
+			SendDataToPc_EN = 1;
+			psampledataToSend = &sampledata;
+			}
 			}*/
 			//----------------------------------------
 			//是否需暂停自动进样系统工作进行维护操作
@@ -2938,7 +3246,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			statusShowMess = 0;
 			//ARM_GPIOCMD(EN_GREEN);
 		}
-		SetTimer( POLLTIME2, SPI_POLL_TIME3000,0);
+		SetTimer(POLLTIME2, SPI_POLL_TIME3000, 0);
 		break;
 		//------------------------------------------------
 		//测试过程状态
@@ -3004,7 +3312,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 					TempReq_EN = FALSE;
 					printf("Startup BlankTest second time not Qualified----------\n");
 					if (systemcfg.language == CHINESE)
-						MessageBox(_T( "空白测试不合格\n  请检查仪器!"), _T("警告!"), MB_OK | MB_ICONINFORMATION);
+						MessageBox(_T("空白测试不合格\n  请检查仪器!"), _T("警告!"), MB_OK | MB_ICONINFORMATION);
 					else if (systemcfg.language == ENGLISH)
 						//CreateWarningBoxNonCHDlg(hDlg, "Blank test wrong!\nPlease check device!", "Warning!");
 						MessageBox(_T("空白测试不合格\n  请检查仪器!"), _T("警告!"), MB_OK | MB_ICONINFORMATION);
@@ -3018,7 +3326,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 				statusShowMess = 3;
 				//InvalidateRect(hDlg, &STATUS, TRUE);
 				UpdateData(FALSE);
-				SetTimer(SLEEP_TIMER1, 2000,0);     //6000
+				SetTimer(SLEEP_TIMER1, 2000, 0);     //6000
 			}
 		}
 		else//不是开机测试
@@ -3052,7 +3360,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			if (1 == ReagentEmpty)	//检查试剂
 			{
 				if (systemcfg.language == CHINESE)
-					MessageBox(_T( "请检查试剂!"), _T("提示"), MB_OK | MB_ICONINFORMATION);
+					MessageBox(_T("请检查试剂!"), _T("提示"), MB_OK | MB_ICONINFORMATION);
 				else if (systemcfg.language == ENGLISH)
 					//CreateWarningBoxNonCHDlg(hDlg, "Check the Reagent Please!", "Presentation");
 					MessageBox(_T("请检查试剂!"), _T("提示"), MB_OK | MB_ICONINFORMATION);
@@ -3061,7 +3369,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			if (1 == AlertMotorShow)//检查电机
 			{
 				if (systemcfg.language == CHINESE)
-					MessageBox(_T( "请检查电机!"), _T("提示"), MB_OK | MB_ICONINFORMATION);
+					MessageBox(_T("请检查电机!"), _T("提示"), MB_OK | MB_ICONINFORMATION);
 				else if (systemcfg.language == ENGLISH)
 					//CreateWarningBoxNonCHDlg(hDlg, "Check the Motor Please!", "Presentation");
 					MessageBox(_T("Check the Motor Please!"), _T("Presentation"), MB_OK | MB_ICONINFORMATION);
@@ -3085,7 +3393,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 
 			if (systemcfg.language == CHINESE)
 			{
-				response = MessageBox(_T("测试样本已达500,请执行浓缩清洗"),_T( "浓缩清洗提示"), MB_YESNO);
+				response = MessageBox(_T("测试样本已达500,请执行浓缩清洗"), _T("浓缩清洗提示"), MB_YESNO);
 			}
 			else if (systemcfg.language == ENGLISH)
 			{
@@ -3112,112 +3420,112 @@ void CTestmainView::OnTimer(UINT_PTR nIDEvent)
 	switch (nIDEvent)
 	{
 	case SLEEP_TIMER1:
-	{	
-					if (!TempReq_EN)
+	{
+		if (!TempReq_EN)
+		{
+			TRACE(_T("SLEEP_TIMER1"));
+			KillTimer(SLEEP_TIMER1);
+			TRACE("MSG_TIMER:SLEEP_TIMER1 is due -------------#\n");
+			//设定轮询控制机状态的定时器		
+			SetTimer(POLLTIME2, SPI_POLL_TIME1000, 0);    //轮询时间定时器	
+		}
+		else
+		{
+			TRACE(_T("SLEEP_TIMER2"));
+			addtime++;
+			if (addtime <= 30)      //10分钟
+			{
+				for (i = 0; i < 3; i++)	//循环三次，防止数据传输异常
+				{
+					sdata_cmd[0] = SPI_CMD_REQTEM;
+					PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
+					memset(temperature, 0, 8);
+					if (0 == PC_RECEIVE_FRAME(temperature, SPI_TYPE_TEMRES))
 					{
-						TRACE(_T("SLEEP_TIMER1"));
-						KillTimer(SLEEP_TIMER1);
-						TRACE("MSG_TIMER:SLEEP_TIMER1 is due -------------#\n");
-						//设定轮询控制机状态的定时器		
-						SetTimer(POLLTIME2, SPI_POLL_TIME1000,0);    //轮询时间定时器	
+						break;
 					}
-					else
-					{
-						TRACE(_T("SLEEP_TIMER2"));
-						addtime++;
-						if (addtime <= 30)      //10分钟
-						{
-							for (i = 0; i < 3; i++)	//循环三次，防止数据传输异常
-							{
-								sdata_cmd[0] = SPI_CMD_REQTEM;
-								PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
-								memset(temperature, 0, 8);
-								if (0 == PC_RECEIVE_FRAME(temperature, SPI_TYPE_TEMRES))
-								{
-									break;
-								}
-							}
-							if (addtime == 1)
-							{
-								oritemp_rea = temperature[0] * 1000 + temperature[1] * 100 + temperature[2] * 10 + temperature[3];
-								oritemp_cup = temperature[4] * 1000 + temperature[5] * 100 + temperature[6] * 10 + temperature[7];
-							}
-							reagenttemp = temperature[0] * 1000 + temperature[1] * 100 + temperature[2] * 10 + temperature[3];
-							cuptemp = temperature[4] * 1000 + temperature[5] * 100 + temperature[6] * 10 + temperature[7];
-							tempcup_base = (unsigned int)systemcfg.tmp.env * 100;
-							tempreagent_base = (unsigned int)systemcfg.tmp.incub * 100;
+				}
+				if (addtime == 1)
+				{
+					oritemp_rea = temperature[0] * 1000 + temperature[1] * 100 + temperature[2] * 10 + temperature[3];
+					oritemp_cup = temperature[4] * 1000 + temperature[5] * 100 + temperature[6] * 10 + temperature[7];
+				}
+				reagenttemp = temperature[0] * 1000 + temperature[1] * 100 + temperature[2] * 10 + temperature[3];
+				cuptemp = temperature[4] * 1000 + temperature[5] * 100 + temperature[6] * 10 + temperature[7];
+				tempcup_base = (unsigned int)systemcfg.tmp.env * 100;
+				tempreagent_base = (unsigned int)systemcfg.tmp.incub * 100;
 
-							//if(reagenttemp > tempreagent_base && cuptemp > tempcup_base && reagenttemp < 4000 && cuptemp < 4000 )     //条件改变
-							if (reagenttemp > tempreagent_base - 200 && reagenttemp < 4000)
-							{
-								KillTimer(SLEEP_TIMER1);
-								//等温度正常之后才能进行其他测试
-								DSP_status = Free;
-								Allow_ASOnLine = TRUE;
-								ASCur_EN = TRUE;
-								statusShowMess = 0;
-								addtime = 0;
-								TempReq_EN = FALSE;
-							}
-						}
-						else
-						{
-							TRACE(_T("SLEEP_TIMER3"));
-							char str_show[100] = "";
-							char str_cat[20] = "";
+				//if(reagenttemp > tempreagent_base && cuptemp > tempcup_base && reagenttemp < 4000 && cuptemp < 4000 )     //条件改变
+				if (reagenttemp > tempreagent_base - 200 && reagenttemp < 4000)
+				{
+					KillTimer(SLEEP_TIMER1);
+					//等温度正常之后才能进行其他测试
+					DSP_status = Free;
+					Allow_ASOnLine = TRUE;
+					ASCur_EN = TRUE;
+					statusShowMess = 0;
+					addtime = 0;
+					TempReq_EN = FALSE;
+				}
+			}
+			else
+			{
+				TRACE(_T("SLEEP_TIMER3"));
+				char str_show[100] = "";
+				char str_cat[20] = "";
 
-							if (reagenttemp - oritemp_rea < 100)
-							{
-								if (systemcfg.language == CHINESE)
-									MessageBox(_T("温控系统1: 试剂不加热"),_T("警告!"));
-								else if (systemcfg.language == ENGLISH)
-									MessageBox(_T("Temerature control system 1 : reagent doesn't heat"),_T( "Warning!"));
-							}
-							if (reagenttemp<200)
-							{
-								if (systemcfg.language == CHINESE)
-									MessageBox(_T("温控系统1: 试剂温度为0"), _T("警告!"));
-								else if (systemcfg.language == ENGLISH)
-									MessageBox(_T("Temerature control system 1 : reagent temperature is 0"),_T("Warning!"));
-							}
-							if (reagenttemp > tempreagent_base - 400)
-							{
-								if (systemcfg.language == CHINESE)
-									strcpy(str_show, "环境温度太低");
-								else if (systemcfg.language == ENGLISH)
-									strcpy(str_show, "Environment temerature is too low");
-								sprintf(str_cat, "\n %d", reagenttemp);
-								strcat(str_show, str_cat);
+				if (reagenttemp - oritemp_rea < 100)
+				{
+					if (systemcfg.language == CHINESE)
+						MessageBox(_T("温控系统1: 试剂不加热"), _T("警告!"));
+					else if (systemcfg.language == ENGLISH)
+						MessageBox(_T("Temerature control system 1 : reagent doesn't heat"), _T("Warning!"));
+				}
+				if (reagenttemp<200)
+				{
+					if (systemcfg.language == CHINESE)
+						MessageBox(_T("温控系统1: 试剂温度为0"), _T("警告!"));
+					else if (systemcfg.language == ENGLISH)
+						MessageBox(_T("Temerature control system 1 : reagent temperature is 0"), _T("Warning!"));
+				}
+				if (reagenttemp > tempreagent_base - 400)
+				{
+					if (systemcfg.language == CHINESE)
+						strcpy(str_show, "环境温度太低");
+					else if (systemcfg.language == ENGLISH)
+						strcpy(str_show, "Environment temerature is too low");
+					sprintf(str_cat, "\n %d", reagenttemp);
+					strcat(str_show, str_cat);
 
-								if (systemcfg.language == CHINESE)
-									MessageBox((LPCTSTR)str_show, _T("警告!"));
-								else if (systemcfg.language == ENGLISH)
-									MessageBox((LPCTSTR)str_show, _T("Warning!"));
-							}
-							if (reagenttemp < tempreagent_base - 400 && reagenttemp > 200)
-							{
-								if (systemcfg.language == CHINESE)
-									strcpy(str_show, "温控系统1: 试剂温度太低");
-								else if (systemcfg.language == ENGLISH)
-									strcpy(str_show, "Temerature control system 1 : reagent temperature is too low");
-								sprintf(str_cat, "\n %d", reagenttemp);
-								strcat(str_show, str_cat);
+					if (systemcfg.language == CHINESE)
+						MessageBox((LPCTSTR)str_show, _T("警告!"));
+					else if (systemcfg.language == ENGLISH)
+						MessageBox((LPCTSTR)str_show, _T("Warning!"));
+				}
+				if (reagenttemp < tempreagent_base - 400 && reagenttemp > 200)
+				{
+					if (systemcfg.language == CHINESE)
+						strcpy(str_show, "温控系统1: 试剂温度太低");
+					else if (systemcfg.language == ENGLISH)
+						strcpy(str_show, "Temerature control system 1 : reagent temperature is too low");
+					sprintf(str_cat, "\n %d", reagenttemp);
+					strcat(str_show, str_cat);
 
-								if (systemcfg.language == CHINESE)
-									MessageBox((LPCTSTR)str_show, _T("警告!"));
-								else if (systemcfg.language == ENGLISH)
-									MessageBox((LPCTSTR)str_show, _T("Warning!"));
-							}
-							KillTimer(SLEEP_TIMER1);
-							DSP_status = Free;
-							Allow_ASOnLine = TRUE;
-							ASCur_EN = TRUE;
-							statusShowMess = 0;
-							addtime = 0;
-							TempReq_EN = FALSE;
-						}
-					}
-					break;
+					if (systemcfg.language == CHINESE)
+						MessageBox((LPCTSTR)str_show, _T("警告!"));
+					else if (systemcfg.language == ENGLISH)
+						MessageBox((LPCTSTR)str_show, _T("Warning!"));
+				}
+				KillTimer(SLEEP_TIMER1);
+				DSP_status = Free;
+				Allow_ASOnLine = TRUE;
+				ASCur_EN = TRUE;
+				statusShowMess = 0;
+				addtime = 0;
+				TempReq_EN = FALSE;
+			}
+		}
+		break;
 	}
 	case ERROR_TIMER:
 	{
@@ -3231,7 +3539,7 @@ void CTestmainView::OnTimer(UINT_PTR nIDEvent)
 		}
 		else
 			DisplayErrMess();
-			break;
+		break;
 	}
 	case CHECKERR_TIMER:
 	{
@@ -3243,7 +3551,7 @@ void CTestmainView::OnTimer(UINT_PTR nIDEvent)
 
 			if (errorShowMess > 0)
 			{
-				
+
 			}
 		}
 		break;
@@ -3351,7 +3659,7 @@ DWORD WINAPI CTestmainView::BarcodeCheck(LPVOID lpParam)
 		recvdata[i] = 0;
 	while (1)
 	{
-		m_rs232.ComRd(6, recvdata, 100,9600);//条码枪波特率 9600
+		m_rs232.ComRd(6, recvdata, 100, 9600);//条码枪波特率 9600
 		barcode = A2W((char*)recvdata);
 		if (barcode != "")
 		{
@@ -3453,13 +3761,13 @@ DWORD WINAPI CTestmainView::SwitchStateCheck(LPVOID lpParam)
 	uchar  recvdata[100] = { 0 };
 	CString switchState;
 	//uchar reply[3] = { '1', '\r', '\n' };
-	
+
 	USES_CONVERSION;
 	for (int i = 0; i < 100; i++)
 		recvdata[i] = 0;
 	CString reply[] = { CString('1'), CString('\r'), CString('\n') };
 	//int replySize = sizeof(reply);
-	
+
 	while (1)
 	{
 		m_rs232.ComRd(portNO, recvdata, 10, 9600);//检测开关波特率 9600
@@ -3477,9 +3785,9 @@ DWORD WINAPI CTestmainView::SwitchStateCheck(LPVOID lpParam)
 		//	}
 		//}
 		//if (testState)
-		if (recvdata[0]==0x32)//检测到开关按下
+		if (recvdata[0] == 0x32)//检测到开关按下
 		{
-			
+
 			//TRACE(switchState + "\n");			
 			//CString str = "111111111111111111";
 			for (int i = 0; i < 3; i++)
@@ -3500,7 +3808,7 @@ DWORD WINAPI CTestmainView::SwitchStateCheck(LPVOID lpParam)
 		}
 	}
 	//uchar reply[3] = { '1', '\r', '\n' };
-	
+
 	//CString cs[] = {CString('1'),CString('\r'),CString('\n')};
 	//while (1)
 	//{
@@ -3615,3 +3923,75 @@ DWORD WINAPI CTestmainView::SwitchStateCheck(LPVOID lpParam)
 //	}
 //	return 0;
 //}
+
+
+//void CTestmainView::OnBnClickedButton1()
+//{
+//	// TODO:  在此添加控件通知处理程序代码
+//
+//	GetErrInfo();
+//	//日志文件处理		
+//	if (errorNumber > 0 || systemcfg2.warn_baso || systemcfg2.warn_diluent || systemcfg2.warn_fix
+//		|| systemcfg2.warn_hgb || systemcfg2.warn_rinse || systemcfg2.warn_waste)
+//	{
+//		if (errorNumber > 0)
+//		{
+//			ErrFlag = 1;
+//			errorShowNum = 0;
+//			ErrorTimer_Flag = TRUE;
+//
+//			DisplayErrMess();//显示错误信息，待处理
+//
+//			//UpdateErrMessage();//此处更新错误信息
+//
+//			SetTimer(ERROR_TIMER, 200, 0);
+//		}
+//	}
+//}
+
+void CTestmainView::deepClone(char * dest, char * src, int srcLength){
+	for (int i= 0; i < srcLength; i++){
+		*(dest+i) = *(src+i);
+	}
+}
+
+/********************测试代码*****************************/
+void CTestmainView::OnBnClickedButton1()
+{
+	//// TODO:  在此添加控件通知处理程序代码
+	////GetPatientInfo();
+	//char* c2 = "张三";
+	//CString cs2 = "李四";
+
+	//USES_CONVERSION;	
+	//GetPatientInfo(&patientdata);
+	//AddPatientRecord(&patientdata);
+	////_tcscpy(cs1.GetBuffer(cs2.GetLength()+1), cs2);
+	////strncpy(c1, c2,1);
+	////strcpy(c1, c2);
+	//c1 = T2A(cs2.GetBuffer(0));
+
+}
+
+void CTestmainView::OnBnClickedButton2()
+{
+	//// TODO:  在此添加控件通知处理程序代码
+	//CString cs;
+	//cs = patientdata.age;
+
+	////memcpy(&(*patientdata->age), &temp, sizeof((*patientdata->age)));
+	//MessageBox(cs);
+}
+
+
+void CTestmainView::OnBnClickedButton3()
+{
+	//TRACE(_T("POLLTIME2\n"));
+	//sdata_cmd[0] = SPI_CMD_REQDSP_STATUS;
+	//PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
+	//PC_RECEIVE_FRAME(rdata_state, SPI_TYPE_STATE);
+
+	//TRACE(_T("rdata_sate[0]=%X\n"), rdata_state[0]);
+	//PostMessage(WM_ACKSPI, rdata_state[0], 0);
+}
+/*******************************************************/

@@ -67,7 +67,7 @@ BOOL CPatientResultView::InitPatientResultForm()
 {
 	CRect rect;
 	int i = 0;
-	CString select_name_sample = L"select * from patientdata where name ='" + m_patientname + "'";
+	CString select_name_sample = L"select * from patientdata ";// where name = '" + m_patientname + "'";
 	CString strNum = "";
 	CString strtemp = "20";
 	CString strSex[3] = { "男", "女", "" };
@@ -90,7 +90,7 @@ BOOL CPatientResultView::InitPatientResultForm()
 
 
 	// 为CRP列表视图控件添加四列
-	m_PatientResultList.InsertColumn(0, _T("选择"), LVCFMT_CENTER, rect.Width() / 8, 0);
+	m_PatientResultList.InsertColumn(0, _T("选择"), LVCFMT_CENTER, rect.Width() / 10, 0);
 	m_PatientResultList.InsertColumn(1, _T("样本号"), LVCFMT_CENTER, rect.Width() / 8, 1);
 	m_PatientResultList.InsertColumn(2, _T("时间"), LVCFMT_CENTER, rect.Width() / 8, 2);
 	m_PatientResultList.InsertColumn(3, _T("病人编号"), LVCFMT_CENTER, rect.Width() / 8, 3);
@@ -296,6 +296,12 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		pView->OnInitialUpdate();
 		CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
+		UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
+
+		::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
+		::GetWindowLong(pView->m_hWnd, GWL_ID));
+
+		::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
 		pActiveView->ShowWindow(SW_HIDE);
 		pView->ShowWindow(SW_SHOW);
 		((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);

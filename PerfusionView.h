@@ -28,7 +28,8 @@ public:
 	afx_msg void OnPrimeReversedprime();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void PrimeReagent(char* Mess, uchar CMD);
-
+	void SetWindowEnable();
+	void SetWindowDisable();
 	CSpi m_spidev;
 	
 protected:

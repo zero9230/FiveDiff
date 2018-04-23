@@ -11,8 +11,7 @@
 IMPLEMENT_DYNCREATE(CLogView, CBCGPChartExampleView)
 
 CLogView::CLogView()
-: CBCGPChartExampleView(CLogView::IDD)
-, m_Logtype(0)
+: CBCGPChartExampleView(CLogView::IDD), m_Logtype(0)
 {
 
 }

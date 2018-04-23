@@ -77,6 +77,15 @@ void CCalibrationView::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	// TODO:  在此处添加消息处理程序代码
 	// 不为绘图消息调用 CBCGPChartExampleView::OnPaint()
+	//SetBkMode(dc, BM_TRANSPARENT);
+	
+
+	//ShowStatusInfo();
+	//ShowCalibrationInfo();
+	//ShowOriCoefficient(hDlg, &hdc);
+
+
+
 }
 
 
@@ -107,8 +116,7 @@ BOOL CCalibrationView::InitCalibrationForm()
 	m_CalibrationList.SetRowHeigt(20);
 	// 为列表视图控件添加全行选中和栅格风格   
 	m_CalibrationList.SetExtendedStyle(m_CalibrationList.GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_CHECKBOXES);
-
-
+	
 	// 为PLT列表视图控件添加四列
 	m_CalibrationList.InsertColumn(0, _T("选择"), LVCFMT_CENTER, rect.Width() *1/ 16, 0);
 	m_CalibrationList.InsertColumn(1, _T("操作者"), LVCFMT_CENTER, rect.Width()*2 /16, 1);
@@ -121,19 +129,19 @@ BOOL CCalibrationView::InitCalibrationForm()
 
 	// 在PLT列表视图控件中插入列表项，并设置列表子项文本
 	m_CalibrationList.InsertItem(0, _T(""));
-	m_CalibrationList.SetItemText(0, 1, _T("Technician"));
+	m_CalibrationList.SetItemText(0, 0, _T("1"));
 	//m_CalibrationList.SetItemText(0, 2, _T("10^9/L"));
 	m_CalibrationList.InsertItem(1, _T(""));
-	m_CalibrationList.SetItemText(1, 1, _T("Technician"));
+	m_CalibrationList.SetItemText(1, 0, _T("2"));
 	//m_CalibrationList.SetItemText(1, 2, _T("fL"));
 	m_CalibrationList.InsertItem(2, _T(""));
-	m_CalibrationList.SetItemText(2, 1, _T("Technician"));
+	m_CalibrationList.SetItemText(2, 0, _T("3"));
 	//m_CalibrationList.SetItemText(2, 2, _T("fL"));
 	m_CalibrationList.InsertItem(3, _T(""));
-	m_CalibrationList.SetItemText(3, 1, _T("Technician"));
+	m_CalibrationList.SetItemText(3, 0, _T("4"));
 	//m_CalibrationList.SetItemText(3, 2, _T("%"));
 	m_CalibrationList.InsertItem(4, _T(""));
-	m_CalibrationList.SetItemText(4, 1, _T("Technician"));
+	m_CalibrationList.SetItemText(4, 0, _T("5"));
 	//m_CalibrationList.SetItemText(4, 2, _T("%"));
 
 	return TRUE;
@@ -220,7 +228,17 @@ void CCalibrationView::OnTargetvalue()
 	}
 }
 
-void CCalibrationView::DealWithData(uchar CurCalMode, CString ResultBuff[5], uchar CVBuff[5], uchar CoeBuff[5], int ItemType)
+/*************************处理数据*********************************
+CurCalMode  测试模式 0:全血+CBC5DIFF,1:全血+CBC,2:预稀释+CBC5DIFF,3:预稀释+CBC；
+ResultBuff  五次测试结果
+CVBuff	变异系数CV
+CoeBuff	最后的校正系数；
+ItemType 五项数据的编号
+
+**************************************************/
+void CCalibrationView::DealWithData(uchar CurCalMode, CString ResultBuff[5], CString MeanBuff[5], uchar CVBuff[5], uchar CoeBuff[5], int ItemType,int meanIndex)
+//void CCalibrationView::DealWithData(uchar CurCalMode, CString ResultBuff[5],  uchar CVBuff[5], uchar CoeBuff[5], int ItemType)
+
 {
 	unsigned int 	i;
 	uchar 		cal_fail = 0;
@@ -251,6 +269,7 @@ void CCalibrationView::DealWithData(uchar CurCalMode, CString ResultBuff[5], uch
 	if (cal_fail == 0)
 	{
 		MEAN = SUM / 5;	//X-bar
+		Mean[meanIndex].Format(L"%.2lf", MEAN);
 		for (i = 0; i < ac_index; i++)
 		{
 			ftmp = _wtof(ResultBuff[i]);
@@ -275,6 +294,7 @@ void CCalibrationView::DealWithData(uchar CurCalMode, CString ResultBuff[5], uch
 				sprintf((char*)CVBuff, "*.**");
 			}
 			if (CV < 4.0)		//有什么依据没有4 xx22
+			//if (CV<40)
 			{
 				COE = atof((const char*)ref_ac[ItemType])*systemcfg.calibration[modeTemp][ItemType] / MEAN;	//原有系数的基础上再乘以一个新系数
 
@@ -283,7 +303,8 @@ void CCalibrationView::DealWithData(uchar CurCalMode, CString ResultBuff[5], uch
 				else if (COE < 0.70)	//依据是什么
 					COE = 0.70;
 				systemcfg.calibration[modeTemp][ItemType] = COE;
-				sprintf((char*)CoeBuff, "%.2f", COE);
+				//_tcscpy();
+				sprintf((char*)CoeBuff, "%.2lf", COE);
 			}
 			else
 				sprintf((char*)CoeBuff, "***");
@@ -298,27 +319,32 @@ void CCalibrationView::DealWithData(uchar CurCalMode, CString ResultBuff[5], uch
 
 void CCalibrationView::DealWithWBC(uchar CurCalMode)
 {
-	DealWithData(CurCalMode, wbc_buff, wbc_cvbuff, wbc_coebuff, CAL_WBCF);
+	DealWithData(CurCalMode, wbc_buff,Mean, wbc_cvbuff, wbc_coebuff, CAL_WBCF,0);
+	//DealWithData(CurCalMode, wbc_buff, wbc_cvbuff, wbc_coebuff, CAL_WBCF);
 }
 
 void CCalibrationView::DealWithRBC(uchar CurCalMode)
 {
-	DealWithData(CurCalMode, rbc_buff, rbc_cvbuff, rbc_coebuff, CAL_RBCF);
+	DealWithData(CurCalMode, rbc_buff, Mean, rbc_cvbuff, rbc_coebuff, CAL_RBCF, 1);
+	//DealWithData(CurCalMode, rbc_buff,  rbc_cvbuff, rbc_coebuff, CAL_RBCF);
 }
 
 void CCalibrationView::DealWithHGB(uchar CurCalMode)
 {
-	DealWithData(CurCalMode, hgb_buff, hgb_cvbuff, hgb_coebuff, CAL_HGBF);
+	DealWithData(CurCalMode, hgb_buff, Mean, hgb_cvbuff, hgb_coebuff, CAL_HGBF, 2);
+	//DealWithData(CurCalMode, hgb_buff, hgb_cvbuff, hgb_coebuff, CAL_HGBF);
 }
 
 void CCalibrationView::DealWithMCV(uchar CurCalMode)
 {
-	DealWithData(CurCalMode, mcv_buff, mcv_cvbuff, mcv_coebuff, CAL_MCVF);
+	DealWithData(CurCalMode, mcv_buff, Mean, mcv_cvbuff, mcv_coebuff, CAL_MCVF, 3);
+	//DealWithData(CurCalMode, mcv_buff,  mcv_cvbuff, mcv_coebuff, CAL_MCVF);
 }
 
 void CCalibrationView::DealWithPLT(uchar CurCalMode)
 {
-	DealWithData(CurCalMode, plt_buff, plt_cvbuff, plt_coebuff, CAL_PLTF);
+	DealWithData(CurCalMode, plt_buff, Mean, plt_cvbuff, plt_coebuff, CAL_PLTF, 4);
+	//DealWithData(CurCalMode, plt_buff, plt_cvbuff, plt_coebuff, CAL_PLTF);
 }
 
 void CCalibrationView::OnAutoCalibrateStart()
@@ -326,6 +352,8 @@ void CCalibrationView::OnAutoCalibrateStart()
 	// TODO:  在此添加控件通知处理程序代码
 	
 }
+
+//获取定标靶值
 BOOL  CCalibrationView::GetRefValue()
 {
 	CString temp[5];
@@ -338,6 +366,7 @@ BOOL  CCalibrationView::GetRefValue()
 		{
 			nametemp[i] += "靶值为空";
 			MessageBox(nametemp[i]);
+			return FALSE;
 		}
 		strcpy((char*)ref_ac[i], W2A(temp[i]));
 		if ((_wtof(temp[i]) <= 0) && (_wtof(temp[i]) > 1000))
@@ -362,14 +391,47 @@ void CCalibrationView::ShowCalibrationInfo()
 		//strcpy((char*)hgb_buff[ac_index - 1], sampledata.rbcdata.hgb);
 		//strcpy((char*)mcv_buff[ac_index - 1], sampledata.rbcdata.mcv);
 		//strcpy((char*)plt_buff[ac_index - 1], sampledata.pltdata.plt);
-		wbc_buff[ac_index - 1].Format(L"%d",sampledata.wbcdata.wbc);
-		rbc_buff[ac_index - 1].Format(L"%d",sampledata.rbcdata.rbc);
-		hgb_buff[ac_index - 1].Format(L"%d",sampledata.rbcdata.hgb);
-		mcv_buff[ac_index - 1].Format(L"%d",sampledata.rbcdata.mcv);
-		plt_buff[ac_index - 1].Format(L"%d",sampledata.pltdata.plt);
+
+		//wbc_buff[ac_index - 1].Format(L"%.2f",sampledata.wbcdata.wbc);
+		//rbc_buff[ac_index - 1].Format(L"%.2f",sampledata.rbcdata.rbc);
+		//hgb_buff[ac_index - 1].Format(L"%.2f",sampledata.rbcdata.hgb);
+		//mcv_buff[ac_index - 1].Format(L"%.2f",sampledata.rbcdata.mcv);
+		//plt_buff[ac_index - 1].Format(L"%.2f",sampledata.pltdata.plt);
+		CString timeTemp;		
+		time(&systime);
+		caltime = localtime(&systime);		
+		timeTemp.Format(L"%04d-%02d-%02d %02d : %02d", caltime->tm_year + 1900, caltime->tm_mon + 1, caltime->tm_mday, caltime->tm_hour, caltime->tm_min);
+		
+		CString name;
+		switch (operator_right)
+		{
+		case  0:
+			name = "Administrator";
+			break;
+		case 1:
+			name = "Engineer";
+			break;
+		case 2:
+			name = "Doctor";
+			break;
+		case 3:
+			name = "Operator";
+			break;
+		default:
+			name = "Sinnowa";
+			break;
+		}
+
+		wbc_buff[ac_index - 1]=sampledata.wbcdata.wbc;
+		rbc_buff[ac_index - 1]=sampledata.rbcdata.rbc;
+		hgb_buff[ac_index - 1]=sampledata.rbcdata.hgb;
+		mcv_buff[ac_index - 1]=sampledata.rbcdata.mcv;
+		plt_buff[ac_index - 1]=sampledata.pltdata.plt;
 
 		for (int i = 0; i < ac_index; i++)
 		{
+			m_CalibrationList.SetItemText(i, 1, name);
+			m_CalibrationList.SetItemText(i, 2, timeTemp);
 			m_CalibrationList.SetItemText(i,3, wbc_buff[i]);
 			m_CalibrationList.SetItemText(i, 4, rbc_buff[i]);
 			m_CalibrationList.SetItemText(i, 5, hgb_buff[i]);
@@ -379,7 +441,7 @@ void CCalibrationView::ShowCalibrationInfo()
 	}
 }
 
-
+//更新并显示定标因子coe
 void CCalibrationView::UpdateCalibrate()
 {
 	uchar CurCalMode;
@@ -391,17 +453,36 @@ void CCalibrationView::UpdateCalibrate()
 	DealWithHGB(CurCalMode);
 	DealWithMCV(CurCalMode);
 	DealWithPLT(CurCalMode);
-	m_CoefficientList.SetItemText(2, 1,(LPCTSTR)wbc_cvbuff);
-	m_CoefficientList.SetItemText(2, 2, (LPCTSTR)rbc_cvbuff);
-	m_CoefficientList.SetItemText(2, 3, (LPCTSTR)hgb_cvbuff);
-	m_CoefficientList.SetItemText(2, 4, (LPCTSTR)mcv_cvbuff);
-	m_CoefficientList.SetItemText(2, 5, (LPCTSTR)plt_cvbuff);
 
-	m_CoefficientList.SetItemText(4, 1,(LPCTSTR)wbc_coebuff);
-	m_CoefficientList.SetItemText(4, 2, (LPCTSTR)rbc_coebuff);
-	m_CoefficientList.SetItemText(4, 3, (LPCTSTR)hgb_coebuff);
-	m_CoefficientList.SetItemText(4, 4, (LPCTSTR)mcv_coebuff);
-	m_CoefficientList.SetItemText(4, 5, (LPCTSTR)plt_coebuff);
+	CString str;
+	
+	str = wbc_cvbuff;
+	m_CoefficientList.SetItemText(2, 1,str);
+	str = rbc_cvbuff;
+	m_CoefficientList.SetItemText(2, 2, str);
+	str = hgb_cvbuff;
+	m_CoefficientList.SetItemText(2, 3, str);
+	str = mcv_cvbuff;
+	m_CoefficientList.SetItemText(2, 4, str);
+	str = plt_cvbuff;
+	m_CoefficientList.SetItemText(2, 5, str);
+
+	str = wbc_coebuff;
+	m_CoefficientList.SetItemText(4, 1,str);
+	str = rbc_coebuff;
+	m_CoefficientList.SetItemText(4, 2, str);
+	str = hgb_coebuff;
+	m_CoefficientList.SetItemText(4, 3, str);
+	str = mcv_coebuff;
+	m_CoefficientList.SetItemText(4, 4, str);
+	str = plt_coebuff;
+	m_CoefficientList.SetItemText(4, 5, str);
+
+	for (int i = 0; i < 5; i++){
+		m_CoefficientList.SetItemText(1, i+1, Mean[i]);
+	}
+
+
 
 }
 
@@ -427,6 +508,7 @@ void CCalibrationView::AutoCalibrationRun()
 void CCalibrationView::OnCalibrationTest()
 {
 	// TODO:  在此添加控件通知处理程序代码
+
 	if (!GetRefValue())
 	{
 		MessageBox(L"请输入靶值!", L"警告!");
@@ -434,6 +516,17 @@ void CCalibrationView::OnCalibrationTest()
 	}
 	if (1 == ref_flag && ac_index < 5)
 		AutoCalibrationRun();
+
+
+	///************************以下为测试部分代码************************/
+	//initData();
+	//ac_index = 5;
+	//
+	//
+	//UpdateCalibrate();
+
+
+
 }
 
 
@@ -452,7 +545,8 @@ void CCalibrationView::OnTimer(UINT_PTR nIDEvent)
 		sdata_cmd[0] = SPI_CMD_REQDSP_STATUS;
 		PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 		PC_RECEIVE_FRAME(rdata_state, SPI_TYPE_STATE);
-		SendMessage(MSG_ACKSPI, rdata_state[0], 0);//将查询的状态发送到SPI消息响应处理
+		SendMessage(WM_ACKSPI, rdata_state[0], 0);//将查询的状态发送到SPI消息响应处理
+		//SendMessage(MSG_ACKSPI, rdata_state[0], 0);//将查询的状态发送到SPI消息响应处理
 		TRACE("MSG_TIMER:POLLTIME is due -------------#\n");
 	default:
 			break;
@@ -486,6 +580,13 @@ afx_msg LRESULT CCalibrationView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			ac_index += 1;
 
 			CurStatusMess = Free;
+			//此处要更新数据
+
+			ShowCalibrationInfo();
+			if (ac_index == 5)
+				UpdateCalibrate();
+
+
 			//刷新图形等待流程结束
 			PC_status = WAITING_TEST_OVER;
 			SetTimer(POLLTIME, SPI_POLL_TIME3000,0);
@@ -578,6 +679,7 @@ void CCalibrationView::OnNMClickCoefficientList(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
+//将选择的模式保存到变量
 void CCalibrationView::Showtarget()
 {
 	CString calibrationtemp[4][5];
@@ -641,4 +743,32 @@ void CCalibrationView::OnBnClickedAutoTestmodeRadio2()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	Showtarget();
+}
+
+
+void CCalibrationView::initData(){
+	//_tcscpy(items_shortname[i].GetBuffer(items_shortname_temp[i].GetLength()+1), items_shortname_temp[i]);
+
+	//CString wbc_buff_temp[5] = { "15.43", "3.22", "97.6", "90.8", "112" };
+	//CString rbc_buff_temp[5] = { "15.56", "3.22", "98.3", "111.7", "159" };
+	//CString hgb_buff_temp[5] = { "15.73", "3.22", "102.3", "82.6", "105" };
+	//CString mcv_buff_temp[5] = { "13.97", "3.53", "108.00", "100.1", "160" };
+	//CString plt_buff_temp[5] = { "0.00", "2.54", "117.8", "87.3", "153" };
+
+	USES_CONVERSION;
+	CString ref_ac_temp[5] = {"12.5","3.14","104.8","94.5","137.8"};
+	CString wbc_buff_temp[5] = { "15.43", "15.56", "15.73", "13.97", "0.00" };
+	CString rbc_buff_temp[5] = { "3.22", "3.22","3.22", "3.53",  "2.54"   };
+	CString hgb_buff_temp[5] = { "97.6", "98.3", "102.3","108.00" , "117.8"};
+	CString mcv_buff_temp[5] = { "90.8", "111.7", "82.6", "100.1" , "87.3"};
+	CString plt_buff_temp[5] = { "112", "159",  "105", "160", "153" };
+
+	for (int i = 0; i < 5; i++){
+		strcpy((char*)ref_ac[i], W2A(ref_ac_temp[i]));
+		_tcscpy(wbc_buff[i].GetBuffer(wbc_buff[i].GetLength() + 1), wbc_buff_temp[i]);
+		_tcscpy(rbc_buff[i].GetBuffer(rbc_buff[i].GetLength() + 1), rbc_buff_temp[i]);
+		_tcscpy(hgb_buff[i].GetBuffer(hgb_buff[i].GetLength() + 1), hgb_buff_temp[i]);
+		_tcscpy(mcv_buff[i].GetBuffer(mcv_buff[i].GetLength() + 1), mcv_buff_temp[i]);
+		_tcscpy(plt_buff[i].GetBuffer(plt_buff[i].GetLength() + 1), plt_buff_temp[i]);
+	}	
 }

@@ -29,6 +29,10 @@ public:
 	void					OnInitRadarChart3();
 	void					OnInitRadarChart4();
 	void					OnInitRadarChart5();
+
+	int GetLatestResult(int controltype, int controlfile);
+	int GetQcEditInfo(int controltype, int controlfile);
+
 	CBCGPChartCtrl			m_RadarChart1;
 	CBCGPChartCtrl			m_RadarChart2;
 	CBCGPChartCtrl			m_RadarChart3;
@@ -39,8 +43,13 @@ public:
 	CBCGPChartCtrl			m_RadarChart8;
 	CMyBCGPListCtrl			m_QualityMaterialList;
 	BOOL					OnInitQualityMaterialList();
+	BOOL					OnUpdateQualityMaterialList();
 	CFont					textfont;
+	double data[26];
+	CString number;
+	CString deadline;
 
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnClose();
+	void UpdateView();
 };

@@ -260,6 +260,58 @@ int IS_NO_exist(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs,int *param)
 	}
 	return 0;
 }
+
+int loaddoctor(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs, doctor_info &param)
+{
+	TRACE("loadpatient()====================\n");
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空\n");
+			return TRUE;
+		}
+		if ((!m_pRs->adoEOF))
+		{
+			_variant_t var;
+			char *temp;
+			USES_CONVERSION;
+			//var = m_pRs->GetCollect("doct_id");
+			//if (var.vt != VT_NULL)
+			//{
+			//	long id = (long)m_pRs->GetCollect("doct_id");
+			//	(param).id = id;
+			//}
+
+			var = m_pRs->GetCollect("name");
+			if (var.vt != VT_NULL)
+			{
+				CString name = m_pRs->GetCollect("name");
+				temp = W2A(name);
+				strncpy(param.name, temp, sizeof(param.name) / sizeof(char));
+				//CString name_test;//
+				//name_test = param.name;//关于带有中文的   注意 注意  注意  此处是个测试
+			}
+			var = m_pRs->GetCollect("doct_memo");
+			if (var.vt != VT_NULL)
+			{
+				char memo = m_pRs->GetCollect("doct_memo");
+				//(param).sex = sex;
+				strncpy(param.memo, temp, sizeof(param.memo) / sizeof(char));
+			}
+		}
+	}
+	catch (_com_error &e)
+	{
+		TRACE("loadpatient函数程序异常\n");
+	}
+	TRACE("End:::loadpatient()====================\n");
+	return 0;
+}
+
 //------------------------------------------------
 //回调函数，读取保存的数据测试用
 int loadpatient(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs, patient_info &param)
@@ -333,6 +385,13 @@ int loadpatient(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs, patient_info &pa
 				CString technician = m_pRs->GetCollect("technicia");
 				temp = W2A(technician);
 				strncpy(param.technician, temp, sizeof(param.technician) / sizeof(char));
+			}
+			var = m_pRs->GetCollect("doctor");
+			if (var.vt != VT_NULL)
+			{
+				CString doctor = m_pRs->GetCollect("doctor");
+				temp = W2A(doctor);
+				strncpy(param.doctor, temp, sizeof(param.doctor) / sizeof(char));
 			}
 		}
 	}
@@ -1136,6 +1195,9 @@ int AddSampleRecord(sample_info *psampledata)
 		number.Format(_T("%d"), psampledata->number);
 		CString time;
 		time.Format(_T("%d"), psampledata->time);
+		if (psampledata->time < 100000){
+			time = "0" + time;
+		}
 		CString mode;
 		mode.Format(_T("%d"), psampledata->mode);
 		CString border1;
@@ -1245,6 +1307,9 @@ int AddSampleRecord(sample_info *psampledata)
 		number.Format(_T("%d"), psampledata->number);
 		CString time;
 		time.Format(_T("%d"), psampledata->time);
+		if (psampledata->time < 100000){
+			time = "0" + time;
+		}
 		CString mode;
 		mode.Format(_T("%d"), psampledata->mode);
 		CString border1;
@@ -1317,9 +1382,12 @@ int QcLjXXrEditFileAdd(qc_edit_data_info *pqcLjXXrEditData)
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
 	CString qctype;
-	qctype.Format((*pqcLjXXrEditData).qctype);
+	//qctype.Format((*pqcLjXXrEditData).qctype);
+	qctype = (*pqcLjXXrEditData).qctype;
+	//TRACE("***###\nqctype=%s\n",qctype);
 	CString filenum;
-	filenum.Format((*pqcLjXXrEditData).filenum);
+	//filenum.Format((*pqcLjXXrEditData).filenum);
+	filenum = (*pqcLjXXrEditData).filenum;
 	CString Number;
 	Number = ChartsToCString((*pqcLjXXrEditData).Number, sizeof((*pqcLjXXrEditData).Number)/sizeof(char));
 	CString Deadline;
@@ -1429,16 +1497,16 @@ int QcLjXXrEditFileAdd(qc_edit_data_info *pqcLjXXrEditData)
 	CString pltsd_pct;
 	pltsd_pct = ChartsToCString((*pqcLjXXrEditData).pltsd.pct, sizeof((*pqcLjXXrEditData).pltsd.pct) / sizeof(char));
 	CString insertqceditdata = _T("insert into [qceditdata]([qctype],[filenum],[number],[deadline],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[WBC_SD],[LYMP_SD],[NEUP_SD],[MONOP_SD],[EOSP_SD],[BASOP_SD],[ALYP_SD],[LICP_SD],[LYM_SD],[NEU_SD],[MONO_SD],[EOS_SD],[BASO_SD],[ALY_SD],[LIC_SD],[RBC_SD],[HGB_SD],[HCT_SD],[MCV_SD],[MCH_SD],[MCHC_SD],[RDW_SD],[PLT_SD],[MPV_SD],[PDW_SD],[PCT_SD]) values('") + 
-		qctype + "' ,'" + filenum + "' ,'" + Number + "' ,'" + Deadline+ "' ,'" + 
-		wbctarget_wbc + "' ,'" + wbctarget_lymp + "' ,'" + wbctarget_neup + "' ,'" + wbctarget_monop + "' ,'" + wbctarget_eosp + "' ,'" +
-		wbctarget_basp + "' ,'" + wbctarget_alyp + "' ,'" + wbctarget_licp + "' ,'" + wbctarget_lym + "' ,'" + wbctarget_neu + "' ,'" +
-		wbctarget_mono + "' ,'" + wbctarget_eos + "' ,'" + wbctarget_bas + "' ,'" + wbctarget_aly + "' ,'" + wbctarget_lic + "' ,'" +
-		rbctarget_rbc + "' ,'" + rbctarget_hgb + "' ,'" + rbctarget_hct + "' ,'" + rbctarget_mcv + "' ,'" + rbctarget_mch + "' ,'" +
-		rbctarget_mchc + "' ,'" + rbctarget_rdw + "' ,'" + plttarget_plt + "' ,'" + plttarget_mpv + "' ,'" + plttarget_pdw + "' ,'" +
-		plttarget_pct + "' ,'" + wbcsd_wbc + "' ,'" + wbcsd_lymp + "' ,'" + wbcsd_neup + "' ,'" + wbcsd_monop + "' ,'" + wbcsd_eosp + "' ,'" +
-		wbcsd_basp + "' ,'" + wbcsd_alyp + "' ,'" + wbcsd_licp + "' ,'" + wbcsd_lym + "' ,'" + wbcsd_neu + "' ,'" + wbcsd_mono + "' ,'" + wbcsd_eos + "' ,'" +
-		wbcsd_bas + "' ,'" + wbcsd_aly + "' ,'" + wbcsd_lic + "' ,'" + rbcsd_rbc + "' ,'" + rbcsd_hgb + "' ,'" + rbcsd_hct + "' ,'" + rbcsd_mcv + "' ,'" +
-		rbcsd_mch + "' ,'" + rbcsd_mchc + "' ,'" + rbcsd_rdw + "' ,'" + pltsd_plt + "' ,'" + pltsd_mpv + "' ,'" + pltsd_pdw + "' ,'" + pltsd_pct + "');";
+		qctype.Trim() + "' ,'" + filenum.Trim() + "' ,'" + Number.Trim() + "' ,'" + Deadline.Trim() + "' ,'" +
+		wbctarget_wbc.Trim() + "' ,'" + wbctarget_lymp.Trim() + "' ,'" + wbctarget_neup.Trim() + "' ,'" + wbctarget_monop.Trim() + "' ,'" + wbctarget_eosp.Trim() + "' ,'" +
+		wbctarget_basp.Trim() + "' ,'" + wbctarget_alyp.Trim() + "' ,'" + wbctarget_licp.Trim() + "' ,'" + wbctarget_lym.Trim() + "' ,'" + wbctarget_neu.Trim() + "' ,'" +
+		wbctarget_mono.Trim() + "' ,'" + wbctarget_eos.Trim() + "' ,'" + wbctarget_bas.Trim() + "' ,'" + wbctarget_aly.Trim() + "' ,'" + wbctarget_lic.Trim() + "' ,'" +
+		rbctarget_rbc.Trim() + "' ,'" + rbctarget_hgb.Trim() + "' ,'" + rbctarget_hct.Trim() + "' ,'" + rbctarget_mcv.Trim() + "' ,'" + rbctarget_mch.Trim() + "' ,'" +
+		rbctarget_mchc.Trim() + "' ,'" + rbctarget_rdw.Trim() + "' ,'" + plttarget_plt.Trim() + "' ,'" + plttarget_mpv.Trim() + "' ,'" + plttarget_pdw.Trim() + "' ,'" +
+		plttarget_pct.Trim() + "' ,'" + wbcsd_wbc.Trim() + "' ,'" + wbcsd_lymp.Trim() + "' ,'" + wbcsd_neup.Trim() + "' ,'" + wbcsd_monop.Trim() + "' ,'" + wbcsd_eosp.Trim() + "' ,'" +
+		wbcsd_basp.Trim() + "' ,'" + wbcsd_alyp.Trim() + "' ,'" + wbcsd_licp.Trim() + "' ,'" + wbcsd_lym.Trim() + "' ,'" + wbcsd_neu.Trim() + "' ,'" + wbcsd_mono.Trim() + "' ,'" + wbcsd_eos.Trim() + "' ,'" +
+		wbcsd_bas.Trim() + "' ,'" + wbcsd_aly.Trim() + "' ,'" + wbcsd_lic.Trim() + "' ,'" + rbcsd_rbc.Trim() + "' ,'" + rbcsd_hgb.Trim() + "' ,'" + rbcsd_hct.Trim() + "' ,'" + rbcsd_mcv.Trim() + "' ,'" +
+		rbcsd_mch.Trim() + "' ,'" + rbcsd_mchc.Trim() + "' ,'" + rbcsd_rdw.Trim() + "' ,'" + pltsd_plt.Trim() + "' ,'" + pltsd_mpv.Trim() + "' ,'" + pltsd_pdw.Trim() + "' ,'" + pltsd_pct.Trim() + "');";
 	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
 		return -1;
 	ExeSql(m_pDB, m_pRs, insertqceditdata);
@@ -1465,6 +1533,7 @@ int QcLjXXrEditFileExistReset(qc_edit_data_info *pqcLjXXrEditData)
 		return -1;
 	CString qctype;
 	qctype = (*pqcLjXXrEditData).qctype;
+	//qctype.Format((*pqcLjXXrEditData).qctype);//张文浩
 	CString filenum;
 	filenum = (*pqcLjXXrEditData).filenum;
 	CString Number;
@@ -1576,20 +1645,21 @@ int QcLjXXrEditFileExistReset(qc_edit_data_info *pqcLjXXrEditData)
 	pltsd_pdw = ChartsToCString((*pqcLjXXrEditData).pltsd.pdw, sizeof((*pqcLjXXrEditData).pltsd.pdw) / sizeof(char));
 	CString pltsd_pct;
 	pltsd_pct = ChartsToCString((*pqcLjXXrEditData).pltsd.pct, sizeof((*pqcLjXXrEditData).pltsd.pct) / sizeof(char));
-	CString DELedit = _T("delete from qceditdata where qctype ='") + qctype + "'and filenum ='" + filenum+ "'";
+	CString DELedit = _T("delete from qceditdata where qctype ='") + qctype + "' and filenum ='" + filenum+ "'";
 	ExeSql(m_pDB, m_pRs, DELedit);
-	CString DELresult = _T("delete from qcresultdata where qctype =") + qctype + "'and filenum ='" + filenum + "'";
+	CString DELresult = _T("delete from qcresultdata where qctype ='") + qctype + "' and filenum ='" + filenum + "'";
 	ExeSql(m_pDB, m_pRs, DELresult);
-	CString insertqceditdata = _T("insert into [qceditdata]([qctype],[filenum],[number],[deadline],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[WBC_SD],[LYMP_SD],[NEUP_SD],[MONOP_SD],[EOSP_SD],[BASOP_SD],[ALYP_SD],[LICP_SD],[LYM_SD],[NEU_SD],[MONO_SD],[EOS_SD],[BASO_SD],[ALY_SD],[LIC_SD],[RBC_SD],[HGB_SD],[HCT_SD],[MCV_SD],[MCH_SD],[MCHC_SD],[RDW_SD],[PLT_SD],[MPV_SD],[PDW_SD],[PCT_SD]) values('") + qctype + "' ,'" + filenum + "' ,'" + Number + "' ,'" + Deadline + "' ,'" +
-		wbctarget_wbc + "' ,'" + wbctarget_lymp + "' ,'" + wbctarget_neup + "' ,'" + wbctarget_monop + "' ,'" + wbctarget_eosp + "' ,'" +
-		wbctarget_basp + "' ,'" + wbctarget_alyp + "' ,'" + wbctarget_licp + "' ,'" + wbctarget_lym + "' ,'" + wbctarget_neu + "' ,'" +
-		wbctarget_mono + "' ,'" + wbctarget_eos + "' ,'" + wbctarget_bas + "' ,'" + wbctarget_aly + "' ,'" + wbctarget_lic + "' ,'" +
-		rbctarget_rbc + "' ,'" + rbctarget_hgb + "' ,'" + rbctarget_hct + "' ,'" + rbctarget_mcv + "' ,'" + rbctarget_mch + "' ,'" +
-		rbctarget_mchc + "' ,'" + rbctarget_rdw + "' ,'" + plttarget_plt + "' ,'" + plttarget_mpv + "' ,'" + plttarget_pdw + "' ,'" +
-		plttarget_pct + "' ,'" + wbcsd_wbc + "' ,'" + wbcsd_lymp + "' ,'" + wbcsd_neup + "' ,'" + wbcsd_monop + "' ,'" + wbcsd_eosp + "' ,'" +
-		wbcsd_basp + "' ,'" + wbcsd_alyp + "' ,'" + wbcsd_licp + "' ,'" + wbcsd_lym + "' ,'" + wbcsd_neu + "' ,'" + wbcsd_mono + "' ,'" + wbcsd_eos + "' ,'" +
-		wbcsd_bas + "' ,'" + wbcsd_aly + "' ,'" + wbcsd_lic + "' ,'" + rbcsd_rbc + "' ,'" + rbcsd_hgb + "' ,'" + rbcsd_hct + "' ,'" + rbcsd_mcv + "' ,'" +
-		rbcsd_mch + "' ,'" + rbcsd_mchc + "' ,'" + rbcsd_rdw + "' ,'" + pltsd_plt + "' ,'" + pltsd_mpv + "' ,'" + pltsd_pdw + "' ,'" + pltsd_pct + "');";
+	CString insertqceditdata = _T("insert into [qceditdata]([qctype],[filenum],[number],[deadline],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[WBC_SD],[LYMP_SD],[NEUP_SD],[MONOP_SD],[EOSP_SD],[BASOP_SD],[ALYP_SD],[LICP_SD],[LYM_SD],[NEU_SD],[MONO_SD],[EOS_SD],[BASO_SD],[ALY_SD],[LIC_SD],[RBC_SD],[HGB_SD],[HCT_SD],[MCV_SD],[MCH_SD],[MCHC_SD],[RDW_SD],[PLT_SD],[MPV_SD],[PDW_SD],[PCT_SD]) values('") + qctype.Trim() + "' ,'" + filenum.Trim() + "' ,'" + Number.Trim() + "' ,'" + Deadline.Trim() + "' ,'" +
+		wbctarget_wbc.Trim() + "' ,'" + wbctarget_lymp.Trim() + "' ,'" + wbctarget_neup.Trim() + "' ,'" + wbctarget_monop.Trim() + "' ,'" + wbctarget_eosp.Trim() + "' ,'" +
+		wbctarget_basp.Trim() + "' ,'" + wbctarget_alyp.Trim() + "' ,'" + wbctarget_licp.Trim() + "' ,'" + wbctarget_lym.Trim() + "' ,'" + wbctarget_neu.Trim() + "' ,'" +
+		wbctarget_mono.Trim() + "' ,'" + wbctarget_eos.Trim() + "' ,'" + wbctarget_bas.Trim() + "' ,'" + wbctarget_aly.Trim() + "' ,'" + wbctarget_lic.Trim() + "' ,'" +
+		rbctarget_rbc.Trim() + "' ,'" + rbctarget_hgb.Trim() + "' ,'" + rbctarget_hct.Trim() + "' ,'" + rbctarget_mcv.Trim() + "' ,'" + rbctarget_mch.Trim() + "' ,'" +
+		rbctarget_mchc.Trim() + "' ,'" + rbctarget_rdw.Trim() + "' ,'" + plttarget_plt.Trim() + "' ,'" + plttarget_mpv.Trim() + "' ,'" + plttarget_pdw.Trim() + "' ,'" +
+		plttarget_pct.Trim() + "' ,'" + wbcsd_wbc.Trim() + "' ,'" + wbcsd_lymp.Trim() + "' ,'" + wbcsd_neup.Trim() + "' ,'" + wbcsd_monop.Trim() + "' ,'" + wbcsd_eosp.Trim() + "' ,'" +
+		wbcsd_basp.Trim() + "' ,'" + wbcsd_alyp.Trim() + "' ,'" + wbcsd_licp.Trim() + "' ,'" + wbcsd_lym.Trim() + "' ,'" + wbcsd_neu.Trim() + "' ,'" + wbcsd_mono.Trim() + "' ,'" + wbcsd_eos.Trim() + "' ,'" +
+		wbcsd_bas.Trim() + "' ,'" + wbcsd_aly.Trim() + "' ,'" + wbcsd_lic.Trim() + "' ,'" + rbcsd_rbc.Trim() + "' ,'" + rbcsd_hgb.Trim() + "' ,'" + rbcsd_hct.Trim() + "' ,'" + rbcsd_mcv.Trim() + "' ,'" +
+		rbcsd_mch.Trim() + "' ,'" + rbcsd_mchc.Trim() + "' ,'" + rbcsd_rdw.Trim() + "' ,'" + pltsd_plt.Trim() + "' ,'" + pltsd_mpv.Trim() + "' ,'" + pltsd_pdw.Trim() + "' ,'" + pltsd_pct.Trim() + "');";
+	rbcsd_mch.Trim() + "' ,'" + rbcsd_mchc.Trim() + "' ,'" + rbcsd_rdw.Trim() + "' ,'" + pltsd_plt.Trim() + "' ,'" + pltsd_mpv.Trim() + "' ,'" + pltsd_pdw.Trim() + "' ,'" + pltsd_pct.Trim() + "');";
 	ExeSql(m_pDB, m_pRs, insertqceditdata);
 	CloseDataBase(m_pDB, m_pRs);
 	return 0;
@@ -1677,7 +1747,7 @@ int AddQcLjXXrResult(qcresult_info *qcresultdata)
 	CString basoflg;
 	basoflg = ChartsToCString(qcresultdata->basoflg, sizeof(qcresultdata->basoflg) / sizeof(char));
 	CString rbcflg;
-	rbcgraph = ChartsToCString(qcresultdata->rbcflg, sizeof(qcresultdata->rbcflg) / sizeof(char));
+	rbcflg = ChartsToCString(qcresultdata->rbcflg, sizeof(qcresultdata->rbcflg) / sizeof(char));
 	CString pltflg;
 	pltflg = ChartsToCString(qcresultdata->pltflg, sizeof(qcresultdata->pltflg) / sizeof(char));
 	CString qctype;
@@ -1685,21 +1755,29 @@ int AddQcLjXXrResult(qcresult_info *qcresultdata)
 	CString filenum;
 	filenum = qcresultdata->filenum;
 	CString time1;
-	CString date;
-	date = ChartsToCString(qcresultdata->date, sizeof(qcresultdata->date) / sizeof(char));
+	
+	//date = ChartsToCString(qcresultdata->date, sizeof(qcresultdata->date) / sizeof(char));
 	time(&systime);
 	caltime = localtime(&systime);
 	qcresultdata->time = (caltime->tm_hour) * 10000 + (caltime->tm_min) * 100 + caltime->tm_sec;
+	
+	sprintf(qcresultdata->date, "%04d-%02d-%02d", caltime->tm_year + 1900, caltime->tm_mon + 1, caltime->tm_mday);//mny,20171219
+	
 	time1.Format(_T("%d"), qcresultdata->time);
 	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
 		return -1;
-	CString insertqcresult = _T("insert into [qcresultdata]([row],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[lmne],[basograph],[rbcgraph],[pltgraph],[lmneflg],[basoflg],[rbcflg],[pltflg],[qctype],[filenum],[time],[data]) values('") + row + "' ,'" + wbcdata_wbc + "' ,'" + wbcdata_lymp + "' ,'" + wbcdata_neup + "' ,'" +
+	CString insertqcresult = _T("insert into [qcresultdata]([row],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[lmne],[basograph],[rbcgraph],[pltgraph],[lmneflg],[basoflg],[rbcflg],[pltflg],[qctype],[filenum],[time],[date]) values(") + row + " ,'" + wbcdata_wbc + "' ,'" + wbcdata_lymp + "' ,'" + wbcdata_neup + "' ,'" +
 		wbcdata_monop + "' ,'" + wbcdata_eosp + "' ,'" + wbcdata_basp + "' ,'" + wbcdata_alyp + "' ,'" + wbcdata_licp + "' ,'" + wbcdata_lym + "' ,'" +
 		wbcdata_neu + "' ,'" + wbcdata_mono + "' ,'" + wbcdata_eos + "' ,'" + wbcdata_bas + "' ,'" + wbcdata_aly + "' ,'" + wbcdata_lic + "' ,'" +
 		rbcdata_rbc + "' ,'" + rbcdata_hgb + "' ,'" + rbcdata_hct + "' ,'" + rbcdata_mcv + "' ,'" + rbcdata_mch + "' ,'" + rbcdata_mchc + "' ,'" +
 		rbcdata_rdw + "' ,'" + pltdata_plt + "' ,'" + pltdata_mpv + "' ,'" + pltdata_pdw + "' ,'" + pltdata_pct + "' ,'" + lmnegraph + "' ,'" + 
 		basograph + "' ,'" + rbcgraph + "' ,'" + pltgraph + "' ,'" + lmneflg + "' ,'" + basoflg + "' ,'" + rbcflg + "' ,'" + pltflg + "' ,'" 
-		+ qctype + "' ,'" + filenum + "' ,'" + time1 + "' ,'" + date + "');";
+		+ qctype + "' ,'" + filenum + "' ,'" + time1 + "' ,'" + qcresultdata->date + "');";
+	
+	//[lmne],[basograph],,[pltgraph]
+	//+ lmnegraph + "' ,'" + basograph + "' ,'" +  + "' ,'"+pltgraph
+	CString testtesttest = _T("insert into [qcresultdata]([rbcgraph]) values('")  + rbcgraph + "');";
+	//ExeSql(m_pDB, m_pRs, insertqcresult);
 	ExeSql(m_pDB, m_pRs, insertqcresult);
 	CloseDataBase(m_pDB, m_pRs);
 	return 0;
@@ -1713,19 +1791,19 @@ int AddQcLjXXrResult(qcresult_info *qcresultdata)
 *Data Access:
 *History:
 *************************************************/
-int DelQcLjXXrResult(unsigned char qctypeparam, unsigned char filenumparam, unsigned int rowparam)
+int DelQcLjXXrResult(unsigned int qctypeparam, unsigned int filenumparam, unsigned int rowparam)
 {
 	CString filename;
 	filename.Format(_T("appdata.accdb"));
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
 	CString qctypeparam1;
-	qctypeparam1.Format(qctypeparam);
+	qctypeparam1.Format(L"%d",qctypeparam);
 	CString filenumparam1;
-	filenumparam1.Format(filenumparam);
+	filenumparam1.Format(L"%d",filenumparam);
 	CString rowparam1;
-	rowparam1.Format(rowparam);
-	CString DEL_QcRow = _T("delete from qcresultdata where qctype ='") + qctypeparam1 + "'and filenum ='" + filenumparam1 + "' and row ='" + rowparam1 + "'";
+	rowparam1.Format(L"%d",rowparam);
+	CString DEL_QcRow = _T("delete from qcresultdata where qctype ='") + qctypeparam1 + "'and filenum ='" + filenumparam1 + "' and row =" + rowparam1 + "";
 	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
 		return -1;
 	ExeSql(m_pDB, m_pRs, DEL_QcRow);

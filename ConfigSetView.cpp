@@ -19,7 +19,11 @@ CConfigSetView::CConfigSetView(CWnd* pParent /*=NULL*/)
 	m_treePage[2] = new	CUnitSetView;
 	m_treePage[3] = new	CRangeSetView;
 	m_treePage[4] = new	CThresholdSetView;
+
 	m_treePage[5] = new	CUploadSetView;
+	//m_treePage[5] = new	CQcFileSelectView;
+
+
 	m_treePage[6] = new	CPrintSetView;
 	m_treePage[7] = new	CReportSetView;
 	m_treePage[8] = new	CResetView;
@@ -37,7 +41,10 @@ CConfigSetView::CConfigSetView(CWnd* pParent /*=NULL*/)
 	SetView[2] = IDD_UNITSET;
 	SetView[3] = IDD_RANGESET;
 	SetView[4] = IDD_THRESHOLDSET;
+	
 	SetView[5] = IDD_UPLOADSET;
+	//SetView[5] = IDD_QC_FILE_SELECT;
+	
 	SetView[6] = IDD_PRINTSET;
 	SetView[7] = IDD_REPORTSET;
 	SetView[8] = IDD_RESET;
@@ -197,7 +204,7 @@ void CConfigSetView::SelectView(int nID)
 
 	if (Activeflg[nID] == false)
 	{
-		for (int i=0; i <16; i++)
+		for (int i = 0; i < 16; i++)
 		{
 			Activeflg[i] = false;
 		}
@@ -216,7 +223,17 @@ void CConfigSetView::SelectView(int nID)
 	GetClientRect(m_rect);
 	m_rect.left = 200;
 	m_rect.bottom = m_rect.bottom - 50;
-	m_treePage[nID]->MoveWindow(m_rect);
+
+	//m_treePage[nID].IsWindowVisible();
+	//CDialogEx		ee;
+	if ((m_treePage[nID]->GetSafeHwnd()) == NULL)
+	{
+		m_treePage[nID]->Create(SetView[nID], this);
+
+		m_treePage[nID]->ShowWindow(SW_SHOW);
+	}
+
+	m_treePage[nID]->MoveWindow(m_rect);//ø’÷∏’Î
 
 }
 

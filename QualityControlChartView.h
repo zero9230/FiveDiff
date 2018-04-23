@@ -14,7 +14,7 @@ public:
 	CQualityControlChartView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQualityControlChartView();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_QUALITY_CONTROL_CHART };
 
 protected:
@@ -47,11 +47,16 @@ public:
 	CBCGPChartCtrl  m_QualityLineChart4;
 	CMyBCGPListCtrl   m_materialInfolist;
 	bool			InitmaterialInfoList();
+	bool			UpdateMaterialInfoList();
 	CString			quality_table[28];
 
 	int				curpage;
 	afx_msg void	OnGraphUp();
 	afx_msg void	OnGraphDown();
+	afx_msg LRESULT OnRedraw(WPARAM, LPARAM);
+
+	void UpdateView();
+
 
 	CFont			textfont;
 	int				QcLjFileExistEdit;//0:文件没有编辑信息，1:文件有编辑信息
@@ -60,7 +65,9 @@ public:
 	int				GetDetail(int controltype, int controlfile);
 	void			UpdateMSC();
 	void			UpdateLUlimit();
-	float			upperlimit[26];//上限
-	float			lowerlimit[26];//下限
-	float			data[26][31];//质控结果
+	double			upperlimit[26];//上限
+	double			lowerlimit[26];//下限
+	double			data[26][31];//质控结果
+	CString number;
+	CString deadline;
 };

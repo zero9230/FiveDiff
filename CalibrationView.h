@@ -51,7 +51,8 @@ public:
 	CMyBCGPListCtrl m_CalibrationList;
 	CMyBCGPListCtrl m_CoefficientList;
 
-
+	CString Mean[5];//平均值
+	//CString TestTime[5];//测试时间
 	int e_Item;    //刚编辑的行  
 	int e_SubItem; //刚编辑的列  
 	CEdit m_WBCEdit;
@@ -69,7 +70,8 @@ public:
 	void	DealWithHGB(uchar CurCalMode);
 	void	DealWithMCV(uchar CurCalMode);
 	void	DealWithPLT(uchar CurCalMode);
-	void	DealWithData(uchar CurCalMode, CString ResultBuff[5], uchar CVBuff[5], uchar CoeBuff[5], int ItemType);
+	void	DealWithData(uchar CurCalMode, CString ResultBuff[5],CString MeanBuff[5], uchar CVBuff[5], uchar CoeBuff[5], int ItemType,int meanIndex);
+	//void	DealWithData(uchar CurCalMode, CString ResultBuff[5], uchar CVBuff[5], uchar CoeBuff[5], int ItemType);
 	void	ShowCalibrationInfo();
 	void	UpdateCalibrate();
 	void	Showtarget();
@@ -100,11 +102,16 @@ public:
 	int m_modeRadio;
 	int m_testmodeRadio;
 	afx_msg void OnBnClickedAutoModeRadio();
+
 	afx_msg void OnBnClickedAutoModeRadio2();
 	afx_msg void OnBnClickedAutoTestmodeRadio();
 	afx_msg void OnBnClickedAutoTestmodeRadio2();
 	afx_msg void OnCalibrationTest();
 	void		 UpdateTargetvalue();
+
+	void		initData();
+
+
 };
 
 

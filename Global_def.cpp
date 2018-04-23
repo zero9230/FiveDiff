@@ -57,7 +57,7 @@ unsigned int  Controltype;//L-J质控：0；X质控：1； X-R质控：2；
 unsigned int  Controlfile;//0,1,2,3,4,5,6,7,8对应文件1,2,3,4,5,6,7,8,9
 
 int				CurView;//当前界面
-HANDLE			SendMutex;//互斥量，控制发送消息
+HANDLE			SendMutex;//互斥锁，控制发送消息
 HANDLE			SendEvent;//互斥量，控制发送消息
 HANDLE			 TestmainEvent = NULL;//轮询条形码线程控制事件
 HANDLE			hEvent = NULL;//轮询条形码线程控制事件

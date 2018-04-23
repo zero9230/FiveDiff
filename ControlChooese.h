@@ -48,4 +48,6 @@ public:
 	afx_msg void OnFilebutton7();
 	afx_msg void OnFilebutton8();
 	afx_msg void OnFilebutton9();
+	afx_msg void OnBnClickedXcontrolradio();
+	afx_msg void OnBnClickedXrcontrolradio();
 };

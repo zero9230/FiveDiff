@@ -207,6 +207,7 @@ void CReagentmanagement2View::UpdateReagentDate()
 	m_HGBStartDate.SetDate(HGBStartDate);
 	m_EOSStartDate.SetDate(EOSStartDate);
 	m_BASStartDate.SetDate(BASStartDate);
+
 	m_DiluentEndDate.SetDate(DiluentEndDate);
 	m_RinseEndDate.SetDate(RinseEndDate);
 	m_HGBEndDate.SetDate(HGBEndDate);
@@ -313,6 +314,7 @@ void CReagentmanagement2View::PaintLevel()
 	GetDlgItem(IDC_HB5D_HGB)->GetWindowRect(rect_hb5d_hgb);
 	GetDlgItem(IDC_HB5D_EOS)->GetWindowRect(rect_hb5d_eos);
 	GetDlgItem(IDC_HB5D_BAS)->GetWindowRect(rect_hb5d_bas);
+
 	ScreenToClient(&rect_diluent);
 	ScreenToClient(&rect_rinse);
 	ScreenToClient(&rect_hb5d_hgb);
@@ -327,7 +329,7 @@ void CReagentmanagement2View::PaintLevel()
 	CImage image;
 	image.Load(_T("res/bas.png"));
 
-	HBITMAP hbitmap = image.Detach();
+	HBITMAP hbitmap = image.Detach();// attach是把一个C++对象与一个WINDOWS对象关联，直到用detach则把关联去掉。  
 	//image.Load(_T"");
 	//HBITMAP
 	CBitmap cBitmap;
@@ -347,6 +349,7 @@ void CReagentmanagement2View::PaintLevel()
 	
 	print = systemcfg.regentfull.eoslyse;
 	print = (print * 100 / EOS_Top_Level);
+	//print = (print * 32 / EOS_Top_Level);
 	str1.Format(L"%d", print);
     str2 = str1 + "%";
 	print = (print + 5) / 10;

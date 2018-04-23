@@ -102,9 +102,9 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\..\..\Bin64\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\..\Bin\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\..\..\Bin64\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
@@ -250,7 +250,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -275,11 +275,9 @@
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>.\Dll;.\..\..\Bin\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>usb2uis.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>usb2uis.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Bscmake>
@@ -517,9 +515,18 @@
     <ClCompile Include="PLTSetView.cpp" />
     <ClCompile Include="PrintSetView.cpp" />
     <ClCompile Include="QcDataProcess.cpp" />
+    <ClCompile Include="QcXChartView.cpp" />
+    <ClCompile Include="QcXListView.cpp" />
+    <ClCompile Include="QcXrChartView.cpp" />
+    <ClCompile Include="QcXrEditView.cpp" />
+    <ClCompile Include="QcXrListView.cpp" />
+    <ClCompile Include="QcXrTestView.cpp" />
+    <ClCompile Include="QcXTargetValueView.cpp" />
+    <ClCompile Include="QcXTestView.cpp" />
     <ClCompile Include="QualityControlChartView.cpp" />
     <ClCompile Include="QualityControlView.cpp" />
     <ClCompile Include="QualityFileExit.cpp" />
+    <ClCompile Include="QualityListView.cpp" />
     <ClCompile Include="QualityRadarView.cpp" />
     <ClCompile Include="QualityTargetValueView.cpp" />
     <ClCompile Include="QualityTestView.cpp" />
@@ -654,9 +661,18 @@
     <ClInclude Include="PLTSetView.h" />
     <ClInclude Include="PrintSetView.h" />
     <ClInclude Include="QcDataProcess.h" />
+    <ClInclude Include="QcXChartView.h" />
+    <ClInclude Include="QcXListView.h" />
+    <ClInclude Include="QcXrChartView.h" />
+    <ClInclude Include="QcXrEditView.h" />
+    <ClInclude Include="QcXrListView.h" />
+    <ClInclude Include="QcXrTestView.h" />
+    <ClInclude Include="QcXTargetValueView.h" />
+    <ClInclude Include="QcXTestView.h" />
     <ClInclude Include="QualityControlChartView.h" />
     <ClInclude Include="QualityControlView.h" />
     <ClInclude Include="QualityFileExit.h" />
+    <ClInclude Include="QualityListView.h" />
     <ClInclude Include="QualityRadarView.h" />
     <ClInclude Include="QualityTargetValueView.h" />
     <ClInclude Include="QualityTestView.h" />
@@ -718,6 +734,7 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram11.cd" />
     <None Include="res\background.png" />
     <None Include="res\BCGPChartExample.ico" />
     <None Include="res\BCGPChartExample.rc2" />

@@ -65,6 +65,7 @@ public:
 public:
 	CSpi			 m_spidev;
 
+	static doctor_info* doctordata;
 
 	DataTransmission m_datatrans;
 	DataProcess		 m_dataprocess;
@@ -95,6 +96,7 @@ public:
 	virtual void	OnInitialUpdate();
 	void			InitControl();
 	void			patientPaint(patient_info *ppatientdata);
+	int			loadDoctors();
 
 	BOOL			InitForm(sample_info* psampledata);
 	BOOL			InitWBCForm(sample_info* psampledata);
@@ -131,6 +133,8 @@ public:
 	void			UpdateWBCBasoFlagBox(sample_info *psampledata);
 	void			UpdateRBCFlagBox(sample_info *psampledata);
 	void			UpdatePLTFlagBox(sample_info *psampledata);
+
+	void			UpdateErrMessage();
 
 	void			SetItemHeight(UINT nHeight);
 	void			GetPatientInfo(patient_info *ppatientdata);
@@ -170,7 +174,7 @@ public:
 	void	ConcentratedCleaning_2(const char* Mess);
 	void	YealyMaintenance( const char* Mess);
 	void	EM_RINSEBATHS( const char* Mess);
-
+	void deepClone(char * dest, char * src, int srcLength);
 
 	static DWORD WINAPI	CreateAutoSampleThread(LPVOID lpParam);
 	static DWORD WINAPI BarcodeCheck(LPVOID lpParam);
@@ -192,6 +196,12 @@ public:
 	afx_msg void OnEnChangeTestmainBarcode();
 	// ¿ª¹Ø×´Ì¬¼ì²â
 	
+	//afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton1();
+	CString cs1;
+	char* c1;
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
 };
 
 

@@ -285,9 +285,6 @@
     <ClCompile Include="ManualCalibrationView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QualityControlView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QualityRadarView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -298,9 +295,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QualityTargetValueView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QualityFileExit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QualityTestView.cpp">
@@ -346,6 +340,39 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BackupRestoreView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QualityFileExit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QualityControlView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXTargetValueView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXTestView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXChartView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QualityListView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXListView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXrEditView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXrTestView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXrChartView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QcXrListView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -715,6 +742,33 @@
     <ClInclude Include="BackupRestoreView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="QcXTargetValueView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QcXTestView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QcXChartView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QualityListView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QcXListView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QcXrEditView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QcXrTestView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QcXrChartView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QcXrListView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\BCGPChartExample.ico">
@@ -757,6 +811,7 @@
     </None>
     <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram11.cd" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\toolbartree.bmp">

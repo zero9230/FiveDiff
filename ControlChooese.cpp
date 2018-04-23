@@ -5,6 +5,8 @@
 #include "BCGPChartExample.h"
 #include "ControlChooese.h"
 #include "afxdialogex.h"
+#include "MainFrm.h"
+#include "QualityControlView.h"
 
 
 // CControlChooese 对话框
@@ -49,6 +51,8 @@ void CControlChooese::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_FILEBUTTON8, m_file8);
 	DDX_Control(pDX, IDC_FILEBUTTON9, m_file9);
 	DDX_Radio(pDX, IDC_LJCONTROLRADIO, m_ControltypeRadio);
+	//DDX_Radio(pDX, IDC_XCONTROLRADIO, m_ControltypeRadio);
+	//DDX_Radio(pDX, IDC_XRCONTROLRADIO, m_ControltypeRadio);
 }
 
 
@@ -67,6 +71,8 @@ BEGIN_MESSAGE_MAP(CControlChooese, CDialogEx)
 	ON_BN_CLICKED(IDC_FILEBUTTON7, &CControlChooese::OnFilebutton7)
 	ON_BN_CLICKED(IDC_FILEBUTTON8, &CControlChooese::OnFilebutton8)
 	ON_BN_CLICKED(IDC_FILEBUTTON9, &CControlChooese::OnFilebutton9)
+	ON_BN_CLICKED(IDC_XCONTROLRADIO, &CControlChooese::OnBnClickedXcontrolradio)
+	ON_BN_CLICKED(IDC_XRCONTROLRADIO, &CControlChooese::OnBnClickedXrcontrolradio)
 END_MESSAGE_MAP()
 
 
@@ -77,7 +83,28 @@ void CControlChooese::OnClose()
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	//MessageBox(L"close here!");
+	//CMainFrame* mainFrame;
+	//CView* pNewView = mainFrame->GetView(2);
+	//CView* pActiveView =GetActiveView();
+	
 	CDialogEx::OnClose();
+	//CurView = 3;
+	//pActiveView->ShowWindow(SW_HIDE);
+	//pNewView->ShowWindow(SW_SHOW);
+	//SetActive(pNewView);
+
+
+
+	//HWND hwnd = this->m_hWnd;
+	//::PostMessage(hwnd,WM_DESTROY, 0, 0);
+
+	//CQualityControlView *parentWnd = (CQualityControlView*)this->GetParent();
+	////::PostMessage(parentWnd, WM_DESTROY, 0, 0);
+	
+	//HWND prthwnd = parentWnd->GetSafeHwnd();
+	////parentWnd->DestroyWindow();
+	//::PostMessage(prthwnd, WM_DESTROY, 0, 0);
+	
 }
 
 
@@ -217,7 +244,20 @@ void CControlChooese::OnLjcontrolradio()
 	Controltype = m_ControltypeRadio;
 }
 
+void CControlChooese::OnBnClickedXcontrolradio()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	UpdateData(true);
+	Controltype = 1;
+}
 
+
+void CControlChooese::OnBnClickedXrcontrolradio()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	UpdateData(true);
+	Controltype = 2;
+}
 
 void CControlChooese::OnFilebutton1()
 {
@@ -292,3 +332,6 @@ void CControlChooese::OnFilebutton9()
 	Controlfile = 8;
 	CDialog::OnOK();
 }
+
+
+

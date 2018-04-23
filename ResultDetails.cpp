@@ -8,7 +8,7 @@
 //#include "MainFrm.h"
 //#include "Includes_app.h"
 // CResultDetails
-
+#include <string.h>
 //画图
 #define RealCO_Dot_LBRP			256
 #define RealCO_DOT_PLT			210
@@ -102,9 +102,20 @@ CResultDetails::CResultDetails()
 		"10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L",
 		"10^12/L", " g/L", "%", "fL", "Pg", "g/L", "%", "fL",
 		"10^9/L", "fL", "fL", "%", "%" };
-	memcpy(items_fullname, items_fullname_temp, sizeof(items_fullname_temp));
-	memcpy(items_shortname, items_shortname_temp, sizeof(items_shortname_temp));
-	memcpy(unit_info, unit_info_temp, sizeof(unit_info_temp));
+	//深复制才可完成功能
+	for (int i = 0; i < 28; i++){
+		_tcscpy(items_shortname[i].GetBuffer(items_shortname_temp[i].GetLength()+1), items_shortname_temp[i]);
+		items_shortname[i].ReleaseBuffer();
+	}
+	for (int i = 0; i < 28; i++){
+		_tcscpy(items_fullname[i].GetBuffer(items_fullname_temp[i].GetLength() + 1), items_fullname_temp[i]);
+		items_fullname[i].ReleaseBuffer();
+	}
+	for (int i = 0; i < 28; i++){
+		_tcscpy(unit_info[i].GetBuffer(unit_info_temp[i].GetLength() + 1), unit_info_temp[i]);
+		unit_info[i].ReleaseBuffer();
+	}
+
 }
 
 CResultDetails::~CResultDetails()
@@ -122,16 +133,17 @@ void CResultDetails::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RESULT_LIST3, m_Details_PLTlist);
 	DDX_Control(pDX, IDC_RESULT_LIST4, m_Details_RETlist);
 	DDX_Control(pDX, IDC_RESULT_LIST5, m_Details_CRPlist);
-	DDX_Control(pDX, IDC_RESULT_CHART, m_LMNEChart);
-	DDX_Control(pDX, IDC_RESULT_CHART1, m_BASOChart);
-	DDX_Control(pDX, IDC_RESULT_CHART2, m_RBCChart);
-	DDX_Control(pDX, IDC_RESULT_CHART3, m_PLTChart);
-	DDX_Control(pDX, IDC_RESULT_CHART4, m_PieChart);
+	DDX_Control(pDX, IDC_RESULT_LMNE_CHART, m_LMNEChart);
+	DDX_Control(pDX, IDC_RESULT_BASO_CHART, m_BASOChart);
+	DDX_Control(pDX, IDC_RESULT_RBC_CHART, m_RBCChart);
+	DDX_Control(pDX, IDC_RESULT_PLT_CHART, m_PLTChart);
+	DDX_Control(pDX, IDC_RESULT_PIE_CHART, m_PieChart);
 	DDX_Control(pDX, IDC_RESULT_LIST8, m_WBCFlag);
 	DDX_Control(pDX, IDC_RESULT_LIST9, m_RBCFlag);
 	DDX_Control(pDX, IDC_RESULT_LIST10, m_PLTFlag);
 	DDX_Control(pDX, IDC_RESULT_LIST11, m_RETFlag);
-	DDX_Control(pDX, IDC_RESULT_COMBO_SEX, m_Result_sex);
+	DDX_Control(pDX, IDC_RESULT_COMBO_SEX, m_sex_combo);
+	DDX_Control(pDX, IDC_RESULT_COMBO_DOCTOR, m_doctor_combo);
 }
 
 BEGIN_MESSAGE_MAP(CResultDetails, CBCGPChartExampleView)
@@ -169,16 +181,17 @@ void CResultDetails::Dump(CDumpContext& dc) const
 sample_info* CResultDetails::sampledata = NULL;
 patient_info* CResultDetails::patientdata = NULL;
 pResultToDisplay CResultDetails::pThisResult = NULL;
-unsigned char graphbu[3500] = {0};
+unsigned char graphbu[3500] = { 0 };
 
 void CResultDetails::OnInitialUpdate()
 {
 	CBCGPChartExampleView::OnInitialUpdate();
 
-	// TODO:  在此添加专用代码和/或调用基类
-	m_Result_sex.InsertString(0,_T("男"));
-	m_Result_sex.InsertString(1,_T("女"));
-	m_Result_sex.InsertString(2,_T("空"));
+	// TODO:  在此添加专用代码和/或调用基类	
+	m_sex_combo.InsertString(0, _T("空"));
+	m_sex_combo.InsertString(1, _T("男"));
+	m_sex_combo.InsertString(2, _T("女"));
+
 	LoadChoseRecord(pThisResult);
 	InitForm(sampledata);
 	PrintChart(sampledata);
@@ -207,31 +220,37 @@ void CResultDetails::OnPaint()
 	InitForm(sampledata);
 	PrintChart(sampledata);
 	InitPaitientInfo(patientdata);*/
-	
+
 	PrintLMNEChart(sampledata);
-//	LmneGraphPaint(sampledata, patientdata->rangetype);
+	//	LmneGraphPaint(sampledata, patientdata->rangetype);
 
 
 }
 
 BOOL CResultDetails::InitPaitientInfo(patient_info* ppatientdata)
 {
-	CString numtemp = "20";
-	CString nametemp;
-	CString agetemp;
-	CString doctor;
 	USES_CONVERSION;
-	nametemp = A2W(ppatientdata->name);
-	doctor = A2W(ppatientdata->doctor);
-	agetemp = ppatientdata->age;
+	CString numtemp = "20";
+	CString rangetype;	
+	CString nametemp= A2W(ppatientdata->name);
+	CString agetemp= ppatientdata->age;
+	CString doctor =A2W(ppatientdata->doctor);
+	CString barcode = ppatientdata->code;
 
-	numtemp = numtemp+pThisResult->numofrs[pThisResult->nownum];
+	rangetype.Format(L"%d",ppatientdata->rangetype);
+	numtemp = numtemp + pThisResult->numofrs[pThisResult->nownum];
+
+	//MessageBox(rangetype);
 	GetDlgItem(IDC_RESULT_EDIT1)->SetWindowText(numtemp);
+	GetDlgItem(IDC_RESULT_EDIT2)->SetWindowText(rangetype);
 	GetDlgItem(IDC_RESULT_EDIT3)->SetWindowText(nametemp);
 	GetDlgItem(IDC_RESULT_EDIT4)->SetWindowText(agetemp);
+	GetDlgItem(IDC_RESULT_EDIT5)->SetWindowText(barcode);
+	//m_sex_combo.SetCurSel(1);
 	GetDlgItem(IDC_RESULT_COMBO_DOCTOR)->SetWindowTextW(doctor);
-	m_Result_sex.SetCurSel((int)ppatientdata->sex);
-	
+	m_sex_combo.SetCurSel((int)ppatientdata->sex);
+
+	UpdateData(false);
 	return TRUE;
 }
 /********************表格处理函数*************************/
@@ -301,11 +320,96 @@ BOOL CResultDetails::InitWBCForm(sample_info* psampledata)
 	m_Details_WBCList.SetItemText(13, 1, (CString)psampledata->wbcdata.aly);
 	m_Details_WBCList.SetItemText(14, 1, (CString)psampledata->wbcdata.lic);
 
+
+	int itemCount = 15;
+	CString showbuffer;
+	uchar type = systemcfg.range.type;
+	CString asterisk = "*";
+	CString temp[15];
+	float tmp[15];
+	for (int i = 0; i < itemCount; i++)
+	{
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i]);
+		m_Details_WBCList.SetItemText(i, 3, showbuffer);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + 28]);
+		m_Details_WBCList.SetItemText(i, 4, showbuffer);
+
+		if (i == 0){
+			temp[i] = (CString)psampledata->wbcdata.wbc;
+			tmp[i] = atof(psampledata->wbcdata.wbc);
+		}
+		if (i == 1){
+			temp[i] = (CString)psampledata->wbcdata.lymp;
+			tmp[i] = atof(psampledata->wbcdata.lymp);
+		}
+		if (i == 2){
+			temp[i] = (CString)psampledata->wbcdata.neup;
+			tmp[i] = atof(psampledata->wbcdata.neup);
+		}
+		if (i == 3){
+			temp[i] = (CString)psampledata->wbcdata.monop;
+			tmp[i] = atof(psampledata->wbcdata.monop);
+		}
+		if (i == 4){
+			temp[i] = (CString)psampledata->wbcdata.eosp;
+			tmp[i] = atof(psampledata->wbcdata.eosp);
+		}
+		if (i == 5){
+			temp[i] = (CString)psampledata->wbcdata.basp;
+			tmp[i] = atof(psampledata->wbcdata.basp);
+		}
+		if (i == 6){
+			temp[i] = (CString)psampledata->wbcdata.alyp;
+			tmp[i] = atof(psampledata->wbcdata.alyp);
+		}
+		if (i == 7)
+		{
+			temp[i] = (CString)psampledata->wbcdata.licp;
+			tmp[i] = atof(psampledata->wbcdata.licp);
+		}
+		if (i == 8){
+			temp[i] = (CString)psampledata->wbcdata.lym;
+			tmp[i] = atof(psampledata->wbcdata.lym);
+		}
+		if (i == 9){
+			temp[i] = (CString)psampledata->wbcdata.neu;
+			tmp[i] = atof(psampledata->wbcdata.neu);
+		}
+		if (i == 10){
+			temp[i] = (CString)psampledata->wbcdata.mono;
+			tmp[i] = atof(psampledata->wbcdata.mono);
+		}
+		if (i == 11){
+			temp[i] = (CString)psampledata->wbcdata.eos;
+			tmp[i] = atof(psampledata->wbcdata.eos);
+		}
+		if (i == 12){
+			temp[i] = (CString)psampledata->wbcdata.bas;
+			tmp[i] = atof(psampledata->wbcdata.bas);
+		}
+		if (i == 13){
+			temp[i] = (CString)psampledata->wbcdata.aly;
+			tmp[i] = atof(psampledata->wbcdata.aly);
+		}
+		if (i == 14){
+			temp[i] = (CString)psampledata->wbcdata.lic;
+			tmp[i] = atof(psampledata->wbcdata.lic);
+		}
+		if (temp[i].Find(asterisk, 0) >= 0)
+			m_Details_WBCList.SetItemText(i, 5, _T("*"));
+		else if (tmp[i] < systemcfg.range.normal[type][i])
+			m_Details_WBCList.SetItemText(i, 5, _T("L"));
+		else if (tmp[i] > systemcfg.range.normal[type][i + 28])
+			m_Details_WBCList.SetItemText(i, 5, _T("H"));
+		else
+			m_Details_WBCList.SetItemText(i, 5, _T("N"));
+	}
+
 	return TRUE;
 }
 BOOL CResultDetails::UpdateWBCForm(sample_info* psampledata)
 {
-	
+
 	m_Details_WBCList.SetItemText(0, 1, ChartsToCString((psampledata->wbcdata.wbc), sizeof(psampledata->wbcdata.wbc) / sizeof(char)));
 	m_Details_WBCList.SetItemText(1, 1, ChartsToCString((psampledata->wbcdata.lymp), sizeof(psampledata->wbcdata.lymp) / sizeof(char)));
 	m_Details_WBCList.SetItemText(2, 1, ChartsToCString((psampledata->wbcdata.neup), sizeof(psampledata->wbcdata.neup) / sizeof(char)));
@@ -321,6 +425,91 @@ BOOL CResultDetails::UpdateWBCForm(sample_info* psampledata)
 	m_Details_WBCList.SetItemText(12, 1, ChartsToCString((psampledata->wbcdata.bas), sizeof(psampledata->wbcdata.bas) / sizeof(char)));
 	m_Details_WBCList.SetItemText(13, 1, ChartsToCString((psampledata->wbcdata.aly), sizeof(psampledata->wbcdata.aly) / sizeof(char)));
 	m_Details_WBCList.SetItemText(14, 1, ChartsToCString((psampledata->wbcdata.lic), sizeof(psampledata->wbcdata.lic) / sizeof(char)));
+
+	int itemCount = 15;
+	CString showbuffer;
+	uchar type = systemcfg.range.type;
+	CString asterisk = "*";
+	CString temp[15];
+	float tmp[15];
+	for (int i = 0; i < itemCount; i++)
+	{
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i]);
+		m_Details_WBCList.SetItemText(i, 3, showbuffer);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + 28]);
+		m_Details_WBCList.SetItemText(i, 4, showbuffer);
+
+		if (i == 0){
+			temp[i] = (CString)psampledata->wbcdata.wbc;
+			tmp[i] = atof(psampledata->wbcdata.wbc);
+		}
+		if (i == 1){
+			temp[i] = (CString)psampledata->wbcdata.lymp;
+			tmp[i] = atof(psampledata->wbcdata.lymp);
+		}
+		if (i == 2){
+			temp[i] = (CString)psampledata->wbcdata.neup;
+			tmp[i] = atof(psampledata->wbcdata.neup);
+		}
+		if (i == 3){
+			temp[i] = (CString)psampledata->wbcdata.monop;
+			tmp[i] = atof(psampledata->wbcdata.monop);
+		}
+		if (i == 4){
+			temp[i] = (CString)psampledata->wbcdata.eosp;
+			tmp[i] = atof(psampledata->wbcdata.eosp);
+		}
+		if (i == 5){
+			temp[i] = (CString)psampledata->wbcdata.basp;
+			tmp[i] = atof(psampledata->wbcdata.basp);
+		}
+		if (i == 6){
+			temp[i] = (CString)psampledata->wbcdata.alyp;
+			tmp[i] = atof(psampledata->wbcdata.alyp);
+		}
+		if (i == 7)
+		{
+			temp[i] = (CString)psampledata->wbcdata.licp;
+			tmp[i] = atof(psampledata->wbcdata.licp);
+		}
+		if (i == 8){
+			temp[i] = (CString)psampledata->wbcdata.lym;
+			tmp[i] = atof(psampledata->wbcdata.lym);
+		}
+		if (i == 9){
+			temp[i] = (CString)psampledata->wbcdata.neu;
+			tmp[i] = atof(psampledata->wbcdata.neu);
+		}
+		if (i == 10){
+			temp[i] = (CString)psampledata->wbcdata.mono;
+			tmp[i] = atof(psampledata->wbcdata.mono);
+		}
+		if (i == 11){
+			temp[i] = (CString)psampledata->wbcdata.eos;
+			tmp[i] = atof(psampledata->wbcdata.eos);
+		}
+		if (i == 12){
+			temp[i] = (CString)psampledata->wbcdata.bas;
+			tmp[i] = atof(psampledata->wbcdata.bas);
+		}
+		if (i == 13){
+			temp[i] = (CString)psampledata->wbcdata.aly;
+			tmp[i] = atof(psampledata->wbcdata.aly);
+		}
+		if (i == 14){
+			temp[i] = (CString)psampledata->wbcdata.lic;
+			tmp[i] = atof(psampledata->wbcdata.lic);
+		}
+		if (temp[i].Find(asterisk, 0) >= 0)
+			m_Details_WBCList.SetItemText(i, 5, _T("*"));
+		else if (tmp[i] < systemcfg.range.normal[type][i])
+			m_Details_WBCList.SetItemText(i, 5, _T("L"));
+		else if (tmp[i] > systemcfg.range.normal[type][i + 28])
+			m_Details_WBCList.SetItemText(i, 5, _T("H"));
+		else
+			m_Details_WBCList.SetItemText(i, 5, _T("N"));
+	}
+
 
 	return TRUE;
 }
@@ -370,11 +559,68 @@ BOOL CResultDetails::InitRBCForm(sample_info* psampledata)
 	m_Details_RBClist.SetItemText(6, 1, (CString)psampledata->rbcdata.rdwcv);
 	m_Details_RBClist.SetItemText(7, 1, (CString)psampledata->rbcdata.rdwsd);
 
+
+	uchar type = systemcfg.range.type;
+	CString showbuffer;
+	int preCount = 15;
+	int rbcNum = 8;
+	CString asterisk = "*";
+	CString temp[8];
+	float tmp[8];
+	for (int i = 0; i < rbcNum; i++){
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + preCount]);
+		m_Details_RBClist.SetItemText(i, 3, showbuffer);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + preCount + 28]);
+		m_Details_RBClist.SetItemText(i, 4, showbuffer);
+
+		if (i == 0){
+			temp[i] = (CString)psampledata->rbcdata.rbc;
+			tmp[i] = atof(psampledata->rbcdata.rbc);
+		}
+
+		if (i == 1){
+			temp[i] = (CString)psampledata->rbcdata.hgb;
+			tmp[i] = atof(psampledata->rbcdata.hgb);
+		}
+		if (i == 2){
+			temp[i] = (CString)psampledata->rbcdata.hct;
+			tmp[i] = atof(psampledata->rbcdata.hct);
+		}
+		if (i == 3){
+			temp[i] = (CString)psampledata->rbcdata.mcv;
+			tmp[i] = atof(psampledata->rbcdata.mcv);
+		}
+		if (i == 4){
+			temp[i] = (CString)psampledata->rbcdata.mch;
+			tmp[i] = atof(psampledata->rbcdata.mch);
+		}
+		if (i == 5){
+			temp[i] = (CString)psampledata->rbcdata.mchc;
+			tmp[i] = atof(psampledata->rbcdata.mchc);
+		}
+		if (i == 6){
+			temp[i] = (CString)psampledata->rbcdata.rdwcv;
+			tmp[i] = atof(psampledata->rbcdata.rdwcv);
+		}
+		if (i == 7){
+			temp[i] = (CString)psampledata->rbcdata.rdwsd;
+			tmp[i] = atof(psampledata->rbcdata.rdwsd);
+		}
+		if (temp[i].Find(asterisk, 0) >= 0)
+			m_Details_RBClist.SetItemText(i, 5, _T("*"));
+		else if (tmp[i] < systemcfg.range.normal[type][i + preCount])
+			m_Details_RBClist.SetItemText(i, 5, _T("L"));
+		else if (tmp[i] >  systemcfg.range.normal[type][i + preCount + 28])
+			m_Details_RBClist.SetItemText(i, 5, _T("H"));
+		else
+			m_Details_RBClist.SetItemText(i, 5, _T("N"));
+	}
+
 	return TRUE;
 }
 BOOL CResultDetails::UpdateRBCForm(sample_info* psampledata)
 {
-	
+
 	m_Details_RBClist.SetItemText(0, 1, ChartsToCString((psampledata->rbcdata.rbc), sizeof(psampledata->rbcdata.rbc) / sizeof(char)));
 	m_Details_RBClist.SetItemText(1, 1, ChartsToCString((psampledata->rbcdata.hgb), sizeof(psampledata->rbcdata.hgb) / sizeof(char)));
 	m_Details_RBClist.SetItemText(2, 1, ChartsToCString((psampledata->rbcdata.hct), sizeof(psampledata->rbcdata.hct) / sizeof(char)));
@@ -384,6 +630,62 @@ BOOL CResultDetails::UpdateRBCForm(sample_info* psampledata)
 	m_Details_RBClist.SetItemText(6, 1, ChartsToCString((psampledata->rbcdata.rdwcv), sizeof(psampledata->rbcdata.rdwcv) / sizeof(char)));
 	//MessageBox((CString)psampledata->rbcdata.rdwcv);
 	m_Details_RBClist.SetItemText(7, 1, ChartsToCString((psampledata->rbcdata.rdwsd), sizeof(psampledata->rbcdata.rdwsd) / sizeof(char)));
+
+	uchar type = systemcfg.range.type;
+	CString showbuffer;
+	int preCount = 15;
+	int rbcNum = 8;
+	CString asterisk = "*";
+	CString temp[8];
+	float tmp[8];
+	for (int i = 0; i < rbcNum; i++){
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + preCount]);
+		m_Details_RBClist.SetItemText(i, 3, showbuffer);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + preCount + 28]);
+		m_Details_RBClist.SetItemText(i, 4, showbuffer);
+
+		if (i == 0){
+			temp[i] = (CString)psampledata->rbcdata.rbc;
+			tmp[i] = atof(psampledata->rbcdata.rbc);
+		}
+
+		if (i == 1){
+			temp[i] = (CString)psampledata->rbcdata.hgb;
+			tmp[i] = atof(psampledata->rbcdata.hgb);
+		}
+		if (i == 2){
+			temp[i] = (CString)psampledata->rbcdata.hct;
+			tmp[i] = atof(psampledata->rbcdata.hct);
+		}
+		if (i == 3){
+			temp[i] = (CString)psampledata->rbcdata.mcv;
+			tmp[i] = atof(psampledata->rbcdata.mcv);
+		}
+		if (i == 4){
+			temp[i] = (CString)psampledata->rbcdata.mch;
+			tmp[i] = atof(psampledata->rbcdata.mch);
+		}
+		if (i == 5){
+			temp[i] = (CString)psampledata->rbcdata.mchc;
+			tmp[i] = atof(psampledata->rbcdata.mchc);
+		}
+		if (i == 6){
+			temp[i] = (CString)psampledata->rbcdata.rdwcv;
+			tmp[i] = atof(psampledata->rbcdata.rdwcv);
+		}
+		if (i == 7){
+			temp[i] = (CString)psampledata->rbcdata.rdwsd;
+			tmp[i] = atof(psampledata->rbcdata.rdwsd);
+		}
+		if (temp[i].Find(asterisk, 0) >= 0)
+			m_Details_RBClist.SetItemText(i, 5, _T("*"));
+		else if (tmp[i] < systemcfg.range.normal[type][i + preCount])
+			m_Details_RBClist.SetItemText(i, 5, _T("L"));
+		else if (tmp[i] >  systemcfg.range.normal[type][i + preCount + 28])
+			m_Details_RBClist.SetItemText(i, 5, _T("H"));
+		else
+			m_Details_RBClist.SetItemText(i, 5, _T("N"));
+	}
 
 	return TRUE;
 }
@@ -426,17 +728,104 @@ BOOL CResultDetails::InitPLTForm(sample_info* psampledata)
 	m_Details_PLTlist.SetItemText(4, 1, (CString)psampledata->pltdata.plcr);
 
 
+	uchar type = systemcfg.range.type;
+	CString showbuffer;
+	int pltNum = 5;
+	CString asterisk = "*";
+	CString temp[5];
+	float tmp[5];
+	for (int i = 0; i < pltNum; i++){
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + 23]);
+		m_Details_PLTlist.SetItemText(i, 3, showbuffer);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + 23 + 28]);
+		m_Details_PLTlist.SetItemText(i, 4, showbuffer);
+
+		if (i == 0){
+			temp[i] = (CString)psampledata->pltdata.plt;
+			tmp[i] = atof(psampledata->pltdata.plt);
+		}
+		if (i == 1){
+			temp[i] = (CString)psampledata->pltdata.mpv;
+			tmp[i] = atof(psampledata->pltdata.mpv);
+		}
+		if (i == 2){
+			temp[i] = (CString)psampledata->pltdata.pdw;
+			tmp[i] = atof(psampledata->pltdata.pdw);
+		}
+		if (i == 3){
+			temp[i] = (CString)psampledata->pltdata.pct;
+			tmp[i] = atof(psampledata->pltdata.pct);
+		}
+		if (i == 4){
+			temp[i] = (CString)psampledata->pltdata.plcr;
+			tmp[i] = atof(psampledata->pltdata.plcr);
+		}
+
+		if (temp[i].Find(asterisk, 0) >= 0)
+			m_Details_PLTlist.SetItemText(i, 5, _T("*"));
+		else if (tmp[i] < systemcfg.range.normal[type][i + 23])
+			m_Details_PLTlist.SetItemText(i, 5, _T("L"));
+		else if (tmp[i] >  systemcfg.range.normal[type][i + 23 + 28])
+			m_Details_PLTlist.SetItemText(i, 5, _T("H"));
+		else
+			m_Details_PLTlist.SetItemText(i, 5, _T("N"));
+	}
+
+
+
 	return TRUE;
 }
 BOOL CResultDetails::UpdatePLTForm(sample_info* psampledata)
 {
-	
+
 	m_Details_PLTlist.SetItemText(0, 1, ChartsToCString((psampledata->pltdata.plt), sizeof(psampledata->pltdata.plt) / sizeof(char)));
 	m_Details_PLTlist.SetItemText(1, 1, ChartsToCString((psampledata->pltdata.mpv), sizeof(psampledata->pltdata.mpv) / sizeof(char)));
 	m_Details_PLTlist.SetItemText(2, 1, ChartsToCString((psampledata->pltdata.pdw), sizeof(psampledata->pltdata.pdw) / sizeof(char)));
 	m_Details_PLTlist.SetItemText(3, 1, ChartsToCString((psampledata->pltdata.pct), sizeof(psampledata->pltdata.pct) / sizeof(char)));
 	m_Details_PLTlist.SetItemText(4, 1, ChartsToCString((psampledata->pltdata.plcr), sizeof(psampledata->pltdata.plcr) / sizeof(char)));
 
+	uchar type = systemcfg.range.type;
+	CString showbuffer;
+	int pltNum = 5;
+	CString asterisk = "*";
+	CString temp[5];
+	float tmp[5];
+	for (int i = 0; i < pltNum; i++){
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + 23]);
+		m_Details_PLTlist.SetItemText(i, 3, showbuffer);
+		showbuffer.Format(L"%0.1f", systemcfg.range.normal[type][i + 23 + 28]);
+		m_Details_PLTlist.SetItemText(i, 4, showbuffer);
+
+		if (i == 0){
+			temp[i] = (CString)psampledata->pltdata.plt;
+			tmp[i] = atof(psampledata->pltdata.plt);
+		}
+		if (i == 1){
+			temp[i] = (CString)psampledata->pltdata.mpv;
+			tmp[i] = atof(psampledata->pltdata.mpv);
+		}
+		if (i == 2){
+			temp[i] = (CString)psampledata->pltdata.pdw;
+			tmp[i] = atof(psampledata->pltdata.pdw);
+		}
+		if (i == 3){
+			temp[i] = (CString)psampledata->pltdata.pct;
+			tmp[i] = atof(psampledata->pltdata.pct);
+		}
+		if (i == 4){
+			temp[i] = (CString)psampledata->pltdata.plcr;
+			tmp[i] = atof(psampledata->pltdata.plcr);
+		}
+
+		if (temp[i].Find(asterisk, 0) >= 0)
+			m_Details_PLTlist.SetItemText(i, 5, _T("*"));
+		else if (tmp[i] < systemcfg.range.normal[type][i + 23])
+			m_Details_PLTlist.SetItemText(i, 5, _T("L"));
+		else if (tmp[i] >  systemcfg.range.normal[type][i + 23 + 28])
+			m_Details_PLTlist.SetItemText(i, 5, _T("H"));
+		else
+			m_Details_PLTlist.SetItemText(i, 5, _T("N"));
+	}
 
 	return TRUE;
 }
@@ -548,7 +937,7 @@ void CResultDetails::PrintChart(sample_info *psampledata)
 	PrintRBCChart(psampledata);
 	PrintPLTChart(psampledata);
 	PrintPieChart();
-	
+
 }
 //////////////////////////////////////////////////////////////////////////////////////////	
 //Description:	动态初始化LMNE散点图各区域界标值						  	//
@@ -1211,8 +1600,6 @@ void CResultDetails::PrintBASOChart(sample_info *psampledata)
 
 	CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 
-
-
 	//将对0x00的特殊处理去除
 	for (i = 0; i < 255; i++)	//255存的是结束标志，里边内容无需显示
 		graphbuff[i] = (psampledata->basograph[i] - 1);
@@ -1242,7 +1629,7 @@ void CResultDetails::UpdatePrintBASOChart(sample_info *psampledata)
 	//CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 
 	int num = pChart->GetSeriesCount();
-	CBCGPChartSeries* pSeries1 = pChart->GetSeries(num-1);
+	CBCGPChartSeries* pSeries1 = pChart->GetSeries(num - 1);
 	pSeries1->RemoveAllDataPoints();
 	//将对0x00的特殊处理去除
 	for (i = 0; i < 255; i++)	//255存的是结束标志，里边内容无需显示
@@ -1259,7 +1646,7 @@ void CResultDetails::UpdatePrintBASOChart(sample_info *psampledata)
 	SetObjectColors();
 	pChart->SetSeriesShadow();
 
-
+	pChart->Redraw();
 
 }
 
@@ -1302,7 +1689,7 @@ void CResultDetails::UpdatePrintRBCChart(sample_info *psampledata)
 	ASSERT_VALID(pChart);
 	//CBCGPChartSeries* pSeries1 = pChart->CreateSeries("RBC");
 	int num = pChart->GetSeriesCount();
-	CBCGPChartSeries* pSeries1 = pChart->GetSeries(num-1);
+	CBCGPChartSeries* pSeries1 = pChart->GetSeries(num - 1);
 	pSeries1->RemoveAllDataPoints();
 	COleDateTime today = COleDateTime::GetCurrentTime();
 
@@ -1315,7 +1702,7 @@ void CResultDetails::UpdatePrintRBCChart(sample_info *psampledata)
 		graphbuff[i] = graphbuff[i + (i + 2) / 4];
 		pSeries1->AddDataPoint(graphbuff[i]);
 	}
-
+	pChart->Redraw();
 }
 
 void CResultDetails::PrintPLTChart(sample_info *psampledata)
@@ -1366,10 +1753,10 @@ void CResultDetails::UpdatePrintPLTChart(sample_info *psampledata)
 	unsigned char graphbuff[256] = { 0 };
 	CBCGPChartVisualObject* pChart = m_PLTChart.GetChart();
 	ASSERT_VALID(pChart);
-	
+
 	//CBCGPChartSeries* pSeries1 = pChart->CreateSeries(_T("Series 1"));
 	int num = pChart->GetSeriesCount();
-	CBCGPChartSeries* pSeries1 = pChart->GetSeries(num-1);
+	CBCGPChartSeries* pSeries1 = pChart->GetSeries(num - 1);
 	pSeries1->RemoveAllDataPoints();
 	//将对0x00的特殊处理去除		
 	for (i = 0; i < 255; i++)
@@ -1393,7 +1780,7 @@ void CResultDetails::UpdatePrintPLTChart(sample_info *psampledata)
 	SetObjectColors();
 
 	pChart->SetSeriesShadow();
-
+	pChart->Redraw();
 }
 
 void CResultDetails::PrintPieChart()
@@ -1499,14 +1886,14 @@ int CResultDetails::LoadChoseRecord(pResultToDisplay pThisResult)
 	}
 	//根据编号获取病人信息表对应记录
 	CString numofrs;
-	numofrs=pThisResult->numofrs[pThisResult->nownum];
+	numofrs = pThisResult->numofrs[pThisResult->nownum];
 	CString select_patientdata = _T("select * from patientdata where number = '") + numofrs + "';";
 	CString select_sampledata = _T("select * from sampledata where number = '") + numofrs + "';";
 
 	ExeSql(m_pDB, m_pRs, select_patientdata);
 	loadpatient(m_pDB, m_pRs, *patientdata);
 	//根据编号获取样本数据表的对应记录
-	
+
 	ExeSql(m_pDB, m_pRs, select_sampledata);
 	loadresult(m_pDB, m_pRs, *sampledata);
 	CloseDataBase(m_pDB, m_pRs);
@@ -1547,7 +1934,7 @@ void CResultDetails::OnViewForward()
 		//PrintChart(sampledata);//此句之前需要加入原图像擦除，否则会产生图像覆盖
 		UpdatePrintChart(sampledata);
 		InitPaitientInfo(patientdata);
-		if (pThisResult->nownum == (*pThisResult).totalnums-1)
+		if (pThisResult->nownum == (*pThisResult).totalnums - 1)
 		{
 			CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON2);
 			pBtn->EnableWindow(FALSE);
@@ -1686,8 +2073,6 @@ void CResultDetails::Init_graphdata_rbc(void)
 
 }
 
-
-
 void CResultDetails::OnSelectResultPrint()
 {
 	// TODO:  在此添加控件通知处理程序代码
@@ -1734,6 +2119,7 @@ void CResultDetails::WriteSelectReportData(sample_info* psampledata, patient_inf
 
 void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patient_info* ppatientdata)
 {
+
 	CString patientID, patientName, sex, age, hospitalname, reportTitle;
 	CString department, area, barcode, remarks;
 
@@ -1903,6 +2289,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 					}
 				}
 
+				//填充框线内的部分
 				else if (type == FIELD_TYPE_GRID)
 				{
 					//Get number of columns
@@ -1920,7 +2307,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 							{
 								result[i][j] = 0;
 							}
-							for (int k = 0; k < 20; k++)//此处有问题！
+							for (int k = 0; k < 20; k++)
 							{
 								range[i][k] = 0;
 							}
@@ -1933,6 +2320,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						GetSample_Data(result, sampledata);
 						GetSample_Range(range);
 						GetSample_Warn(warn, sampledata);
+						//乱码问题在此处
 						if (name.Compare(L"Result") == 0)
 						{
 							if (m_printStyle == 4)
@@ -1943,10 +2331,12 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 
 								int itemCounter = 28;
 								arr.Add(itemhead);
+
 								for (int i = 0; i < itemCounter; i++)
 								{
 									col.Empty();
 									line.Empty();
+									
 									col.Format(L"%d|%s|%s|%s|%s|%s|%s|",
 										(i + 1),
 										items_shortname[i],
@@ -1956,9 +2346,12 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 										unit_info[i],
 										(CString)range[i]
 										);
+									
 									line += col;
 									arr.Add(line);
+									
 								}
+								
 								m_reportGenerator.Add(name, arr);
 								arr.RemoveAll();
 
@@ -2021,6 +2414,10 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						}
 					}
 				}
+				//可能是调用AddObject函数来添加图片
+				//CFile file(L"./res/LMNE.bmp",CFile::modeRead);
+				//CDrawObject co;
+				//m_reportGenerator.AddObject((CDrawObject)file,1);
 			}
 		}
 		m_reportGenerator.Print();
@@ -2331,7 +2728,196 @@ void CResultDetails::FillA5Report(CString file, sample_info* psampledata, patien
 
 void CResultDetails::GernerateLMNEBGP()
 {
+	CRect rect;
+	CImage imag;
+	CWnd* pWnd = GetDlgItem(IDC_RESULT_LMNE_CHART);
+	pWnd->GetClientRect(&rect); // 获取控件屏幕坐标
+	CDC* pDC = pWnd->GetDC();
 
+	CDC MemDC;
+	CBitmap bmp;
+	MemDC.CreateCompatibleDC(pDC);
+	bmp.CreateCompatibleBitmap(pDC, 267, 282);
+	MemDC.SelectObject(&bmp);
+
+	MemDC.FillSolidRect(rect.left, rect.top, 267, 282, RGB(255, 255, 255));
+	//	MemDC.MoveTo(0, 0);
+	//	MemDC.LineTo(100, 100);
+	MemDC.SetViewportOrg(0, 280 - rect.Height());
+
+
+
+	MemDC.SetViewportOrg(0, 0);
+	MemDC.SelectStockObject(WHITE_BRUSH);
+	MemDC.Rectangle(rect);
+	CPen cpen, pen;
+	pen.CreatePen(PS_SOLID, 2, RGB(255, 255, 255));
+	MemDC.SelectObject(&pen);
+	MemDC.SetViewportOrg(0, 0);
+	MemDC.LineTo(0, rect.Height());
+	MemDC.LineTo(rect.Width(), rect.Height());
+	MemDC.LineTo(rect.Width(), 0);
+	MemDC.LineTo(0, 0);
+	pen.~CPen();
+
+	pen.CreatePen(PS_SOLID, 1, RGB(96, 96, 96));
+	MemDC.SelectObject(&pen);
+	MemDC.SetViewportOrg(0, 280);
+	MemDC.LineTo(255, 0);
+	MemDC.LineTo(255, -255);
+	MemDC.LineTo(0, -255);
+	MemDC.LineTo(0, 0);
+	MemDC.TextOut(0, -280, "LMNE:");
+	//	MemDC.MoveTo(255, 0);
+	//	MemDC.LineTo(265, 0);
+	//	MemDC.LineTo(265, -255);
+	//	MemDC.LineTo(255, -255);
+
+	unsigned char i;
+
+	int 		x1, x2, y1, y2;
+	B_LMNE		m_blmne;
+	double		coe_w = LMNE_WIDTH / 255.0;
+	double		coe_h = LMNE_HEIGHT / 255.0;
+
+	if ((*sampledata).coeoflmne > 1.3)
+		sampledata->coeoflmne = 1.3;
+	else if ((*sampledata).coeoflmne < 0.7)
+		sampledata->coeoflmne = 0.7;
+	Init_B_LMNE((*sampledata).coeoflmne, &m_blmne);
+	//------------------------------------------------
+	//LMNE
+	//line 1 (NOL,0)->(NOL,NL)
+	x1 = m_blmne.X_NOL * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 2 (NON,NL)->(NON,NE)
+	x1 = m_blmne.X_NON * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+	//line 3 (LL,0)->(LL,NL)
+	x1 = m_blmne.X_LL * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
+	for (i = 0; i * 3 < y1 - y2;)
+	{
+		MemDC.MoveTo(x1, y2 + i * 3);
+		MemDC.LineTo(x1, y2 + i * 3 + 3);
+		i += 2;	// ....  ....  ....
+	}
+	//line 4 (LN,NL)->(LN,NE)
+	x1 = m_blmne.X_LN * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
+	for (i = 0; i * 3 < y1 - y2;)
+	{
+		MemDC.MoveTo(x1, y2 + i * 3);
+		MemDC.LineTo(x1, y2 + i * 3 + 3);
+		i += 2;
+	}
+
+	//line 5 (NOE,NE)->(NOE,256)
+	x1 = m_blmne.X_NOE*coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_NE*coe_h;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - LMNE_HEIGHT;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 6/10 (LMN,NL)->(MN,RMN)
+	x1 = m_blmne.X_LMN * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
+	x2 = m_blmne.X_MN * coe_w + LMNE_LEFT;
+	y2 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 7 (AL,0)->(AL,NL)
+	x1 = m_blmne.X_AL * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - m_blmne.Y_NL*coe_h;
+	for (i = 0; i * 3 < y1 - y2;)
+	{
+		MemDC.MoveTo(x1, y2 + i * 3);
+		MemDC.LineTo(x1, y2 + i * 3 + 3);
+		i += 2;
+	}
+
+	//line 8/9 (LMU,NL)->(LMD,0)
+	x1 = m_blmne.X_LMU * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
+	x2 = m_blmne.X_LMD * coe_w + LMNE_LEFT;
+	y2 = LMNE_BOTTOM;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 11 (RM,0)->(RM,RMN)
+	x1 = m_blmne.X_RM * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 12 (RN,RMN)->(RN,NE)
+	x1 = m_blmne.X_RN * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
+	x2 = x1;
+	y2 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 13 (NOL,NL)->(LMU,NL)
+	x1 = m_blmne.X_NOL * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_NL * coe_h;
+	x2 = m_blmne.X_LMU * coe_w + LMNE_LEFT;
+	y2 = y1;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 14 (MN,RMN)->(256,RMN)
+	x1 = m_blmne.X_MN * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_RMN * coe_h;
+	x2 = LMNE_WIDTH + LMNE_LEFT;
+	y2 = y1;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+	//line 15 (NON,NE)->(256,NE)
+	x1 = m_blmne.X_NON * coe_w + LMNE_LEFT;
+	y1 = LMNE_BOTTOM - m_blmne.Y_NE * coe_h;
+	x2 = LMNE_WIDTH + LMNE_LEFT;
+	y2 = y1;
+	MemDC.MoveTo(x1, y1);
+	MemDC.LineTo(x2, y2);
+
+
+	LmneGraphPaint(sampledata, patientdata->rangetype, MemDC);
+
+	MemDC.SetViewportOrg(0, 0);
+	//pDC->BitBlt(0, rect.Height() - 280, 267, 282, &MemDC, 0, 0, SRCCOPY);
+
+	//	GetDlgItem(IDC_RESULT_CHART)->EnableWindow(FALSE);
+
+	//将绘图保存成位图图片
+	imag.Create(267, 282, 24);
+	BitBlt(imag.GetDC(), 0, 0, 267, 282, MemDC.m_hDC, 0, 0, SRCCOPY);
+	HRESULT hResult = imag.Save(L"./LMNE.bmp");
+
+	MemDC.DeleteDC();
+	bmp.DeleteObject();
+	imag.ReleaseDC();
+	/*
 	CDC memDC;
 	CBitmap memBitmap, *pOldBitmap;
 	CWindowDC dc(GetDesktopWindow());
@@ -2375,7 +2961,7 @@ void CResultDetails::GernerateLMNEBGP()
 
 
 	CFile file;
-	file.Open(L"./res/LMNE.bmp", CFile::modeCreate | CFile::modeWrite);
+	file.Open(L"./LMNE.bmp", CFile::modeCreate | CFile::modeWrite);
 	file.Write(&BMFhead, sizeof(BITMAPFILEHEADER));
 	file.Write(&BMIhead, sizeof(BITMAPINFOHEADER));
 	file.Write(pData, dwSize);
@@ -2384,9 +2970,89 @@ void CResultDetails::GernerateLMNEBGP()
 	delete pData;
 	memDC.SelectObject(pOldBitmap);
 	memDC.DeleteDC();
+	*/
 }
 void CResultDetails::GernerateBASOBGP()
 {
+	unsigned char graphbuff[256] = { 0 };
+	CImage imag;
+	CBitmap memBitmap;
+	CRect rect;
+
+	CDC *pdc = m_BASOChart.GetDC();
+	CDC memDC;
+	memDC.CreateCompatibleDC(pdc);
+	m_BASOChart.GetWindowRect(&rect);
+	memBitmap.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
+	memDC.SelectObject(&memBitmap);
+	//设置背景为白色
+	CRgn rectRgn;
+	rectRgn.CreateRectRgn(0, 0, rect.Width(), rect.Height());
+	CBrush brush;
+	brush.CreateSolidBrush(RGB(255, 255, 255));
+	memDC.FillRgn(&rectRgn, &brush);
+
+	CPen pen;
+	CPen *pOldPen;
+	CFont font;
+	CFont *pOldfont;
+
+	//设置字体
+	font.CreateFont(12, 3, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+	pOldfont = memDC.SelectObject(&font);
+
+	pen.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+	pOldPen = memDC.SelectObject(&pen);
+
+	//画坐标系
+	memDC.MoveTo(10, 120);
+	memDC.LineTo(220, 120);
+	memDC.MoveTo(10, 120);
+	memDC.LineTo(10, 0);
+	//横坐标刻度
+	for (int i = 60; i < 261; i += 50)
+	{
+		memDC.MoveTo(i, 120);
+		memDC.LineTo(i, 123);
+	}
+	memDC.TextOutW(56, 124, "50");
+	memDC.TextOutW(106, 124, "100");
+	memDC.TextOutW(156, 124, "150");
+	memDC.TextOutW(206, 124, "200");
+	//画纵坐标刻度
+	for (int i = 80; i >= 0; i -= 40)
+	{
+		memDC.MoveTo(10, i);
+		memDC.LineTo(7, i);
+	}
+	memDC.TextOutW(0, 81, "100");
+	memDC.TextOutW(0, 41, "200");
+	memDC.TextOutW(0, 1, "300");
+	//恢复原本的画笔和字体
+	memDC.SelectObject(pOldPen);
+	memDC.SelectObject(pOldfont);
+	font.DeleteObject();
+	pen.DeleteObject();
+
+	pen.CreatePen(PS_SOLID, 1, RGB(0, 100, 0));//设置画笔绘图
+	pOldPen = memDC.SelectObject(&pen);
+	memDC.TextOutW(20, 2, "BASO");
+	float ratio;//将纵坐标按比例缩小
+	ratio = 120.0 / 300.0;
+	for (int i = 0; i < 204; i++)
+	{
+		graphbuff[i] = ratio*sampledata->basograph[i + (i + 2) / 4];
+		memDC.MoveTo(i + 10, 120);
+		memDC.LineTo(i + 10, 120 - graphbuff[i]);
+	}
+	//将绘图保存成位图图片
+	imag.Create(rect.Width(), rect.Height(), 24);
+	BitBlt(imag.GetDC(), 0, 0, rect.Width(), rect.Height(), memDC.m_hDC, 0, 0, SRCCOPY);
+	HRESULT hResult = imag.Save(L"./BASO.bmp");
+	ReleaseDC(pdc);
+	imag.ReleaseDC();
+
+/*	//MessageBox(L"aaaa");
 	CDC memDC;
 	CBitmap memBitmap, *pOldBitmap;
 	CWindowDC dc(GetDesktopWindow());
@@ -2395,10 +3061,22 @@ void CResultDetails::GernerateBASOBGP()
 
 	CRect rect;
 	//GetDesktopWindow()->GetWindowRect(rect);
+	
+	//m_BASOChart.MoveWindow(0, 0, 223, 137);
+	//m_BASOChart.MoveWindow(0, 0, 223, 137);
 	m_BASOChart.GetWindowRect(&rect);
+	//CRect rect1 = rect;
+	
+	//m_BASOChart.MoveWindow(0, 0, 223, 137);
+	m_BASOChart.GetWindowRect(&rect);
+
+	//TRACE(L"\n======left=%d,top=%d,right=%d,bottom=%d\n",rect.left,rect.top,rect.right,rect.bottom);
 	//ClientToScreen(&rect);
 	nWidth = rect.Width();
 	nHeight = rect.Height();
+
+	//TRACE(L"\n===width=%d,height=%d", nWidth, nHeight);
+
 	memBitmap.CreateCompatibleBitmap(&dc, nWidth, nHeight);
 	pOldBitmap = memDC.SelectObject(&memBitmap);
 	memDC.BitBlt(0, 0, nWidth, nHeight, &dc, rect.left, rect.top, SRCCOPY);
@@ -2430,20 +3108,103 @@ void CResultDetails::GernerateBASOBGP()
 
 
 	CFile file;
-	file.Open(L"./res/BASO.bmp", CFile::modeCreate | CFile::modeWrite);
+	file.Open(L"./BASO.bmp", CFile::modeCreate | CFile::modeWrite);//此处原先为./res/BASO.bmp
 	file.Write(&BMFhead, sizeof(BITMAPFILEHEADER));
 	file.Write(&BMIhead, sizeof(BITMAPINFOHEADER));
 	file.Write(pData, dwSize);
 	file.Close();
 
+	//m_BASOChart.MoveWindow(rect1);
+
 	delete pData;
 	memDC.SelectObject(pOldBitmap);
 	memDC.DeleteDC();
+	*/
 }
 
 void CResultDetails::GernerateRBCBGP()
 {
+	unsigned char graphbuff[256] = { 0 };
+	CImage imag;
+	CBitmap memBitmap;
+	CRect rect;
+
+	CDC *pdc = m_RBCChart.GetDC();
 	CDC memDC;
+	memDC.CreateCompatibleDC(pdc);
+	m_RBCChart.GetWindowRect(&rect);
+	memBitmap.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
+	memDC.SelectObject(&memBitmap);
+	//设置背景为白色
+	CRgn rectRgn;
+	rectRgn.CreateRectRgn(0, 0, rect.Width(), rect.Height());
+	CBrush brush;
+	brush.CreateSolidBrush(RGB(255, 255, 255));
+	memDC.FillRgn(&rectRgn, &brush);
+
+	CPen pen;
+	CPen *pOldPen;
+	CFont font;
+	CFont *pOldfont;
+
+	//设置字体
+	font.CreateFont(12, 3, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+	pOldfont = memDC.SelectObject(&font);
+
+	pen.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+	pOldPen = memDC.SelectObject(&pen);
+
+	//画坐标系
+	memDC.MoveTo(10, 120);
+	memDC.LineTo(220, 120);
+	memDC.MoveTo(10, 120);
+	memDC.LineTo(10, 0);
+	//横坐标刻度
+	for (int i = 60; i < 261; i += 50)
+	{
+		memDC.MoveTo(i, 120);
+		memDC.LineTo(i, 123);
+	}
+	memDC.TextOutW(56, 124, "50");
+	memDC.TextOutW(106, 124, "100");
+	memDC.TextOutW(156, 124, "150");
+	memDC.TextOutW(206, 124, "200");
+	//画纵坐标刻度
+	for (int i = 80; i >= 0; i -= 40)
+	{
+		memDC.MoveTo(10, i);
+		memDC.LineTo(7, i);
+	}
+	memDC.TextOutW(0, 81, "100");
+	memDC.TextOutW(0, 41, "200");
+	memDC.TextOutW(0, 1, "300");
+	//恢复原本的画笔和字体
+	memDC.SelectObject(pOldPen);
+	memDC.SelectObject(pOldfont);
+	font.DeleteObject();
+	pen.DeleteObject();
+
+	pen.CreatePen(PS_SOLID, 1, RGB(139, 0, 0));//设置画笔绘图
+	pOldPen = memDC.SelectObject(&pen);
+	memDC.TextOutW(20, 2, "RBC");
+	float ratio;//将纵坐标按比例缩小
+	ratio = 120.0 / 300.0;
+	for (int i = 0; i < 255; i++)
+		graphbuff[i] = ((sampledata->rbcgraph[(i << 1) + 1] - 1) << 8) + sampledata->rbcgraph[i << 1] - 1;
+
+	for (int i = 0; i < 204; i++)
+	{
+		graphbuff[i] = ratio*graphbuff[i + (i + 2) / 4];
+		memDC.MoveTo(i + 10, 120);
+		memDC.LineTo(i + 10, 120 - graphbuff[i]);
+	}
+	//将绘图保存成位图图片
+	imag.Create(rect.Width(), rect.Height(), 24);
+	BitBlt(imag.GetDC(), 0, 0, rect.Width(), rect.Height(), memDC.m_hDC, 0, 0, SRCCOPY);
+	HRESULT hResult = imag.Save(L"./RBC.bmp");
+	ReleaseDC(pdc);
+	imag.ReleaseDC();
+/*	CDC memDC;
 	CBitmap memBitmap, *pOldBitmap;
 	CWindowDC dc(GetDesktopWindow());
 	memDC.CreateCompatibleDC(&dc);
@@ -2486,7 +3247,7 @@ void CResultDetails::GernerateRBCBGP()
 
 
 	CFile file;
-	file.Open(L"./res/RBC.bmp", CFile::modeCreate | CFile::modeWrite);
+	file.Open(L"./RBC.bmp", CFile::modeCreate | CFile::modeWrite);
 	file.Write(&BMFhead, sizeof(BITMAPFILEHEADER));
 	file.Write(&BMIhead, sizeof(BITMAPINFOHEADER));
 	file.Write(pData, dwSize);
@@ -2495,9 +3256,88 @@ void CResultDetails::GernerateRBCBGP()
 	delete pData;
 	memDC.SelectObject(pOldBitmap);
 	memDC.DeleteDC();
+	*/
 }
 void CResultDetails::GerneratePLTBGP()
 {
+	unsigned char graphbuff[256] = { 0 };
+	CImage imag;
+	CBitmap memBitmap;
+	CRect rect;
+
+	CDC *pdc = m_PLTChart.GetDC();
+	CDC memDC;
+	memDC.CreateCompatibleDC(pdc);
+	m_PLTChart.GetWindowRect(&rect);
+	memBitmap.CreateCompatibleBitmap(pdc, rect.Width(), rect.Height());
+	memDC.SelectObject(&memBitmap);
+	//设置背景为白色
+	CRgn rectRgn;
+	rectRgn.CreateRectRgn(0, 0, rect.Width(), rect.Height());
+	CBrush brush;
+	brush.CreateSolidBrush(RGB(255, 255, 255));
+	memDC.FillRgn(&rectRgn, &brush);
+
+	CPen pen;
+	CPen *pOldPen;
+	CFont font;
+	CFont *pOldfont;
+
+	//设置字体
+	font.CreateFont(12, 3, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+	pOldfont = memDC.SelectObject(&font);
+
+	pen.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+	pOldPen = memDC.SelectObject(&pen);
+
+	//画坐标系
+	memDC.MoveTo(10, 120);
+	memDC.LineTo(220, 120);
+	memDC.MoveTo(10, 120);
+	memDC.LineTo(10, 0);
+	//横坐标刻度
+	for (int i = 60; i < 261; i += 50)
+	{
+		memDC.MoveTo(i, 120);
+		memDC.LineTo(i, 123);
+	}
+	memDC.TextOutW(56, 124, "50");
+	memDC.TextOutW(106, 124, "100");
+	memDC.TextOutW(156, 124, "150");
+	memDC.TextOutW(206, 124, "200");
+	//画纵坐标刻度
+	for (int i = 80; i >= 0; i -= 40)
+	{
+		memDC.MoveTo(10, i);
+		memDC.LineTo(7, i);
+	}
+	memDC.TextOutW(0, 81, "100");
+	memDC.TextOutW(0, 41, "200");
+	memDC.TextOutW(0, 1, "300");
+	//恢复原本的画笔和字体
+	memDC.SelectObject(pOldPen);
+	memDC.SelectObject(pOldfont);
+	font.DeleteObject();
+	pen.DeleteObject();
+
+	pen.CreatePen(PS_SOLID, 1, RGB(255, 165, 0));//设置画笔绘图
+	pOldPen = memDC.SelectObject(&pen);
+	memDC.TextOutW(20, 2, "PLT");
+	float ratio;//将纵坐标按比例缩小
+	ratio = 120.0 / 300.0;
+	for (int i = 0; i < 204; i++)
+	{
+		graphbuff[i] = ratio*sampledata->pltgraph[i + (i + 2) / 4];
+		memDC.MoveTo(i + 10, 120);
+		memDC.LineTo(i + 10, 120 - graphbuff[i]);
+	}
+	//将绘图保存成位图图片
+	imag.Create(rect.Width(), rect.Height(), 24);
+	BitBlt(imag.GetDC(), 0, 0, rect.Width(), rect.Height(), memDC.m_hDC, 0, 0, SRCCOPY);
+	HRESULT hResult = imag.Save(L"./PLT.bmp");
+	ReleaseDC(pdc);
+	imag.ReleaseDC();
+	/*
 	CDC memDC;
 	CBitmap memBitmap, *pOldBitmap;
 	CWindowDC dc(GetDesktopWindow());
@@ -2541,7 +3381,7 @@ void CResultDetails::GerneratePLTBGP()
 
 
 	CFile file;
-	file.Open(L"./res/PLT.bmp", CFile::modeCreate | CFile::modeWrite);
+	file.Open(L"./PLT.bmp", CFile::modeCreate | CFile::modeWrite);
 	file.Write(&BMFhead, sizeof(BITMAPFILEHEADER));
 	file.Write(&BMIhead, sizeof(BITMAPINFOHEADER));
 	file.Write(pData, dwSize);
@@ -2550,6 +3390,7 @@ void CResultDetails::GerneratePLTBGP()
 	delete pData;
 	memDC.SelectObject(pOldBitmap);
 	memDC.DeleteDC();
+	*/
 }
 
 void CResultDetails::OnDeleteRecord()
@@ -2566,10 +3407,10 @@ void CResultDetails::OnDeleteRecord()
 		_ConnectionPtr m_pDB;
 		_RecordsetPtr m_pRs;
 		if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
-			return ;
+			return;
 		ExeSql(m_pDB, m_pRs, delete_patientdata);
 		ExeSql(m_pDB, m_pRs, delete_sampledata);
-		CloseDataBase( m_pDB, m_pRs);
+		CloseDataBase(m_pDB, m_pRs);
 		pThisResult->totalnums--;
 		for (int i = pThisResult->nownum; i < pThisResult->totalnums - 1; i++)
 		{
@@ -2611,6 +3452,12 @@ void CResultDetails::OnBnClickedResultReturn()
 	pView->OnInitialUpdate();
 
 	CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
+
+	UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
+	::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
+	::GetWindowLong(pView->m_hWnd, GWL_ID));
+	::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
+	
 	pActiveView->ShowWindow(SW_HIDE);
 	pView->ShowWindow(SW_SHOW);
 	((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);

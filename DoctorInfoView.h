@@ -37,6 +37,11 @@ public:
 	BOOL InitDoctorInfoForm();
 	virtual void OnInitialUpdate();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnManualAdd();
+	afx_msg void OnDelete();
+	afx_msg void OnDblclkDoctorList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedSave();
 };
 
 

@@ -125,7 +125,7 @@ BOOL CResultListView::InitResultForm()
 
 
 	// 为CRP列表视图控件添加四列
-	m_ResultList.InsertColumn(0, _T("选择"), LVCFMT_CENTER, rect.Width() / 8, 0);
+	m_ResultList.InsertColumn(0, _T("选择"), LVCFMT_CENTER, rect.Width() / 10, 0);
 	m_ResultList.InsertColumn(1, _T("样本号"), LVCFMT_CENTER, rect.Width() / 8, 1);
 	m_ResultList.InsertColumn(2, _T("时间"), LVCFMT_CENTER, rect.Width() / 8, 2);
 	m_ResultList.InsertColumn(3, _T("病人编号"), LVCFMT_CENTER, rect.Width() / 8, 3);
@@ -357,6 +357,10 @@ void CResultListView::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)
 		pView->OnInitialUpdate();
 
 		CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
+		UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
+		::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
+		::GetWindowLong(pView->m_hWnd, GWL_ID));
+		::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
 		pActiveView->ShowWindow(SW_HIDE);
 		pView->ShowWindow(SW_SHOW);
 		((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
@@ -396,6 +400,12 @@ void CResultListView::OnPaitientResult()
 	pView->OnInitialUpdate();
 
 	CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
+	UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
+
+	::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
+	::GetWindowLong(pView->m_hWnd, GWL_ID));
+
+	::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
 	pActiveView->ShowWindow(SW_HIDE);
 	pView->ShowWindow(SW_SHOW);
 	((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);

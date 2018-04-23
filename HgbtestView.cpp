@@ -109,7 +109,7 @@ void CHgbtestView::OnBnClickedHgbtestOk()
 					if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
 		                MessageBox(L"命令发送不成功！", L"ERROR", MB_OKCANCEL);
 	              else{
-	                     GetDlgItem(IDC_MICROPERFUSION)->SetWindowText(L"正在执行HGB测试！");
+	                     GetDlgItem(IDC_MICROPERFUSION)->SetWindowText(L"正在执行HGB测试！");//**##此处有异常
 		                 SetTimer(POLLTIME, SPI_POLL_TIME1000,0);
 	                   }
 					

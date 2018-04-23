@@ -23,9 +23,12 @@
 
 #include "Includes_app.h"
 
+#include <vector>
+using std::vector;
 #define CFrameWnd CBCGPFrameWnd
 
 extern CRect m_progressrect;
+//extern CQualityTestView m_QualityTestPage;
 struct CDemoFeature
 {
 	enum Feature
@@ -33,6 +36,7 @@ struct CDemoFeature
 		BCGP_Unknown = -1,
 		TestmainView,
 		ReagentmanagementView,
+		//QcFileSelectView,
 		QualityControlView,
 		DoctorInfoView,
 		LogView,
@@ -71,9 +75,39 @@ struct CDemoFeature
 	HTREEITEM		m_hItem;
 };
 
+class TransferWindow{
+public:
+	vector<int> window_num;
+	int current_num;
+public:
+	TransferWindow(){
+		current_num = 1;
+		window_num.push_back(2);
+	}
+	int forward(){
+		if (current_num < window_num.size())
+			current_num++;
+		return window_num[current_num - 1];
+	}
+	int back(){
+		if (current_num > 1)
+			current_num--;
+		return window_num[current_num - 1];
+	}
+	void add_new_window(int num){
+		if (current_num != window_num.size()){
+			auto it = window_num.begin() + current_num - 1;
+			for (int i = window_num.size() - current_num; i > 0; i--)
+				window_num.erase(it + i);
+		}
+		window_num.push_back(num);
+		current_num++;
+	}
+};
+
 class CMainFrame : public CFrameWnd
 {
-protected: // create from serialization only
+public: // create from serialization only
 	CMainFrame();
 	DECLARE_DYNCREATE(CMainFrame)
 
@@ -117,11 +151,12 @@ public:
 
 protected:  // control bar embedded members
 	CBCGPStatusBar			m_wndStatusBar;
-	CBCGPExplorerToolBar	m_wndToolBar;
+	CBCGPExplorerToolBar		m_wndToolBar;
 	CBCGPOutlookBar			m_wndShortcutsBar;
 	CBCGPOutlookBarPane		m_wndShortcutsPane1;
 	CBCGPCaptionBar			m_wndCaptionBar;
 	//CWorkspaceBar			m_wndWorkSpace;
+	
 
 // Generated message map functions
 protected:
@@ -141,7 +176,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	void										    AddFeatureGroup(LPCTSTR lpszName, int nGroupID);
-	CView*										    GetView(int nID);
+
 	BOOL											CreateShortcutsBar();
 	int												m_nCurrType;
 	CArray<CView*, CView*>							m_arViews;
@@ -149,6 +184,7 @@ protected:
 	CMap<int, int, CDemoFeature*, CDemoFeature*>	m_mapItems;
 	
 public:
+	
 	CSpi			         m_spidev;
 	CProgressCtrl			 m_progress;
 	static int			     TimeClick;
@@ -157,7 +193,7 @@ public:
 	void					 GetFeatureName(int id, CString& strTitle) const;
 	CDemoFeature::Feature	 GetFeature(int id) const;
 	
-
+	CView*				 GetView(int nID);
 	afx_msg void			OnStartup();
 	afx_msg void			OnTimer(UINT_PTR nIDEvent);
 
@@ -212,6 +248,7 @@ public:
 	afx_msg void OnQualityTest();
 	afx_msg void OnClose();
 	afx_msg LRESULT OnTestSwitchOn(WPARAM wParam, LPARAM lParam);
+
 	static DWORD WINAPI	CreateSwitchDetechThread(LPVOID lpParam);
 	static DWORD WINAPI	CreateHeartbeatThread(LPVOID lpParam);
 
@@ -222,6 +259,11 @@ public:
 	afx_msg void OnLockKeyboard();
 	afx_msg void OnUnlockKeyboard();
 	afx_msg void OnBackupsystem();
+
+protected:
+	afx_msg LRESULT OnUpdateErrStatus(WPARAM wParam, LPARAM lParam);
+
+	afx_msg LRESULT OnReagentAlarm(WPARAM wParam, LPARAM lParam);
 };
 
 /////////////////////////////////////////////////////////////////////////////

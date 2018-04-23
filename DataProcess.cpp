@@ -64,7 +64,8 @@ create	wsm 	2010.11.4
 
 //HWND MainTestDlg;
 
-extern int  PLTGraphEnd = 133;
+//int  PLTGraphEnd = 133;
+extern int PLTGraphEnd=133;
 
 float		wbc_lmne = 0.0;
 

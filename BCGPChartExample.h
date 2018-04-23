@@ -84,6 +84,7 @@
 #define WM_RESTART				(WM_USER+23)
 #define WM_WORKSHEET_CLEAN		(WM_USER+24)
 #define WM_SWITCHSTATE			(WM_USER+25)
+#define WM_REAGENT_ALARM		(WM_USER+26)
 
 extern CConfigSetView* SetPTR;
 

@@ -2,6 +2,8 @@
 class DataProcess
 {
 public:
+	//int PLTGraphEnd = 133;
+
 	DataProcess();
 	~DataProcess();
 	void	BasoLmneRbcPlt_2Analyse(sample_info *psampledata);

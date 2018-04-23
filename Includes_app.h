@@ -80,6 +80,7 @@ Others:       	// 其它内容的说明
 //#include "PerfusionView.h"
 //#include "PLTSetView.h"
 //#include "PrintSetView.h"
+#include "QcDataProcess.h"
 //#include "RangeSetView.h"
 //#include "ReabentalarmView.h"
 //#include "Reagentmanagement2View.h"
@@ -103,6 +104,7 @@ Others:       	// 其它内容的说明
 //#include "ValvetestView.h"
 //#include "WorkSheetView.h"
 //#include "WorkspaceBar.h"
+
 
 
 #include "CMyBCGPListCtrl.h"

@@ -81,10 +81,10 @@ void CEmptyView::DrainReagent(char * Mess, uchar CMD, unsigned int m_ntime)
 	if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
 	{
 		//DrainReagent(Mess, CMD, m_ntime);
-		MessageBox(L"命令发送不成功！", L"ERROR", MB_OKCANCEL);
+		MessageBox(L"命令发送不成功！", L"ERROR", MB_OK);
 	}
 		
-	else
+	else//命令发送成功
 	{
 		SetTimer(POLLTIME2, m_ntime, 0);
 		SetWindowDisable();
@@ -97,73 +97,63 @@ void CEmptyView::OnBnClickedDrainRinse()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN RINSE--------#\n", SPI_CMD_DRAIN_RINSE,SPI_POLL_TIME1000);
-	
 }
-
 
 void CEmptyView::OnBnClickedDrainHgb()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN HGB--------#\n", SPI_CMD_DRAIN_HGB, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainRbc()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN RBC--------#\n", SPI_CMD_DRAIN_RBC, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainBaso()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN BASO--------#\n", SPI_CMD_DRAIN_BASO, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainLmne()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN LMNE--------#\n", SPI_CMD_DRAIN_LMNE, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainAll()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN ALL--------#\n", SPI_CMD_DRAIN_ALL, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainDiluentPot()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN DILUENT_POT--------#\n", SPI_CMD_DRAIN_DILUENT_RESERVOIR, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainCtm()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN CTM--------#\n", SPI_CMD_DRAIN_CTM, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainPipe()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	DrainReagent("DRAIN PIPE--------#\n", SPI_CMD_DRAIN_PIPE, SPI_POLL_TIME1000);
-	
-}
 
+}
 
 void CEmptyView::OnBnClickedDrainEscape()
 {
@@ -171,7 +161,6 @@ void CEmptyView::OnBnClickedDrainEscape()
 	CDialogEx::OnCancel();
 	//SetWindowEnable();
 }
-
 
 void CEmptyView::OnTimer(UINT_PTR nIDEvent)
 {
@@ -183,7 +172,11 @@ void CEmptyView::OnTimer(UINT_PTR nIDEvent)
 		PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 		PC_RECEIVE_FRAME(rdata_state, SPI_TYPE_STATE);
 		SendMessage(WM_ACKSPI, rdata_state[0], 0);
+
+		SetWindowEnable();//使窗口使能
 		break;
+	//case POLLTIME3:
+	//	break;
 	}
 CDialogEx::OnTimer(nIDEvent);
 
