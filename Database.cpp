@@ -379,10 +379,10 @@ int loadpatient(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs, patient_info &pa
 				temp = W2A(code);
 				strncpy(param.code, temp, sizeof(param.code) / sizeof(char));
 			}
-			var = m_pRs->GetCollect("technicia");
+			var = m_pRs->GetCollect("technician");
 			if (var.vt != VT_NULL)
 			{
-				CString technician = m_pRs->GetCollect("technicia");
+				CString technician = m_pRs->GetCollect("technician");
 				temp = W2A(technician);
 				strncpy(param.technician, temp, sizeof(param.technician) / sizeof(char));
 			}
@@ -837,6 +837,7 @@ int AddPatientRecord(patient_info *ppatientdata)
 	_RecordsetPtr m_pRs;
 	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
 		return -1;
+
 	CString number;
 	number.Format(_T("%d"), ppatientdata->number);
 	CString name;
@@ -849,9 +850,10 @@ int AddPatientRecord(patient_info *ppatientdata)
 		sex_1 = ppatientdata->sex + 48;
 	sex = sex_1;
 	CString rangetype;
-	char rangetype_1 = ppatientdata->rangetype ;
+	char rangetype_1 = ppatientdata->rangetype;
 	if (rangetype_1 < 10)
 		rangetype_1 = ppatientdata->rangetype + 48;
+
 	rangetype = rangetype_1;
 	CString age;
 	age = ChartsToCString(ppatientdata->age, sizeof(ppatientdata->age) / sizeof(char));
@@ -859,18 +861,52 @@ int AddPatientRecord(patient_info *ppatientdata)
 	code = ChartsToCString(ppatientdata->code, sizeof(ppatientdata->code) / sizeof(char));
 	CString technician;
 	technician = ChartsToCString(ppatientdata->technician, sizeof(ppatientdata->technician) / sizeof(char));
+	/********数据库更新*********/
 	CString  row;
 	row.Format(_T("%d"), ppatientdata->row);
+
+
+
+	CString doc_check = _T("select * from doctordata where doct_name ='") + doctor + "'";
+	ExeSql(m_pDB, m_pRs, doc_check);
+	CString doct_id;
+	_variant_t var;
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+
+		}
+		while (!m_pRs->adoEOF)
+		{
+
+			var = m_pRs->GetCollect("doct_id");
+			if (var.vt != VT_NULL)
+				doct_id = (LPCSTR)_bstr_t(var);
+			m_pRs->MoveNext();
+		}
+
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+
+
 	CString select = _T("select * from patientdata where number ='") + number + "'";
 	ExeSql(m_pDB, m_pRs, select);
 	IS_NO_exist(m_pDB, m_pRs, &number_exsit);
 	if (number_exsit){
 		//更新的时候，行号row不用更新
-		CString updatepatient = _T("update patientdata set name='") + name + "'sex ='" + sex + "'rangetype ='" + rangetype + "'age ='" + age + "'code ='" + code + "'technician ='" + technician + "'doctor ='" + doctor+ "'where number ='" + number + "'";
+		CString updatepatient = _T("update patientdata set name='") + name + "' , sex = '" + sex + "', code = '" + code + "', age = '" + age + "', doctor = " + doct_id + ", technician = '" + technician + "', rangetype = '" + rangetype + "' where number ='" + number + "'";// + "', technician = '" + technician + 
 		ExeSql(m_pDB, m_pRs, updatepatient);
 	}
 	else{
-		CString insertpatient = _T("INSERT INTO [patientdata] ([row],[number],[name],[sex],[rangetype],[age],[doctor]) VALUES('") + row + "' ,'" + number + "' ,'" + name + "' ,'" + sex + "' ,'" + rangetype + "' ,'" + age +"' ,'" +doctor +"');";
+		CString insertpatient = _T("INSERT INTO [patientdata] ([row],[number],[name],[sex],[rangetype],[age],[code],[technician],[doctor]) VALUES('") + row + "' ,'" + number + "' ,'" + name + "' ,'" + sex + "' ,'" + rangetype + "' ,'" + age + "','" + code + "','" + technician + "' ,'" + doct_id + "');";
 		ExeSql(m_pDB, m_pRs, insertpatient);
 	}
 	CloseDataBase(m_pDB, m_pRs);

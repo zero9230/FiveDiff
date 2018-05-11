@@ -119,6 +119,13 @@ public:
 	{
 		return m_nCurrType;
 	}
+	CBCGPOutlookBar& GetShortCut()
+	{
+		return m_wndShortcutsBar;
+	}
+	CBCGPOutlookBarPane& GetShortCutPane(){
+		return m_wndShortcutsPane1;
+	}
 
 	int	GetFeatureCount() const
 	{
@@ -169,6 +176,7 @@ protected:
 	//}}AFX_MSG
 	afx_msg void			OnTestModeCombo();
 	afx_msg void			OnOutlookBarShortcut(UINT id);
+	afx_msg void OnUpdateOutlookBarShortcut(CCmdUI* pCmdUI);
 	afx_msg LRESULT			OnRedraw(WPARAM, LPARAM);
 	afx_msg LRESULT			USB_StatusChange(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT			OnMSG_ACKSPI(WPARAM wParam, LPARAM lParam);

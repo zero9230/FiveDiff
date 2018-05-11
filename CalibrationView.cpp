@@ -11,6 +11,9 @@
 
 IMPLEMENT_DYNCREATE(CCalibrationView, CBCGPChartExampleView)
 
+/*****************ЖЈБъ***************/
+
+
 CCalibrationView::CCalibrationView()
 : CBCGPChartExampleView(CCalibrationView::IDD)
 , m_modeRadio(0)

@@ -21,6 +21,18 @@ typedef struct{
 }ResultToDisplay;
 typedef	ResultToDisplay*	pResultToDisplay;
 
+
+///***** 用于医生id与姓名的匹配*******/
+//struct doct_match
+//{
+//	int doct_id=-1;
+//	CString doct_name="";
+//};
+//doct_match doctor_match[30];
+///*****************/
+
+
+
 typedef struct{
 	int list_pos[1000];
 	int ado_pos[1000];
@@ -70,7 +82,7 @@ public:
 	static ResultToDisplay*  pThisResult;
 	int					m_printStyle;
 	BOOL				m_print_tip;
-	
+
 private:
 	static sample_info	*	sampledata;			//与界面交互和数据库交互的变量
 	static patient_info*	patientdata;
@@ -130,8 +142,8 @@ public:
 	afx_msg void	OnViewBack();
 	afx_msg void	OnViewForward();
 	afx_msg void	OnSelectResultPrint();
-		
-	void			WriteSelectReportData(sample_info* psampledata,patient_info* ppatientdata);
+
+	void			WriteSelectReportData(sample_info* psampledata, patient_info* ppatientdata);
 	void			FillA4Report(CString file, sample_info* psampledata, patient_info* ppatientdata);
 	void			FillA5Report(CString file, sample_info* psampledata, patient_info* ppatientdata);
 
@@ -139,34 +151,53 @@ public:
 
 	void			GernerateLMNEBGP();
 	void			GernerateBASOBGP();
-	void			GernerateRBCBGP(); 
+	void			GernerateRBCBGP();
 	void			GerneratePLTBGP();
 
 public:
 	CString			sampleID;
-	 uchar	graph_lmne[16][256];
-	 uchar	graph_baso_left[7][103];
-	 uchar	graph_baso[7][256];
-	 uchar	graph_rbc_left[7][2];
-	 uchar	graph_rbc[7][256];
-	 uchar	graph_plt_left[7][101];
-	 uchar	graph_plt[7][256];
+	uchar	graph_lmne[16][256];
+	uchar	graph_baso_left[7][103];
+	uchar	graph_baso[7][256];
+	uchar	graph_rbc_left[7][2];
+	uchar	graph_rbc[7][256];
+	uchar	graph_plt_left[7][101];
+	uchar	graph_plt[7][256];
 
 
 
-	 CString	itemhead;
+	CString	itemhead;
 
-	 CString items_fullname[28];
-	 CString items_shortname[28] ;	 
-	 CString unit_info[28];
-	
+	CString items_fullname[28];
+	CString items_shortname[28];
+	CString unit_info[28];
 
 
-	 afx_msg void OnDeleteRecord();
 
-	 afx_msg void OnBnClickedResultReturn();
-	 
-	 CComboBox m_doctor_combo;
+	afx_msg void OnDeleteRecord();
+
+	afx_msg void OnBnClickedResultReturn();
+
+	CComboBox m_doctor_combo;
+	//	 afx_msg void OnEnSetfocusResultEdit3();
+	//afx_msg void OnEnSetfocusResultEdit3();
+	//afx_msg void OnEnKillfocusResultEdit3();
+	//afx_msg void OnEnSetfocusResultEdit4();
+	//afx_msg void OnEnKillfocusResultEdit4();
+	//afx_msg void OnEnSetfocusResultEdit5();
+	//afx_msg void OnEnKillfocusResultEdit5();
+	//afx_msg void OnEnSetfocusResultEdit2();
+	//afx_msg void OnEnKillfocusResultEdit2();
+	//afx_msg void OnBnClickedButton3();
+	afx_msg void OnEnSetfocusResultEdit3();
+	afx_msg void OnEnKillfocusResultEdit3();
+	afx_msg void OnEnSetfocusResultEdit4();
+	afx_msg void OnEnKillfocusResultEdit4();
+	afx_msg void OnEnSetfocusResultEdit5();
+	afx_msg void OnEnKillfocusResultEdit5();
+	afx_msg void OnEnSetfocusResultEdit2();
+	afx_msg void OnEnKillfocusResultEdit2();
+	afx_msg void OnBnClickedButton3();
 };
 
 

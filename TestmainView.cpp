@@ -232,13 +232,46 @@ int CTestmainView::loadDoctors()
 	//根据编号获取病人信息表对应记录
 	CString numofrs;
 	//numofrs = pThisResult->numofrs[pThisResult->nownum];
-	CString select_doctordata = _T("select * from doctordata'");// where number = '") + numofrs + "';";
+	CString select_doctordata = _T("select * from doctordata");// where number = '") + numofrs + "';";
 	//CString select_sampledata = _T("select * from sampledata'");// where number = '") + numofrs + "';";
-
+	_variant_t var;
 	ExeSql(m_pDB, m_pRs, select_doctordata);
-	loaddoctor(m_pDB, m_pRs, *doctordata);
-	//根据编号获取样本数据表的对应记录
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+			return FALSE;
+		}
+		while (!m_pRs->adoEOF)
+		{
 
+
+			/*******************************************/
+			//显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
+
+			var = m_pRs->GetCollect("doct_name");
+			CString strName;
+			if (var.vt != VT_NULL)
+				strName = (LPCSTR)_bstr_t(var);
+			//	m_PatientResultList.SetItemText(i, 4, strName);
+			m_doctorcombo.AddString(strName);
+
+			i++;
+			m_pRs->MoveNext();
+		}
+		//	ThisResult2.totalnums = m_PatientResultList.GetItemCount();
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+
+	//loaddoctor(m_pDB, m_pRs, *doctordata);
+	//根据编号获取样本数据表的对应记录
 	CloseDataBase(m_pDB, m_pRs);
 }
 
@@ -3962,6 +3995,11 @@ void CTestmainView::OnBnClickedButton1()
 	////GetPatientInfo();
 	//char* c2 = "张三";
 	//CString cs2 = "李四";
+
+	USES_CONVERSION;
+	GetPatientInfo(&patientdata);
+	AddPatientRecord(&patientdata);
+
 
 	//USES_CONVERSION;	
 	//GetPatientInfo(&patientdata);

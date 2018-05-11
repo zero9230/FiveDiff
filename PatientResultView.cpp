@@ -36,9 +36,9 @@ BEGIN_MESSAGE_MAP(CPatientResultView, CFormView)
 	ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_DAILY_RESULT2, &CPatientResultView::OnDailyResult2)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CPatientResultView::OnNMDblclkList1)
-//	ON_BN_CLICKED(IDC_PATIENT_RESULT2, &CPatientResultView::OnBnClickedPatientResult2)
-//ON_BN_CLICKED(IDC_BUTTON3, &CPatientResultView::OnBnClickedButton3)
-ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView::OnBnClickedButtonSearch)
+	//	ON_BN_CLICKED(IDC_PATIENT_RESULT2, &CPatientResultView::OnBnClickedPatientResult2)
+	//ON_BN_CLICKED(IDC_BUTTON3, &CPatientResultView::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView::OnBnClickedButtonSearch)
 END_MESSAGE_MAP()
 
 
@@ -70,7 +70,7 @@ BOOL CPatientResultView::InitPatientResultForm()
 	CString select_name_sample = L"select * from patientdata ";// where name = '" + m_patientname + "'";
 	CString strNum = "";
 	CString strtemp = "20";
-	CString strSex[3] = { "男", "女", "" };
+	CString strSex[3] = { "空", "男", "女" };
 
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
@@ -101,9 +101,9 @@ BOOL CPatientResultView::InitPatientResultForm()
 
 	// 在CRP列表视图控件中插入列表项，并设置列表子项文本
 
-	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)//作用为打开数据库
 		return FALSE;
-	ExeSql(m_pDB, m_pRs, select_name_sample);
+	ExeSql(m_pDB, m_pRs, select_name_sample);     //执行数据库
 	try
 	{
 		if (!m_pRs->BOF){
@@ -120,30 +120,56 @@ BOOL CPatientResultView::InitPatientResultForm()
 			if (var.vt != VT_NULL)
 				strNum = (LPCSTR)_bstr_t(var);
 			ThisResult2.numofrs[i] = strNum;
-			strNum = strtemp + strNum;
-			m_PatientResultList.InsertItem(i, _T(""));
+			strNum = strtemp + strNum;								//样本号读取正确，并在前面加上20
+			m_PatientResultList.InsertItem(i, _T(""));              //显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
 			m_PatientResultList.SetItemText(i, 1, strNum);
-			m_PatientResultList.SetItemText(i,4,m_patientname);
+
 
 			var = m_pRs->GetCollect("sex");
 			CString sextemp;
 			if (var.vt != VT_NULL)
 			{
 				sextemp = (LPCSTR)_bstr_t(var);
+
 				sextemp = strSex[_ttoi(sextemp)];
 			}
 			m_PatientResultList.SetItemText(i, 5, sextemp);
+
+
+
+			/*******************************************/
+
+
+
+			var = m_pRs->GetCollect("ID");
+			CString strID;
+			if (var.vt != VT_NULL)
+				strID = (LPCSTR)_bstr_t(var);
+			m_PatientResultList.SetItemText(i, 3, strID);
+			//m_PatientResultList.InsertItem(i, _T(""));              //显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
+
+			var = m_pRs->GetCollect("name");
+			CString strName;
+			if (var.vt != VT_NULL)
+				strName = (LPCSTR)_bstr_t(var);
+			m_PatientResultList.SetItemText(i, 4, strName);
+
+
+			/*******************************************/
+
+
 			/*var = m_pRs->GetCollect("time");
 			if (var.vt != VT_NULL)
-				strTime = (LPCSTR)_bstr_t(var);
+			strTime = (LPCSTR)_bstr_t(var);
 			CString a = ":";
 			strTime.Insert(2, a);
 			strTime.Insert(5, a);
 			m_PatientResultList.SetItemText(i, 2, strTime);*/
+
 			i++;
 			m_pRs->MoveNext();
 		}
- 		ThisResult2.totalnums = m_PatientResultList.GetItemCount();
+		ThisResult2.totalnums = m_PatientResultList.GetItemCount();
 	}
 	catch (_com_error &e)
 	{
@@ -299,7 +325,7 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
 
 		::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
-		::GetWindowLong(pView->m_hWnd, GWL_ID));
+			::GetWindowLong(pView->m_hWnd, GWL_ID));
 
 		::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
 		pActiveView->ShowWindow(SW_HIDE);
@@ -332,7 +358,7 @@ void CPatientResultView::OnBnClickedButtonSearch()
 	CString select_name_sample = L"select * from patientdata where name ='" + m_patientname + "'";
 	CString strNum = "";
 	CString strtemp = "20";
-	CString strSex[3] = { "男", "女", "" };
+	CString strSex[3] = { "空", "男", "女" };
 
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;

@@ -200,9 +200,10 @@ BOOL CBCGPChartExampleApp::InitInstance()
 
 
 	CMainFrame* pMainFrame = (CMainFrame*)AfxGetMainWnd();//预开启开机画面
+	pMainFrame->SelectView(pMainFrame->GetCurrentViewType());
 	pMainFrame->SelectView(1);
 	//pMainFrame->SelectView(2);
-	CurView = 1;
+	//CurView = 1;
 	//CurView = 2;
 
 	// The one and only window has been initialized, so show and update it.

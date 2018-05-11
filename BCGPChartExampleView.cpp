@@ -154,10 +154,20 @@ void CBCGPChartExampleView::OnInitialUpdate()
 	if (AfxGetMainWnd() == NULL)
 	{
 		return;
-	}
+	}	
+	CBCGPOutlookBarPane m_wndShortcutsPane1;
+	CBCGPOutlookBar			m_wndShortcutsBar;
 
 	int nID = GetDlgCtrlID() - AFX_IDW_PANE_FIRST + 1;
 
+	//m_wndShortcutsBar.Gets;//GetFeatureName(nID, m_strTitle);
+	//m_Feature = workspace.GetFeature(nID);
+
+	CBCGPChartVisualObject* pChart = GetChart();
+	if (pChart != NULL)
+	{
+		pChart->ShowAxisIntervalInterlacing(BCGP_CHART_X_PRIMARY_AXIS);
+	}
 	//((CMainFrame*)AfxGetMainWnd())->GetFeatureName(nID, m_strTitle);
 	//m_Feature =((CMainFrame*)AfxGetMainWnd())->GetFeature(nID);
 
@@ -199,9 +209,10 @@ void CBCGPChartExampleView::SetDefaultLineWidth()
 
 /////////////////////////////////////////////////////////////////////////////
 // CBCGPChartExampleView printing
-
+//打印预览，会隐藏当前页面，容易造成问题
 void CBCGPChartExampleView::OnFilePrintPreview() 
 {
+	//CView* pCurView=pMainFrame->GetCurrentView();
 #ifdef _BCGSUITE_INC_
     AFXPrintPreview(this);
 #else

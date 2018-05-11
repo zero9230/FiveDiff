@@ -263,6 +263,10 @@ void CQualityControlView::OnBnClickedQualityFileinfo()
 		m_QualityTab.AddTab(&m_QualityTestPage, L"质控计数", 3);
 		m_QualityTab.AddTab(&m_QualityListPage, L"质控列表", 4);
 
+		/**********************测试代码********************/
+		//m_QualityListPage.CloseWindow();
+		//m_QualityListPage.ShowWindow(SW_RESTORE);
+
 		//m_QualityTab.InsertTab(&m_QualityTargetPage, L"LJ质控编辑", 2);
 		//m_QualityTab.AddTab(&m_QcXTargetPage, L"X质控编辑", 0);
 	}

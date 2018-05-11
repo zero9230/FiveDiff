@@ -18,6 +18,8 @@
 #define IDB_TOOLBAR_HC                  151
 #define IDR_MENU_VIEW                   164
 #define IDR_TOOLBAR_TREE                168
+#define IDR_MENU_IMAGES                 170
+#define IDB_MENUIMAGES24                172
 #define IDR_WALL                        176
 #define IDR_BACKGROUND                  177
 #define IDR_TEXTURE1                    178
@@ -1090,6 +1092,7 @@
 #define IDC_QC_XR_CHART_LINECHART1      1998
 #define IDC_QC_XR_CHART_LINECHART2      1999
 #define IDC_QC_XR_CHART_STATIC0         2000
+#define IDC_RESULT_SAVE                 2001
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1263,7 +1266,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        296
 #define _APS_NEXT_COMMAND_VALUE         33010
-#define _APS_NEXT_CONTROL_VALUE         2001
+#define _APS_NEXT_CONTROL_VALUE         2002
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

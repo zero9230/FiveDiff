@@ -155,6 +155,16 @@ BEGIN_MESSAGE_MAP(CResultDetails, CBCGPChartExampleView)
 	ON_BN_CLICKED(IDC_RESULT_PRINT, &CResultDetails::OnSelectResultPrint)
 	ON_BN_CLICKED(IDC_DELETERECORD, &CResultDetails::OnDeleteRecord)
 	ON_BN_CLICKED(IDC_RESULT_RETURN, &CResultDetails::OnBnClickedResultReturn)
+	//ON_BN_CLICKED(IDC_RESULT_SAVE, &CResultDetails::OnBnClickedResultSave)
+	ON_EN_SETFOCUS(IDC_RESULT_EDIT3, &CResultDetails::OnEnSetfocusResultEdit3)
+	ON_EN_KILLFOCUS(IDC_RESULT_EDIT3, &CResultDetails::OnEnKillfocusResultEdit3)
+	ON_EN_SETFOCUS(IDC_RESULT_EDIT4, &CResultDetails::OnEnSetfocusResultEdit4)
+	ON_EN_KILLFOCUS(IDC_RESULT_EDIT4, &CResultDetails::OnEnKillfocusResultEdit4)
+	ON_EN_SETFOCUS(IDC_RESULT_EDIT5, &CResultDetails::OnEnSetfocusResultEdit5)
+	ON_EN_KILLFOCUS(IDC_RESULT_EDIT5, &CResultDetails::OnEnKillfocusResultEdit5)
+	ON_EN_SETFOCUS(IDC_RESULT_EDIT2, &CResultDetails::OnEnSetfocusResultEdit2)
+	ON_EN_KILLFOCUS(IDC_RESULT_EDIT2, &CResultDetails::OnEnKillfocusResultEdit2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CResultDetails::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -188,7 +198,7 @@ void CResultDetails::OnInitialUpdate()
 	CBCGPChartExampleView::OnInitialUpdate();
 
 	// TODO:  在此添加专用代码和/或调用基类	
-	m_sex_combo.InsertString(0, _T("空"));
+	m_sex_combo.InsertString(0, _T("(空)"));
 	m_sex_combo.InsertString(1, _T("男"));
 	m_sex_combo.InsertString(2, _T("女"));
 
@@ -231,25 +241,89 @@ BOOL CResultDetails::InitPaitientInfo(patient_info* ppatientdata)
 {
 	USES_CONVERSION;
 	CString numtemp = "20";
-	CString rangetype;	
-	CString nametemp= A2W(ppatientdata->name);
-	CString agetemp= ppatientdata->age;
-	CString doctor =A2W(ppatientdata->doctor);
+	CString rangetype;
+	CString nametemp = A2W(ppatientdata->name);
+	CString agetemp = ppatientdata->age;
+	CString doctor = A2W(ppatientdata->doctor);
 	CString barcode = ppatientdata->code;
 
-	rangetype.Format(L"%d",ppatientdata->rangetype);
+	/*
+	数据去除两边空格
+	并判断数据是否为默认的随机数值，如果是，则赋值为空
+	*/
+	nametemp = nametemp.Trim();
+	agetemp = agetemp.Trim();
+	doctor = doctor.Trim();
+	barcode = barcode.Trim();
+
+	if (doctor.GetLength() == 0)
+		doctor = "6";
+
+	///********doct_id的数据匹配***************/
+
+	CString filename;
+	filename.Format(_T("appdata.accdb"));
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return -1;
+
+	CString doc_check = _T("select * from doctordata where doct_id =") + doctor;
+	ExeSql(m_pDB, m_pRs, doc_check);
+	_variant_t var;
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+
+		}
+		while (!m_pRs->adoEOF)
+		{
+
+			var = m_pRs->GetCollect("doct_name");
+			if (var.vt != VT_NULL)
+				doctor = (LPCSTR)_bstr_t(var);
+			m_pRs->MoveNext();
+		}
+
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+	CloseDataBase(m_pDB, m_pRs);
+
+
+	/******************************/
+
+
+
+	if (nametemp == "")
+		nametemp = "(空)";
+	if (ppatientdata->age[0] <= 0 || (doctor.GetLength() == 0))
+		agetemp = "(空)";
+	if (doctor == "")
+		doctor = "(空)";
+	if (ppatientdata->code[0] <= 0 || (doctor.GetLength() == 0))
+		barcode = "(空)";
+	rangetype.Format(L"%d", ppatientdata->rangetype);
 	numtemp = numtemp + pThisResult->numofrs[pThisResult->nownum];
 
-	//MessageBox(rangetype);
-	GetDlgItem(IDC_RESULT_EDIT1)->SetWindowText(numtemp);
-	GetDlgItem(IDC_RESULT_EDIT2)->SetWindowText(rangetype);
-	GetDlgItem(IDC_RESULT_EDIT3)->SetWindowText(nametemp);
-	GetDlgItem(IDC_RESULT_EDIT4)->SetWindowText(agetemp);
-	GetDlgItem(IDC_RESULT_EDIT5)->SetWindowText(barcode);
-	//m_sex_combo.SetCurSel(1);
-	GetDlgItem(IDC_RESULT_COMBO_DOCTOR)->SetWindowTextW(doctor);
-	m_sex_combo.SetCurSel((int)ppatientdata->sex);
 
+	//MessageBox(rangetype);
+	GetDlgItem(IDC_RESULT_EDIT1)->SetWindowText(numtemp);//编号
+	GetDlgItem(IDC_RESULT_EDIT2)->SetWindowText(rangetype);//科室
+	GetDlgItem(IDC_RESULT_EDIT3)->SetWindowText(nametemp);//姓名
+	GetDlgItem(IDC_RESULT_EDIT4)->SetWindowText(agetemp);//年龄
+	GetDlgItem(IDC_RESULT_EDIT5)->SetWindowText(barcode);//条形码
+	//m_sex_combo.SetCurSel(1);
+	GetDlgItem(IDC_RESULT_COMBO_DOCTOR)->SetWindowTextW(doctor);//医生
+	m_sex_combo.SetCurSel((int)ppatientdata->sex);
+	int tetetete = 0;
 	UpdateData(false);
 	return TRUE;
 }
@@ -917,6 +991,62 @@ BOOL CResultDetails::InitForm(sample_info* psampledata)
 	InitPLTForm(psampledata);
 	InitRETForm();
 	InitCRPForm();
+	CString			zStatement;
+	CString			filename;
+	_ConnectionPtr  m_pDB;
+	_RecordsetPtr	m_pRs;
+
+	filename.Format(_T("appdata.accdb"));
+	//打开数据库
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+	{
+		return -1;
+	}
+	//根据编号获取病人信息表对应记录
+	CString numofrs;
+	//numofrs = pThisResult->numofrs[pThisResult->nownum];
+	CString select_doctordata = _T("select * from doctordata");// where number = '") + numofrs + "';";
+	//CString select_sampledata = _T("select * from sampledata'");// where number = '") + numofrs + "';";
+	_variant_t var;
+	ExeSql(m_pDB, m_pRs, select_doctordata);
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+			return FALSE;
+		}
+		while (!m_pRs->adoEOF)
+		{
+
+
+			/*******************************************/
+			//显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
+
+			var = m_pRs->GetCollect("doct_name");
+			CString strName;
+			if (var.vt != VT_NULL)
+				strName = (LPCSTR)_bstr_t(var);
+			//	m_PatientResultList.SetItemText(i, 4, strName);
+			m_doctor_combo.AddString(strName);
+			m_pRs->MoveNext();
+		}
+		//	ThisResult2.totalnums = m_PatientResultList.GetItemCount();
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+
+
+
+	//loaddoctor(m_pDB, m_pRs, *doctordata);
+	//根据编号获取样本数据表的对应记录
+	CloseDataBase(m_pDB, m_pRs);
+
 	return TRUE;
 }
 BOOL CResultDetails::UpdateForm(sample_info* psampledata)
@@ -2123,7 +2253,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 	CString patientID, patientName, sex, age, hospitalname, reportTitle;
 	CString department, area, barcode, remarks;
 
-	CString sextemp[3] = { "男", "女", "空" };
+	CString sextemp[3] = { "(空)", "男", "女" };
 	COleDateTime testTime;
 
 	hospitalname = systemcfg.hospital;
@@ -2155,7 +2285,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						data += hospitalname;
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"Title") == 0)
+					else if (name.Compare(L"Title") == 0)
 					{
 						data.Empty();
 
@@ -2163,14 +2293,14 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Name") == 0)
+					else if (name.Compare(L"Name") == 0)
 					{
 						data.Empty();
 						//LcwLoadString(IDS_STRPRNAME, data);
 						data = "姓 名：" + patientName;
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"PatientID") == 0)
+					else if (name.Compare(L"PatientID") == 0)
 					{
 						data.Empty();
 						CString tempID;
@@ -2180,14 +2310,14 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						data = "病人号：" + sampleID;
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"SampleType") == 0)
+					else if (name.Compare(L"SampleType") == 0)
 					{
 						data.Empty();
 						data = "样本类型：全血+5DIFF";
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"SampleID") == 0)
+					else if (name.Compare(L"SampleID") == 0)
 					{
 						data.Empty();
 
@@ -2195,13 +2325,13 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Sex") == 0)
+					else if (name.Compare(L"Sex") == 0)
 					{
 						data.Empty();
 						data = "性 别：" + sex;
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"Department") == 0)
+					else if (name.Compare(L"Department") == 0)
 					{
 						data.Empty();
 						//LcwLoadString(IDS_STRPRDEPART, data);
@@ -2209,7 +2339,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Area") == 0)
+					else if (name.Compare(L"Area") == 0)
 					{
 						data.Empty();
 						area = "2222";
@@ -2217,7 +2347,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Barcode") == 0)
+					else 	if (name.Compare(L"Barcode") == 0)
 					{
 						data.Empty();
 						//LcwLoadString(IDS_STRPRTREATAREA, data);
@@ -2226,7 +2356,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Age") == 0)
+					else if (name.Compare(L"Age") == 0)
 					{
 						data.Empty();
 						//LcwLoadString(IDS_STRPRAGE, data);
@@ -2234,7 +2364,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Bed") == 0)
+					else if (name.Compare(L"Bed") == 0)
 					{
 						data.Empty();
 						//CString tempbed
@@ -2242,7 +2372,7 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Doctor") == 0)
+					else if (name.Compare(L"Doctor") == 0)
 					{
 						data.Empty();
 						//LcwLoadString(IDS_STRPRSILKBED, data);
@@ -2250,38 +2380,38 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 						m_reportGenerator.Add(name, data);
 					}
 
-					if (name.Compare(L"Remarks") == 0)
+					else if (name.Compare(L"Remarks") == 0)
 					{
 						data.Empty();
 						//LcwLoadString(IDS_STRPRDOCTOR, data);
 						data = "备    注：";
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"TestTime") == 0)
+					else if (name.Compare(L"TestTime") == 0)
 					{
 						data.Empty();
 						data = "检测时间：";
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"ReportTime") == 0)
+					else if (name.Compare(L"ReportTime") == 0)
 					{
 						data.Empty();
 						data += "报告时间：";
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"Checker") == 0)
+					else if (name.Compare(L"Checker") == 0)
 					{
 						data.Empty();
 						data += "检验者：";
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"Verifier") == 0)
+					else if (name.Compare(L"Verifier") == 0)
 					{
 						data.Empty();
 						data += "审核者";
 						m_reportGenerator.Add(name, data);
 					}
-					if (name.Compare(L"TestDate") == 0)
+					else if (name.Compare(L"TestDate") == 0)
 					{
 						data.Empty();
 						data += "注：";
@@ -2418,6 +2548,25 @@ void CResultDetails::FillA4Report(CString file, sample_info* psampledata, patien
 				//CFile file(L"./res/LMNE.bmp",CFile::modeRead);
 				//CDrawObject co;
 				//m_reportGenerator.AddObject((CDrawObject)file,1);
+				else if (type == FIELD_TYPE_PICTURE){
+					if (name.Compare(L"LMNEPIC") == 0){
+						CString page2;
+						page2.Format(L"./rpt/ChReportA5.rpt");
+						//m_reportGenerator.AddTemplate(page2,TEMPLATE_TYPE_SECTION);
+						
+						//MessageBox(L"find LMNEPIC");
+					}						
+					else if (name.Compare(L"BASOPIC") == 0){
+						//MessageBox(L"find BASOPIC");
+					}
+					else if (name.Compare(L"RBCPIC") == 0){
+						//MessageBox(L"find RBCPIC");
+					}
+					else if (name.Compare(L"PLTPIC") == 0){
+						//MessageBox(L"find PLTPIC");
+					}
+
+				}
 			}
 		}
 		m_reportGenerator.Print();
@@ -2431,7 +2580,7 @@ void CResultDetails::FillA5Report(CString file, sample_info* psampledata, patien
 	CString patientID, patientName, sex, age, hospitalname, reportTitle;
 	CString department, area, barcode, remarks;
 
-	CString sextemp[3] = { "男", "女", "空" };
+	CString sextemp[3] = { "(空)", "男", "女" };
 	COleDateTime testTime;
 
 	hospitalname = systemcfg.hospital;
@@ -3416,6 +3565,7 @@ void CResultDetails::OnDeleteRecord()
 		{
 			pThisResult->numofrs[i] = pThisResult->numofrs[i + 1];
 		}
+		MessageBox(L"删除成功！");
 		OnViewBack();
 	}
 }
@@ -3461,4 +3611,138 @@ void CResultDetails::OnBnClickedResultReturn()
 	pActiveView->ShowWindow(SW_HIDE);
 	pView->ShowWindow(SW_SHOW);
 	((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
+}
+
+
+
+void CResultDetails::OnEnSetfocusResultEdit3()
+{
+		CString nametemp;
+		GetDlgItem(IDC_RESULT_EDIT3)->GetWindowText(nametemp);
+		if (nametemp == "空)")
+			nametemp = " ";
+		// TODO:  在此添加控件通知处理程序代码
+		GetDlgItem(IDC_RESULT_EDIT3)->SetWindowText(nametemp);
+}
+
+
+void CResultDetails::OnEnKillfocusResultEdit3()
+{
+	CString nametemp;
+	GetDlgItem(IDC_RESULT_EDIT3)->GetWindowText(nametemp);
+	if (nametemp == " ")
+		nametemp = "(空)";
+	// TODO:  在此添加控件通知处理程序代码
+	GetDlgItem(IDC_RESULT_EDIT3)->SetWindowText(nametemp);
+	// TODO:  在此添加控件通知处理程序代码// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultDetails::OnEnSetfocusResultEdit4()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	// TODO:  在此添加控件通知处理程序代码
+	CString agetemp;
+	GetDlgItem(IDC_RESULT_EDIT4)->GetWindowText(agetemp);
+	if (agetemp == "(空)")
+		agetemp = " ";
+	// TODO:  在此添加控件通知处理程序代码
+	GetDlgItem(IDC_RESULT_EDIT4)->SetWindowText(agetemp);
+}
+
+
+void CResultDetails::OnEnKillfocusResultEdit4()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CString agetemp;
+	GetDlgItem(IDC_RESULT_EDIT4)->GetWindowText(agetemp);
+	if (agetemp == " ")
+		agetemp = "(空)";
+	// TODO:  在此添加控件通知处理程序代码
+	GetDlgItem(IDC_RESULT_EDIT4)->SetWindowText(agetemp);// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultDetails::OnEnSetfocusResultEdit5()
+{
+	CString barcode;
+	GetDlgItem(IDC_RESULT_EDIT5)->GetWindowText(barcode);
+	if (barcode == "(空)")
+		barcode = " ";
+	// TODO:  在此添加控件通知处理程序代码
+	GetDlgItem(IDC_RESULT_EDIT5)->SetWindowText(barcode);// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultDetails::OnEnKillfocusResultEdit5()
+{
+	CString barcode;
+	GetDlgItem(IDC_RESULT_EDIT5)->GetWindowText(barcode);
+	if (barcode == " ")
+		barcode = "(空)";
+	// TODO:  在此添加控件通知处理程序代码
+	GetDlgItem(IDC_RESULT_EDIT5)->SetWindowText(barcode);// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultDetails::OnEnSetfocusResultEdit2()
+{
+	CString rangetype;
+	GetDlgItem(IDC_RESULT_EDIT2)->GetWindowText(rangetype);
+	if (rangetype == "(空)")
+		rangetype = " ";
+	// TODO:  在此添加控件通知处理程序代码
+	GetDlgItem(IDC_RESULT_EDIT2)->SetWindowText(rangetype);
+	// TODO:  在此添加控件通知处理程序代码// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultDetails::OnEnKillfocusResultEdit2()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CString rangetype;
+	GetDlgItem(IDC_RESULT_EDIT2)->GetWindowText(rangetype);
+	if (rangetype == " ")
+		rangetype = "(空)";
+	// TODO:  在此添加控件通知处理程序代码
+	GetDlgItem(IDC_RESULT_EDIT2)->SetWindowText(rangetype);// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultDetails::OnBnClickedButton3()
+{
+	USES_CONVERSION;
+	CString m_number, m_sex, m_name, m_age, m_doctor, m_barcode;
+	/******数据*********/
+	GetDlgItem(IDC_RESULT_EDIT1)->GetWindowText(m_number);
+
+	GetDlgItem(IDC_RESULT_EDIT3)->GetWindowText(m_name);
+
+	GetDlgItem(IDC_RESULT_EDIT4)->GetWindowText(m_age);
+	GetDlgItem(IDC_RESULT_EDIT5)->GetWindowText(m_barcode);
+
+
+	char* temp = W2A(m_age);
+	strcpy(patientdata->age, temp);
+	temp = W2A(m_barcode);
+	sprintf(patientdata->code, "%s", temp);
+	m_number.Delete(0, 2);
+	patientdata->number = _ttoi(m_number);
+
+	patientdata->sex = m_sex_combo.GetCurSel();
+
+
+	((CComboBox*)GetDlgItem(IDC_RESULT_COMBO_DOCTOR))->GetWindowText(m_doctor);
+
+	temp = W2A(m_doctor);
+	sprintf(patientdata->doctor, "%s", temp);
+
+
+	wchar_t *ptr;
+	ptr = m_name.GetBuffer(m_name.GetLength()*sizeof(wchar_t));
+	WideCharToMultiByte(CP_ACP, 0, (LPCTSTR)ptr, -1, patientdata->name, sizeof(patientdata->name), NULL, NULL);
+	m_name.ReleaseBuffer();
+
+
+	AddPatientRecord(patientdata);
 }

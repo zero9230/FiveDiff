@@ -17,7 +17,7 @@ IMPLEMENT_DYNCREATE(CResultListView, CBCGPChartExampleView)
 CResultListView::CResultListView()
 : CBCGPChartExampleView(CResultListView::IDD)
 {
-	m_nFirstDayOfWeek=1;
+	m_nFirstDayOfWeek = 1;
 }
 
 CResultListView::~CResultListView()
@@ -68,7 +68,7 @@ void CResultListView::OnInitialUpdate()
 {
 	CBCGPChartExampleView::OnInitialUpdate();
 
-	
+
 	// TODO:  在此添加专用代码和/或调用基类
 	m_ResultDate.SizeToContent();
 
@@ -124,7 +124,8 @@ BOOL CResultListView::InitResultForm()
 	m_ResultList.SetRowHeigt(20);
 
 
-	// 为CRP列表视图控件添加四列
+	//// 为CRP列表视图控件添加四列
+
 	m_ResultList.InsertColumn(0, _T("选择"), LVCFMT_CENTER, rect.Width() / 10, 0);
 	m_ResultList.InsertColumn(1, _T("样本号"), LVCFMT_CENTER, rect.Width() / 8, 1);
 	m_ResultList.InsertColumn(2, _T("时间"), LVCFMT_CENTER, rect.Width() / 8, 2);
@@ -133,6 +134,7 @@ BOOL CResultListView::InitResultForm()
 	m_ResultList.InsertColumn(5, _T("性别"), LVCFMT_CENTER, rect.Width() / 8, 5);
 	m_ResultList.InsertColumn(6, _T("测试类型"), LVCFMT_CENTER, rect.Width() / 8, 6);
 	m_ResultList.InsertColumn(7, _T("阳阴"), LVCFMT_CENTER, rect.Width() / 8, 6);
+
 
 	// 在CRP列表视图控件中插入列表项，并设置列表子项文本
 	m_ResultList.InsertItem(0, _T(""));
@@ -145,7 +147,7 @@ BOOL CResultListView::InitResultForm()
 	m_ResultList.SetItemText(0, 7, _T("阳"));
 
 	m_ResultList.InsertItem(1, _T(""));
-	m_ResultList.SetItemText(1, 1, _T("12345")); 
+	m_ResultList.SetItemText(1, 1, _T("12345"));
 	m_ResultList.SetItemText(1, 2, _T("2016/04/11 16:44:00"));
 	m_ResultList.SetItemText(1, 3, _T("1111"));
 	m_ResultList.SetItemText(1, 4, _T("张三"));
@@ -169,45 +171,46 @@ BOOL CResultListView::InitResultForm()
 void CResultListView::UpdateResultList(COleDateTime Date)
 {
 
-	 int	i = 0;
+	int	i = 0;
 	static unsigned int date;
 	static unsigned int today_start_num;
 	static unsigned int today_end_num;
 	CString today_start_num_1;
 	CString today_end_num_1;
-	
+
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
 
 	_variant_t var;
-	CString strNum="";
-	CString strTime="";
-	CString strName="";
+	CString strNum = "";
+	CString strTime = "";
+	CString strName = "";
 	CString strtemp;
-	CString strSex="";
 	strtemp = "20";
-
+	CString strSex[3] = { "男", "女", "" };
 	m_ResultList.DeleteAllItems();//清空列表刷新
 	int day = Date.GetDay();
 	int month = Date.GetMonth();
 	int year = Date.GetYear();
 
-	date = year * 10000 + month* 100 +day;
+	date = year * 10000 + month * 100 + day;
 	//由于位数原因，编号在存入数据库的日期的高两位截取掉
 	today_start_num = (date % 1000000) * 10000;
 	today_end_num = today_start_num + 9999;
+	//代表一整天
 
-	today_start_num_1.Format(_T("%d"),today_start_num);
+	today_start_num_1.Format(_T("%d"), today_start_num);
 	today_end_num_1.Format(_T("%d"), today_end_num);
 
 	CString select_number_sample = _T("select * from sampledata where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("'");
 	CString select_number_patient = _T("select * from patientdata where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("'");
+
 	CString filename;
 	filename.Format(_T("appdata.accdb"));
 
 	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
 		return;
-	ExeSql(m_pDB, m_pRs, select_number_sample);
+	ExeSql(m_pDB, m_pRs, select_number_sample);//把特定编号的数据选取出来
 	try
 	{
 		if (!m_pRs->BOF){
@@ -226,14 +229,30 @@ void CResultListView::UpdateResultList(COleDateTime Date)
 			ThisResult.numofrs[i] = strNum;
 			strNum = strtemp + strNum;
 			m_ResultList.InsertItem(i, _T(""));
-			m_ResultList.SetItemText(i,1,strNum);
+			m_ResultList.SetItemText(i, 1, strNum);
+
+
+			/*****************************/
+			var = m_pRs->GetCollect("ID");
+			CString strID;
+			if (var.vt != VT_NULL)
+				strID = (LPCSTR)_bstr_t(var);
+			m_ResultList.SetItemText(i, 3, strID);
+
+			var = m_pRs->GetCollect("mode");
+			CString strMode;
+			if (var.vt != VT_NULL)
+				strMode = (LPCSTR)_bstr_t(var);
+			m_ResultList.SetItemText(i, 6, strMode);
+
+			/*****************************/
 
 			var = m_pRs->GetCollect("time");
 			if (var.vt != VT_NULL)
 				strTime = (LPCSTR)_bstr_t(var);
 			CString a = ":";
-			strTime.Insert(2,a);
-			strTime.Insert(5,a);
+			strTime.Insert(2, a);
+			strTime.Insert(5, a);
 			m_ResultList.SetItemText(i, 2, strTime);
 			i++;
 			m_pRs->MoveNext();
@@ -259,15 +278,22 @@ void CResultListView::UpdateResultList(COleDateTime Date)
 		}
 		while (!m_pRs->adoEOF)
 		{
+
+
 			var = m_pRs->GetCollect("name");
 			if (var.vt != VT_NULL)
 				strName = (LPCSTR)_bstr_t(var);
 			m_ResultList.SetItemText(i, 4, strName);
 
 			var = m_pRs->GetCollect("sex");
+			CString sextemp;
 			if (var.vt != VT_NULL)
-				strSex = (LPCSTR)_bstr_t(var);
-			m_ResultList.SetItemText(i, 5, strSex);
+			{
+				sextemp = (LPCSTR)_bstr_t(var);
+				sextemp = strSex[_ttoi(sextemp)];
+			}
+			m_ResultList.SetItemText(i, 5, sextemp);
+
 			i++;
 			m_pRs->MoveNext();
 		}
@@ -276,7 +302,8 @@ void CResultListView::UpdateResultList(COleDateTime Date)
 	{
 		TRACE("UpdateResultList异常");
 	}
-	CloseDataBase( m_pDB, m_pRs);
+	CloseDataBase(m_pDB, m_pRs);
+
 }
 
 void CResultListView::OnCloseupResultTimepicker()
@@ -286,9 +313,9 @@ void CResultListView::OnCloseupResultTimepicker()
 	int day = m_Date.GetDay();
 	int month = m_Date.GetMonth();
 	int year = m_Date.GetYear();
-	TRACE("DAY:%d\n",day);
-	TRACE("month:%d\n",month);
-	TRACE("YEAR:%d\n",year);
+	TRACE("DAY:%d\n", day);
+	TRACE("month:%d\n", month);
+	TRACE("YEAR:%d\n", year);
 	UpdateResultList(m_Date);
 }
 
@@ -311,7 +338,7 @@ void CResultListView::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO:  在此添加控件通知处理程序代码
 	*pResult = 0;
 	POSITION pos = m_ResultList.GetFirstSelectedItemPosition();
-	
+
 
 	if (pos == NULL)
 		TRACE("No items were selected!\n");
@@ -359,7 +386,7 @@ void CResultListView::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)
 		CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
 		UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
 		::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
-		::GetWindowLong(pView->m_hWnd, GWL_ID));
+			::GetWindowLong(pView->m_hWnd, GWL_ID));
 		::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
 		pActiveView->ShowWindow(SW_HIDE);
 		pView->ShowWindow(SW_SHOW);
@@ -403,7 +430,7 @@ void CResultListView::OnPaitientResult()
 	UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
 
 	::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
-	::GetWindowLong(pView->m_hWnd, GWL_ID));
+		::GetWindowLong(pView->m_hWnd, GWL_ID));
 
 	::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
 	pActiveView->ShowWindow(SW_HIDE);
