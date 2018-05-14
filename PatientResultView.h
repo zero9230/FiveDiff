@@ -10,6 +10,7 @@
 //#include "CMyBCGPListCtrl.h"
 #include "ResultListView.h"
 #include "Includes_app.h"
+#include "afxwin.h"
 
 // CPatientResultView ¥∞ÃÂ ”Õº
 
@@ -51,8 +52,9 @@ public:
 	CString m_patientname;
 //	afx_msg void OnBnClickedPatientResult2();
 //	afx_msg void OnBnClickedButton3();
-	CString m_patientGender;
+	//CString m_patientGender;
 	afx_msg void OnBnClickedButtonSearch();
+	CComboBox patient_gender;
 };
 
 

@@ -228,6 +228,7 @@
 #define IDC_EDIT11                      1243
 #define IDC_EDIT12                      1244
 #define IDC_COMBO2                      1246
+#define IDC_COMBOX_SEX                  1246
 #define IDC_TITLE                       1249
 #define IDC_BUTTON3                     1252
 #define IDC_BUTTON4                     1253

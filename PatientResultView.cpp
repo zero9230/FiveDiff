@@ -13,7 +13,7 @@ IMPLEMENT_DYNCREATE(CPatientResultView, CBCGPChartExampleView)
 CPatientResultView::CPatientResultView()
 : CBCGPChartExampleView(CPatientResultView::IDD)
 , m_patientname(_T(""))
-, m_patientGender(_T(""))
+
 {
 
 }
@@ -28,7 +28,8 @@ void CPatientResultView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST1, m_PatientResultList);
 	DDX_Control(pDX, IDC_DAILY_RESULT2, m_daily_result);
 	DDX_Text(pDX, IDC_EDIT_NAME, m_patientname);
-	DDX_Text(pDX, IDC_EDIT_GENDER, m_patientGender);
+	//DDX_Text(pDX, IDC_EDIT_GENDER, m_patientGender);
+	DDX_Control(pDX, IDC_COMBOX_SEX, patient_gender);
 }
 
 
@@ -74,6 +75,9 @@ BOOL CPatientResultView::InitPatientResultForm()
 
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
+	patient_gender.AddString(_T("空"));
+	patient_gender.AddString(_T("男"));
+	patient_gender.AddString(_T("女"));
 
 	_variant_t var;
 	is_search = false;
@@ -350,15 +354,37 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 void CPatientResultView::OnBnClickedButtonSearch()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	CString patient_num;
-	GetDlgItem(IDC_EDIT_ID)->GetWindowText(patient_num);
-
+	CString ID, name, age, sex;
+	char sex_1;
 	CRect rect;
 	int i = 0;
-	CString select_name_sample = L"select * from patientdata where name ='" + m_patientname + "'";
+	CString select_name_sample = L"select * from patientdata where";
 	CString strNum = "";
 	CString strtemp = "20";
 	CString strSex[3] = { "空", "男", "女" };
+	//获取数据
+	m_PatientResultList.DeleteAllItems();
+	GetDlgItem(IDC_EDIT_NAME)->GetWindowText(name);
+	GetDlgItem(IDC_EDIT6)->GetWindowText(age);
+	GetDlgItem(IDC_EDIT_ID)->GetWindowText(ID);
+	ID.Delete(0, 2);
+	sex_1 = patient_gender.GetCurSel();
+	if (sex_1 < 3 && sex_1 >= 0)
+	{
+		sex_1 = sex_1 + 48;
+		sex = sex_1;
+	}
+	//判断检索条件
+	if (name.GetLength() != 0)
+		select_name_sample += " name like '%" + name + "%' and ";
+	if (age.GetLength() != 0)
+		select_name_sample += " age = '" + age + "' and ";
+	if (ID.GetLength() != 0)
+		select_name_sample += " number like '%" + ID + "%' and ";
+	if (sex.GetLength() != 0)
+		select_name_sample += " sex = '" + sex + "'";
+	else
+		select_name_sample.Delete(select_name_sample.GetLength() - 5, 4);
 
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
@@ -384,52 +410,55 @@ void CPatientResultView::OnBnClickedButtonSearch()
 
 		bool bo = false;
 		int pos;
-		//	bool search_flag = false;
 		is_search = false;
-		int ado_num = 0;
 		while (!m_pRs->adoEOF)
 		{
+			if (i == 0)
+			{
+				m_PatientResultList.DeleteAllItems();
+				is_search = true;
+			}
+
 			var = m_pRs->GetCollect("number");
 			if (var.vt != VT_NULL)
 				strNum = (LPCSTR)_bstr_t(var);
+			ThisResult2.numofrs[i] = strNum;
+			strNum = strtemp + strNum;								//样本号读取正确，并在前面加上20
+			m_PatientResultList.InsertItem(i, _T(""));              //显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
+			m_PatientResultList.SetItemText(i, 1, strNum);
 
-			strNum = strtemp + strNum;
 
-			pos = strNum.Find(patient_num, 0);
-			if (pos != -1 && patient_num != "")
-				bo = true;
-
-			if (bo == true)
+			var = m_pRs->GetCollect("sex");
+			CString sextemp;
+			if (var.vt != VT_NULL)
 			{
-				bo = false;
-				if (i == 0)
-				{
-					m_PatientResultList.DeleteAllItems();
-					is_search = true;
-				}
-				m_PatientResultList.InsertItem(i, _T(""));
-				m_PatientResultList.SetItemText(i, 1, strNum);
-				m_PatientResultList.SetItemText(i, 4, m_patientname);
+				sextemp = (LPCSTR)_bstr_t(var);
 
-				var = m_pRs->GetCollect("sex");
-				CString sextemp;
-				if (var.vt != VT_NULL)
-				{
-					sextemp = (LPCSTR)_bstr_t(var);
-					sextemp = strSex[_ttoi(sextemp)];
-				}
-				m_PatientResultList.SetItemText(i, 5, sextemp);
-				ThisRelation.list_pos[i] = i;
-				ThisRelation.ado_pos[i] = ado_num;
-				ThisResult2.numofrs[i] = strNum;
-
-				//now_num = i;
-				//MessageBox(L"zhaodao");
-				i++;
+				sextemp = strSex[_ttoi(sextemp)];
 			}
-			ThisResult2.totalnums = m_PatientResultList.GetItemCount();
+			m_PatientResultList.SetItemText(i, 5, sextemp);
+
+
+
+			/*******************************************/
+
+
+
+			var = m_pRs->GetCollect("ID");
+			CString strID;
+			if (var.vt != VT_NULL)
+				strID = (LPCSTR)_bstr_t(var);
+			m_PatientResultList.SetItemText(i, 3, strID);            //显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
+
+			var = m_pRs->GetCollect("name");
+			CString strName;
+			if (var.vt != VT_NULL)
+				strName = (LPCSTR)_bstr_t(var);
+			m_PatientResultList.SetItemText(i, 4, strName);
+
+
+			i++;
 			m_pRs->MoveNext();
-			ado_num++;
 
 		}
 		if (m_pRs->adoEOF && is_search == false)
