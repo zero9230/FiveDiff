@@ -304,11 +304,11 @@ BOOL CResultDetails::InitPaitientInfo(patient_info* ppatientdata)
 
 	if (nametemp == "")
 		nametemp = "(空)";
-	if (ppatientdata->age[0] <= 0 || (doctor.GetLength() == 0))
+	if (ppatientdata->age[0] <= 0 || (agetemp.GetLength() == 0))
 		agetemp = "(空)";
 	if (doctor == "")
 		doctor = "(空)";
-	if (ppatientdata->code[0] <= 0 || (doctor.GetLength() == 0))
+	if (ppatientdata->code[0] <= 0 || (barcode.GetLength() == 0))
 		barcode = "(空)";
 	rangetype.Format(L"%d", ppatientdata->rangetype);
 	numtemp = numtemp + pThisResult->numofrs[pThisResult->nownum];
@@ -3619,8 +3619,8 @@ void CResultDetails::OnEnSetfocusResultEdit3()
 {
 		CString nametemp;
 		GetDlgItem(IDC_RESULT_EDIT3)->GetWindowText(nametemp);
-		if (nametemp == "空)")
-			nametemp = " ";
+		if (nametemp == "(空)")
+			nametemp = "";
 		// TODO:  在此添加控件通知处理程序代码
 		GetDlgItem(IDC_RESULT_EDIT3)->SetWindowText(nametemp);
 }
@@ -3630,7 +3630,7 @@ void CResultDetails::OnEnKillfocusResultEdit3()
 {
 	CString nametemp;
 	GetDlgItem(IDC_RESULT_EDIT3)->GetWindowText(nametemp);
-	if (nametemp == " ")
+	if (nametemp == "")
 		nametemp = "(空)";
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_RESULT_EDIT3)->SetWindowText(nametemp);
@@ -3645,7 +3645,7 @@ void CResultDetails::OnEnSetfocusResultEdit4()
 	CString agetemp;
 	GetDlgItem(IDC_RESULT_EDIT4)->GetWindowText(agetemp);
 	if (agetemp == "(空)")
-		agetemp = " ";
+		agetemp = "";
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_RESULT_EDIT4)->SetWindowText(agetemp);
 }
@@ -3656,7 +3656,7 @@ void CResultDetails::OnEnKillfocusResultEdit4()
 	// TODO:  在此添加控件通知处理程序代码
 	CString agetemp;
 	GetDlgItem(IDC_RESULT_EDIT4)->GetWindowText(agetemp);
-	if (agetemp == " ")
+	if (agetemp == "")
 		agetemp = "(空)";
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_RESULT_EDIT4)->SetWindowText(agetemp);// TODO:  在此添加控件通知处理程序代码
@@ -3668,7 +3668,7 @@ void CResultDetails::OnEnSetfocusResultEdit5()
 	CString barcode;
 	GetDlgItem(IDC_RESULT_EDIT5)->GetWindowText(barcode);
 	if (barcode == "(空)")
-		barcode = " ";
+		barcode = "";
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_RESULT_EDIT5)->SetWindowText(barcode);// TODO:  在此添加控件通知处理程序代码
 }
@@ -3678,7 +3678,7 @@ void CResultDetails::OnEnKillfocusResultEdit5()
 {
 	CString barcode;
 	GetDlgItem(IDC_RESULT_EDIT5)->GetWindowText(barcode);
-	if (barcode == " ")
+	if (barcode == "")
 		barcode = "(空)";
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_RESULT_EDIT5)->SetWindowText(barcode);// TODO:  在此添加控件通知处理程序代码
@@ -3690,7 +3690,7 @@ void CResultDetails::OnEnSetfocusResultEdit2()
 	CString rangetype;
 	GetDlgItem(IDC_RESULT_EDIT2)->GetWindowText(rangetype);
 	if (rangetype == "(空)")
-		rangetype = " ";
+		rangetype = "";
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_RESULT_EDIT2)->SetWindowText(rangetype);
 	// TODO:  在此添加控件通知处理程序代码// TODO:  在此添加控件通知处理程序代码
@@ -3702,7 +3702,7 @@ void CResultDetails::OnEnKillfocusResultEdit2()
 	// TODO:  在此添加控件通知处理程序代码
 	CString rangetype;
 	GetDlgItem(IDC_RESULT_EDIT2)->GetWindowText(rangetype);
-	if (rangetype == " ")
+	if (rangetype == "")
 		rangetype = "(空)";
 	// TODO:  在此添加控件通知处理程序代码
 	GetDlgItem(IDC_RESULT_EDIT2)->SetWindowText(rangetype);// TODO:  在此添加控件通知处理程序代码
