@@ -289,53 +289,54 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			ThisResult2.nownum = ThisRelation.ado_pos[nItem];
 		else
 			ThisResult2.nownum = nItem;
-	}
-	if (m_PatientResultList.GetNextSelectedItem(pos) < m_PatientResultList.GetItemCount())
-	{
-		CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
-		CRect rect;
-		pMf->GetClentRectEx(rect);
-
-		/**********以下过程进行界面切换**************/
-		CRuntimeClass* pClass = RUNTIME_CLASS(CResultDetails);
-		CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
-
-		//下面两句看不太懂，可能问题在此处
-		this->m_pResultDetails2 = (CResultDetails*)pView;
-		m_pResultDetails2->pThisResult = &ThisResult2;
-
-		//必然在此处触发断言失败！
-		//MessageBox(L"Before failure");
-		ASSERT_VALID(pView);
-		//MessageBox(L"After  failure");
-
-		CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
-
-		CCreateContext newContext;
-		newContext.m_pNewViewClass = NULL;
-		newContext.m_pNewDocTemplate = NULL;
-		newContext.m_pLastView = NULL;
-		newContext.m_pCurrentFrame = NULL;
-		newContext.m_pCurrentDoc = pCurrentDoc;
-
-		if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
-			rect, pMf, AFX_IDW_PANE_FIRST + 10, &newContext))
+		if (m_PatientResultList.GetNextSelectedItem(pos) < m_PatientResultList.GetItemCount())
 		{
-			delete pView;
-			return;
+			CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
+			CRect rect;
+			pMf->GetClentRectEx(rect);
+
+			/**********以下过程进行界面切换**************/
+			CRuntimeClass* pClass = RUNTIME_CLASS(CResultDetails);
+			CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
+
+			//下面两句看不太懂，可能问题在此处
+			this->m_pResultDetails2 = (CResultDetails*)pView;
+			m_pResultDetails2->pThisResult = &ThisResult2;
+
+			//必然在此处触发断言失败！
+			//MessageBox(L"Before failure");
+			ASSERT_VALID(pView);
+			//MessageBox(L"After  failure");
+
+			CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
+
+			CCreateContext newContext;
+			newContext.m_pNewViewClass = NULL;
+			newContext.m_pNewDocTemplate = NULL;
+			newContext.m_pLastView = NULL;
+			newContext.m_pCurrentFrame = NULL;
+			newContext.m_pCurrentDoc = pCurrentDoc;
+
+			if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
+				rect, pMf, AFX_IDW_PANE_FIRST + 10, &newContext))
+			{
+				delete pView;
+				return;
+			}
+			pView->OnInitialUpdate();
+			CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
+			UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
+
+			::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
+				::GetWindowLong(pView->m_hWnd, GWL_ID));
+
+			::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
+			pActiveView->ShowWindow(SW_HIDE);
+			pView->ShowWindow(SW_SHOW);
+			((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
 		}
-		pView->OnInitialUpdate();
-		CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
-		UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
-
-		::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
-			::GetWindowLong(pView->m_hWnd, GWL_ID));
-
-		::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
-		pActiveView->ShowWindow(SW_HIDE);
-		pView->ShowWindow(SW_SHOW);
-		((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
 	}
+	
 }
 
 

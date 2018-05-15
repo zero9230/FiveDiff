@@ -349,51 +349,52 @@ void CResultListView::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)
 		CString selectnum = m_ResultList.GetItemText(nItem, 1);
 		ThisResult.nownum = nItem;
 
-	}
-	if (m_ResultList.GetNextSelectedItem(pos)<m_ResultList.GetItemCount())
-	{
-		CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
-		CRect rect;
-		CRect rect1;
-		pMf->GetClentRectEx(rect);
-
-		CRuntimeClass* pClass = RUNTIME_CLASS(CResultDetails);
-		CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
-
-		this->m_pResultDetails = (CResultDetails*)pView;
-		m_pResultDetails->pThisResult = &ThisResult;
-
-
-		ASSERT_VALID(pView);
-		CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
-
-		CCreateContext newContext;
-		newContext.m_pNewViewClass = NULL;
-		newContext.m_pNewDocTemplate = NULL;
-		newContext.m_pLastView = NULL;
-		newContext.m_pCurrentFrame = NULL;
-		newContext.m_pCurrentDoc = pCurrentDoc;
-
-
-		if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
-			rect, pMf, AFX_IDW_PANE_FIRST + 10, &newContext))
+		if (m_ResultList.GetNextSelectedItem(pos)<m_ResultList.GetItemCount())
 		{
-			delete pView;
-			return;
+			CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
+			CRect rect;
+			CRect rect1;
+			pMf->GetClentRectEx(rect);
+
+			CRuntimeClass* pClass = RUNTIME_CLASS(CResultDetails);
+			CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
+
+			this->m_pResultDetails = (CResultDetails*)pView;
+			m_pResultDetails->pThisResult = &ThisResult;
+
+
+			ASSERT_VALID(pView);
+			CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
+
+			CCreateContext newContext;
+			newContext.m_pNewViewClass = NULL;
+			newContext.m_pNewDocTemplate = NULL;
+			newContext.m_pLastView = NULL;
+			newContext.m_pCurrentFrame = NULL;
+			newContext.m_pCurrentDoc = pCurrentDoc;
+
+
+			if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
+				rect, pMf, AFX_IDW_PANE_FIRST + 10, &newContext))
+			{
+				delete pView;
+				return;
+			}
+			pView->OnInitialUpdate();
+
+			CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
+			UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
+			::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
+				::GetWindowLong(pView->m_hWnd, GWL_ID));
+			::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
+			pActiveView->ShowWindow(SW_HIDE);
+			pView->ShowWindow(SW_SHOW);
+			((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
+			//::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_WINDOWCHANGE, 17, 0);
+
 		}
-		pView->OnInitialUpdate();
-
-		CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
-		UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
-		::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
-			::GetWindowLong(pView->m_hWnd, GWL_ID));
-		::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
-		pActiveView->ShowWindow(SW_HIDE);
-		pView->ShowWindow(SW_SHOW);
-		((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
-		//::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_WINDOWCHANGE, 17, 0);
-
 	}
+	
 }
 
 void CResultListView::OnPaitientResult()
