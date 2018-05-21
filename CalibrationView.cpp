@@ -108,6 +108,7 @@ void CCalibrationView::OnInitialUpdate()
 	Showtarget();
 	InitCalibrationForm();
 	InitCoeffcientForm();
+	OnPaint();
 }
 
 BOOL CCalibrationView::InitCalibrationForm()

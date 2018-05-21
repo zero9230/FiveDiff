@@ -33,7 +33,7 @@ void CPatientResultView::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CPatientResultView, CFormView)
+BEGIN_MESSAGE_MAP(CPatientResultView, CBCGPChartExampleView)
 	ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_DAILY_RESULT2, &CPatientResultView::OnDailyResult2)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CPatientResultView::OnNMDblclkList1)
