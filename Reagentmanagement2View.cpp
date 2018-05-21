@@ -187,6 +187,8 @@ void CReagentmanagement2View::OnInitialUpdate()
 	m_EOSEndDate.SetDate(EOSEndDate);
 	m_BASEndDate.SetDate(BASEndDate);
 
+	OnPaint();
+
 }
 void CReagentmanagement2View::UpdateReagentDate()
 {

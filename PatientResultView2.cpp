@@ -1,70 +1,76 @@
-// PatientResultView.cpp : 实现文件
+// PatientResultView2.cpp : 实现文件
 //
 
 #include "stdafx.h"
-//#include "BCGPChartExample.h"
-#include "PatientResultView.h"
-#include "Includes_app.h"
+#include "BCGPChartExample.h"
+#include "PatientResultView2.h"
+#include "afxdialogex.h"
 
-// CPatientResultView
-bool is_search = false;
-IMPLEMENT_DYNCREATE(CPatientResultView, CBCGPChartExampleView)
 
-CPatientResultView::CPatientResultView()
-: CBCGPChartExampleView(CPatientResultView::IDD)
-, m_patientname(_T(""))
+// CPatientResultView2 对话框
 
+IMPLEMENT_DYNAMIC(CPatientResultView2, CDialogEx)
+
+CPatientResultView2::CPatientResultView2(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CPatientResultView2::IDD, pParent)
 {
+	is_search = false;
 
 }
 
-CPatientResultView::~CPatientResultView()
+CPatientResultView2::~CPatientResultView2()
 {
 }
 
-void CPatientResultView::DoDataExchange(CDataExchange* pDX)
+void CPatientResultView2::DoDataExchange(CDataExchange* pDX)
 {
-	CBCGPChartExampleView::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_PatientResultList);
-	DDX_Control(pDX, IDC_DAILY_RESULT2, m_daily_result);
+	//DDX_Control(pDX, IDC_DAILY_RESULT2, m_daily_result);
 	DDX_Text(pDX, IDC_EDIT_NAME, m_patientname);
 	//DDX_Text(pDX, IDC_EDIT_GENDER, m_patientGender);
 	DDX_Control(pDX, IDC_COMBOX_SEX, patient_gender);
 }
 
 
-BEGIN_MESSAGE_MAP(CPatientResultView, CBCGPChartExampleView)
+BEGIN_MESSAGE_MAP(CPatientResultView2, CDialogEx)
+	
 	ON_WM_ERASEBKGND()
-	ON_BN_CLICKED(IDC_DAILY_RESULT2, &CPatientResultView::OnDailyResult2)
-	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CPatientResultView::OnNMDblclkList1)
+	//ON_BN_CLICKED(IDC_DAILY_RESULT2, &CPatientResultView2::OnDailyResult2)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CPatientResultView2::OnNMDblclkList1)
 	//	ON_BN_CLICKED(IDC_PATIENT_RESULT2, &CPatientResultView::OnBnClickedPatientResult2)
 	//ON_BN_CLICKED(IDC_BUTTON3, &CPatientResultView::OnBnClickedButton3)
-	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView::OnBnClickedButtonSearch)
+	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView2::OnBnClickedButtonSearch)
 END_MESSAGE_MAP()
 
 
-// CPatientResultView 诊断
 
-#ifdef _DEBUG
-void CPatientResultView::AssertValid() const
+// CPatientResultView2 消息处理程序
+
+
+
+
+
+
+BOOL CPatientResultView2::OnInitDialog()
 {
-	CBCGPChartExampleView::AssertValid();
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	InitPatientResultForm();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// 异常:  OCX 属性页应返回 FALSE
 }
 
-#ifndef _WIN32_WCE
-void CPatientResultView::Dump(CDumpContext& dc) const
+
+BOOL CPatientResultView2::OnEraseBkgnd(CDC* pDC)
 {
-	CBCGPChartExampleView::Dump(dc);
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+
+	return CDialogEx::OnEraseBkgnd(pDC);
 }
-#endif
-#endif //_DEBUG
-
-
-// CPatientResultView 消息处理程序
-
-
-
-BOOL CPatientResultView::InitPatientResultForm()
+BOOL CPatientResultView2::InitPatientResultForm()
 {
 	CRect rect;
 	int i = 0;
@@ -179,98 +185,12 @@ BOOL CPatientResultView::InitPatientResultForm()
 	{
 		TRACE("UpdateResultList异常");
 	}
-	//m_PatientResultList.InsertItem(0, _T(""));
-	//m_PatientResultList.SetItemText(0, 1, _T("12345")); 
-	//m_PatientResultList.SetItemText(0, 2, _T("2016/04/11 16:44:00"));
-	//m_PatientResultList.SetItemText(0, 3, _T("1111"));
-	//m_PatientResultList.SetItemText(0, 4, _T("张三"));
-	//m_PatientResultList.SetItemText(0, 5, _T("男"));
-	//m_PatientResultList.SetItemText(0, 6, _T("CBC+RET"));
-	//m_PatientResultList.SetItemText(0, 7, _T("阳"));
-
-	//m_PatientResultList.InsertItem(1, _T(""));
-	//m_PatientResultList.SetItemText(1, 1, _T("12345"));
-	//m_PatientResultList.SetItemText(1, 2, _T("2016/04/11 16:44:00"));
-	//m_PatientResultList.SetItemText(1, 3, _T("1111"));
-	//m_PatientResultList.SetItemText(1, 4, _T("张三"));
-	//m_PatientResultList.SetItemText(1, 5, _T("男"));
-	//m_PatientResultList.SetItemText(1, 6, _T("CBC+RET"));
-	//m_PatientResultList.SetItemText(1, 7, _T("阳"));
-
-	//m_PatientResultList.InsertItem(2, _T(""));
-	//m_PatientResultList.SetItemText(2, 1, _T("12345"));
-	//m_PatientResultList.SetItemText(2, 2, _T("2016/04/11 16:44:00"));
-	//m_PatientResultList.SetItemText(2, 3, _T("1111"));
-	//m_PatientResultList.SetItemText(2, 4, _T("张三"));
-	//m_PatientResultList.SetItemText(2, 5, _T("男"));
-	//m_PatientResultList.SetItemText(2, 6, _T("CBC+RET"));
-	//m_PatientResultList.SetItemText(2, 7, _T("阳"));
-
 
 
 	return TRUE;
 }
 
-
-BOOL CPatientResultView::OnEraseBkgnd(CDC* pDC)
-{
-	// TODO:  在此添加消息处理程序代码和/或调用默认值
-
-	return CBCGPChartExampleView::OnEraseBkgnd(pDC);
-}
-
-
-void CPatientResultView::OnInitialUpdate()
-{
-	CBCGPChartExampleView::OnInitialUpdate();
-
-	// TODO:  在此添加专用代码和/或调用基类
-	InitPatientResultForm();
-	GetDlgItem(IDC_PATIENT_RESULT2)->EnableWindow(false);
-}
-
-
-
-void CPatientResultView::OnDailyResult2()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
-	CRect rect;
-	CRect rect1;
-	pMf->GetClentRectEx(rect);
-
-	CRuntimeClass* pClass = RUNTIME_CLASS(CResultListView);
-	CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
-
-	ASSERT_VALID(pView);
-	CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
-
-	CCreateContext newContext;
-	newContext.m_pNewViewClass = NULL;
-	newContext.m_pNewDocTemplate = NULL;
-	newContext.m_pLastView = NULL;
-	newContext.m_pCurrentFrame = NULL;
-	newContext.m_pCurrentDoc = pCurrentDoc;
-
-
-	if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
-		rect, pMf, AFX_IDW_PANE_FIRST + 10, &newContext))
-	{
-		delete pView;
-		return;
-	}
-	pView->OnInitialUpdate();
-
-	CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
-	pActiveView->ShowWindow(SW_HIDE);
-	pView->ShowWindow(SW_SHOW);
-	((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
-}
-
-
-
-//此处可能有问题
-void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
+void CPatientResultView2::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	//MessageBox(L"Assert Here!");
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
@@ -336,23 +256,9 @@ void CPatientResultView::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
 		}
 	}
-	
+
 }
-
-
-//void CPatientResultView::OnBnClickedPatientResult2()
-//{
-//	// TODO:  在此添加控件通知处理程序代码
-//}
-
-
-//void CPatientResultView::OnBnClickedButton3()
-//{
-//	// TODO:  在此添加控件通知处理程序代码
-//}
-
-
-void CPatientResultView::OnBnClickedButtonSearch()
+void CPatientResultView2::OnBnClickedButtonSearch()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	CString ID, name, age, sex;

@@ -510,6 +510,7 @@
     <ClCompile Include="MotortestView.cpp" />
     <ClCompile Include="PatientInfoView.cpp" />
     <ClCompile Include="PatientResultView.cpp" />
+    <ClCompile Include="PatientResultView2.cpp" />
     <ClCompile Include="PerfusionView.cpp" />
     <ClCompile Include="Picture.cpp" />
     <ClCompile Include="PLTSetView.cpp" />
@@ -555,6 +556,8 @@
     <ClCompile Include="ResetView.cpp" />
     <ClCompile Include="ResultDetails.cpp" />
     <ClCompile Include="ResultListView.cpp" />
+    <ClCompile Include="ResultListView2.cpp" />
+    <ClCompile Include="ResultManageView.cpp" />
     <ClCompile Include="RS232.cpp" />
     <ClCompile Include="SelftestView.cpp" />
     <ClCompile Include="SetMarkModeLMNEView.cpp" />
@@ -656,6 +659,7 @@
     <ClInclude Include="MotortestView.h" />
     <ClInclude Include="PatientInfoView.h" />
     <ClInclude Include="PatientResultView.h" />
+    <ClInclude Include="PatientResultView2.h" />
     <ClInclude Include="PerfusionView.h" />
     <ClInclude Include="Picture.h" />
     <ClInclude Include="PLTSetView.h" />
@@ -707,6 +711,8 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResultDetails.h" />
     <ClInclude Include="ResultListView.h" />
+    <ClInclude Include="ResultListView2.h" />
+    <ClInclude Include="ResultManageView.h" />
     <ClInclude Include="RS232.h" />
     <ClInclude Include="SelftestView.h" />
     <ClInclude Include="SetMarkModeLMNEView.h" />

@@ -375,6 +375,15 @@
     <ClCompile Include="QcXrListView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ResultManageView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PatientResultView2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultListView2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BCGPChartExample.rc">
@@ -767,6 +776,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QcXrListView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultManageView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PatientResultView2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultListView2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

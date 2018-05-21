@@ -142,6 +142,8 @@
 #define IDD_QC_XR_TEST                  302
 #define IDD_QC_XR_CHART                 303
 #define IDD_QC_XR_LIST                  304
+#define IDD_DIALOG10                    306
+#define IDD_RESULT_MANAGE               307
 #define IDC_COMPANY_URL                 1041
 #define IDC_CHART_COLUMN                1054
 #define IDC_CHART_LINE                  1055
@@ -1094,6 +1096,7 @@
 #define IDC_QC_XR_CHART_LINECHART2      1999
 #define IDC_QC_XR_CHART_STATIC0         2000
 #define IDC_RESULT_SAVE                 2001
+#define IDC_RESULT_TAB                  2002
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1265,9 +1268,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        296
+#define _APS_NEXT_RESOURCE_VALUE        307
 #define _APS_NEXT_COMMAND_VALUE         33010
-#define _APS_NEXT_CONTROL_VALUE         2002
+#define _APS_NEXT_CONTROL_VALUE         2003
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

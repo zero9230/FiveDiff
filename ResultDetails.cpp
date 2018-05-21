@@ -4,7 +4,8 @@
 #include "stdafx.h"
 //#include "BCGPChartExample.h"
 #include "ResultDetails.h"
-#include "PatientResultView.h"
+#include "PatientResultView2.h"
+#include "ResultManageView.h"
 //#include "MainFrm.h"
 //#include "Includes_app.h"
 // CResultDetails
@@ -3579,7 +3580,7 @@ void CResultDetails::OnBnClickedResultReturn()
 	CRect rect1;
 	pMf->GetClentRectEx(rect);
 
-	CRuntimeClass *pClass = RUNTIME_CLASS(CPatientResultView);
+	CRuntimeClass *pClass = RUNTIME_CLASS(CResultManageView);
 	CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
 
 	ASSERT_VALID(pView);

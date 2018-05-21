@@ -18,7 +18,7 @@ class CPatientResultView : public CBCGPChartExampleView
 {
 	DECLARE_DYNCREATE(CPatientResultView)
 
-protected:
+public:
 	CPatientResultView();           // 动态创建所使用的受保护的构造函数
 	virtual ~CPatientResultView();
 
