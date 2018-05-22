@@ -30,6 +30,8 @@ void CPatientResultView2::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_NAME, m_patientname);
 	//DDX_Text(pDX, IDC_EDIT_GENDER, m_patientGender);
 	DDX_Control(pDX, IDC_COMBOX_SEX, patient_gender);
+	DDX_Control(pDX, IDC_BUTTON_SEARCH, m_SearchButton);
+
 }
 
 
@@ -41,6 +43,8 @@ BEGIN_MESSAGE_MAP(CPatientResultView2, CDialogEx)
 	//	ON_BN_CLICKED(IDC_PATIENT_RESULT2, &CPatientResultView::OnBnClickedPatientResult2)
 	//ON_BN_CLICKED(IDC_BUTTON3, &CPatientResultView::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView2::OnBnClickedButtonSearch)
+	ON_WM_PAINT()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -375,4 +379,34 @@ void CPatientResultView2::OnBnClickedButtonSearch()
 	{
 		TRACE("UpdateResultList异常");
 	}
+}
+
+void CPatientResultView2::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	// TODO:  在此处添加消息处理程序代码
+	// 不为绘图消息调用 CDialogEx::OnPaint()
+	CRect rect;
+	GetClientRect(rect);
+	dc.FillSolidRect(rect, RGB(255, 255, 255));
+}
+
+
+HBRUSH CPatientResultView2::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  在此更改 DC 的任何特性
+	//switch (pWnd->GetDlgCtrlID())
+	//{
+	//case IDC_BUTTON_SEARCH:
+	//	pDC->SetBkMode(TRANSPARENT);
+	//	pDC->SetTextColor(RGB(0, 0, 0));
+
+	//	return (HBRUSH)GetStockObject(HOLLOW_BRUSH);
+	//default:
+	//	break;
+	//}
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	return hbr;
 }
