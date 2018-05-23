@@ -40,6 +40,7 @@ BEGIN_MESSAGE_MAP(CPatientResultView, CBCGPChartExampleView)
 	//	ON_BN_CLICKED(IDC_PATIENT_RESULT2, &CPatientResultView::OnBnClickedPatientResult2)
 	//ON_BN_CLICKED(IDC_BUTTON3, &CPatientResultView::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView::OnBnClickedButtonSearch)
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -469,4 +470,12 @@ void CPatientResultView::OnBnClickedButtonSearch()
 	{
 		TRACE("UpdateResultList异常");
 	}
+}
+
+void CPatientResultView::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	
+	// TODO:  在此处添加消息处理程序代码
+	// 不为绘图消息调用 CBCGPChartExampleView::OnPaint()
 }

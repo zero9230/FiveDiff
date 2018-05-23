@@ -6,6 +6,7 @@
 
 class CQualityListView : public CDialogEx
 {
+	
 	DECLARE_DYNAMIC(CQualityListView)
 
 public:
@@ -53,4 +54,8 @@ public:
 	afx_msg LRESULT OnRedraw(WPARAM, LPARAM);
 	virtual BOOL OnInitDialog();
 	
+	afx_msg void OnPaint();
+	unsigned int m_nDrawType;
+	void  CQualityListView::Update_InitListList();
+//	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

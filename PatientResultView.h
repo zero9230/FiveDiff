@@ -55,6 +55,7 @@ public:
 	//CString m_patientGender;
 	afx_msg void OnBnClickedButtonSearch();
 	CComboBox patient_gender;
+	afx_msg void OnPaint();
 };
 
 

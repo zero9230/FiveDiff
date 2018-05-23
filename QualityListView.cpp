@@ -2,9 +2,11 @@
 //
 
 #include "stdafx.h"
+#include "afxwin.h"
 #include "BCGPChartExample.h"
 #include "QualityListView.h"
 #include "afxdialogex.h"
+
 
 
 // CQualityListView 对话框
@@ -14,6 +16,7 @@ IMPLEMENT_DYNAMIC(CQualityListView, CDialogEx)
 CQualityListView::CQualityListView(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CQualityListView::IDD, pParent)
 	, pageNum(_T(""))
+	, m_nDrawType(0)
 {
 	for (int i = 0; i < 26; i++)
 	{
@@ -54,6 +57,8 @@ BEGIN_MESSAGE_MAP(CQualityListView, CDialogEx)
 	ON_MESSAGE(UM_REDRAW, OnRedraw)
 	ON_BN_CLICKED(IDC_QUALITY_LIST_UP_BUTTON, &CQualityListView::OnBnClickedQualityListUpButton)
 	ON_BN_CLICKED(IDC_QUALITY_LIST_DOWN_BUTTON, &CQualityListView::OnBnClickedQualityListDownButton)
+	ON_WM_PAINT()
+//	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -110,14 +115,15 @@ void CQualityListView::InitListList()
 		_T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"),_T("10^12/L"), _T("g/L"), _T("%"), _T("fL"),
 		_T("pg"), _T("g/L"), _T("%"), _T("fL"), _T("10^9/L"), _T("fL"), _T("fL"), _T("%") };
 	*/
+
+
 	// 获取编程语言列表视图控件的位置和大小   
 	m_ListList.GetClientRect(&rect);
 	m_ListList.SetRowHeigt(20);
 	// 为列表视图控件添加全行选中和栅格风格   
 	m_ListList.SetExtendedStyle(m_ListList.GetExtendedStyle() | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
-
-	// 为列表视图控件添加四列;
+		// 为列表视图控件添加四列;
 	m_ListList.InsertColumn(0, _T(""), LVCFMT_CENTER, rect.Width() * 1 / 9, 0);
 	m_ListList.InsertColumn(1, _T("靶值"), LVCFMT_CENTER, rect.Width() * 1 / 8, 1);
 	m_ListList.InsertColumn(2, _T("偏差限"), LVCFMT_CENTER, rect.Width() * 1 / 8, 2);
@@ -139,6 +145,7 @@ void CQualityListView::InitListList()
 	{
 		m_ListList.InsertItem(i, table[i]);
 	}
+	
 	/***************填充初始化数据**************/
 	//m_ListList.SetItemText(0, 4, L"10^9/L");
 	//m_ListList.SetItemText(1, 4, L"%");
@@ -464,3 +471,65 @@ afx_msg LRESULT CQualityListView::OnRedraw(WPARAM, LPARAM){
 	UpdateView();
 	return 0;
 }
+void CQualityListView::Update_InitListList()
+{
+	/***************初始化表格**************/
+	CRect rect;
+	CString table[28] = { "日期", "时间", "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
+		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };	
+	
+
+
+	LVCOLUMN m_vcolumn;
+	CString strText[8] = { "", "靶值", "偏差限", "1" ,"2","3","4","5"};
+
+	// 获取编程语言列表视图控件的位置和大小   
+	m_ListList.GetClientRect(&rect);
+	m_ListList.SetRowHeigt(20);
+	// 为列表视图控件添加全行选中和栅格风格   
+	m_ListList.SetExtendedStyle(m_ListList.GetExtendedStyle() | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+
+	for (int i = 0; i < 8; i++)
+	{
+		m_vcolumn.mask = LVCF_TEXT;
+		m_vcolumn.pszText = strText[i].GetBuffer(0);
+		m_vcolumn.cchTextMax = strText[i].GetLength();
+		m_ListList.SetColumn(i, &m_vcolumn);
+	}
+
+	for (int i = 0; i < 28; i++)
+	{
+		m_ListList.SetItemText(i,0, table[i]);
+	}
+	m_ListList.SetItemText(0, 1, _T(""));
+	m_ListList.SetItemText(0, 2, _T(""));
+	m_ListList.SetItemText(1, 1, _T(""));
+	m_ListList.SetItemText(1, 2, _T(""));
+
+}
+
+void CQualityListView::OnPaint()
+{
+
+	CPaintDC dc(this);	
+	CRect rect;
+	GetClientRect(rect);
+	dc.FillSolidRect(rect, RGB(255, 255, 255));
+	/*Update_InitListList();
+	UpdateListResultList();
+	UpdateView();*/
+	// device context for painting
+	// TODO:  在此处添加消息处理程序代码
+	// 不为绘图消息调用 CDialogEx::OnPaint()
+}
+
+
+
+
+
+//BOOL CQualityListView::OnEraseBkgnd(CDC* pDC)
+//{
+//	// TODO:  在此添加消息处理程序代码和/或调用默认值
+//
+//	return CDialogEx::OnEraseBkgnd(pDC);
+//}

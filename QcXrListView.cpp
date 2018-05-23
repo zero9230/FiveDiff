@@ -64,6 +64,9 @@ END_MESSAGE_MAP()
 void CQcXrListView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
+	InitListList();
+	UpdateView();
+	UpdateListResultList();
 	// TODO:  在此处添加消息处理程序代码
 	// 不为绘图消息调用 CDialogEx::OnPaint()
 }
