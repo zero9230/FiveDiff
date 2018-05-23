@@ -319,7 +319,7 @@ void CRangeSetView::SaveRange(int types)
 	for (i = 0; i < 28; i++)
 	{
 
-		if (_tstof(buff[i]) >= _tstof(buff[i + 28]))
+		if (_tstof(buff[i]) > _tstof(buff[i + 28]))
 		{
 			if (systemcfg.language == CHINESE)
 				MessageBox(L"输入范围要满足:下限<上限!",L"警告!", MB_OK | MB_ICONINFORMATION);

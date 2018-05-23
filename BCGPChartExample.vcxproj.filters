@@ -69,9 +69,6 @@
     <ClCompile Include="LogView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ResultListView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PatientResultView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -384,6 +381,9 @@
     <ClCompile Include="ResultListView2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ResultListView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BCGPChartExample.rc">
@@ -461,9 +461,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LogView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResultListView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PatientResultView.h">
@@ -785,6 +782,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResultListView2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultListView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
