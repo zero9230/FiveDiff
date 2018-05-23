@@ -10,7 +10,7 @@ class CQcXrListView : public CDialogEx
 public:
 	CQcXrListView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQcXrListView();
-
+	void CQcXrListView::Update_InitListList();
 // 对话框数据
 	enum { IDD = IDD_QC_XR_LIST };
 

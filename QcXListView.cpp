@@ -505,9 +505,9 @@ void CQcXListView::Update_InitListList()
 void CQcXListView::OnPaint()
 {
 	CPaintDC dc(this); 
-	
 	Update_InitListList();
-	UpdateListResultList();
+
+
 	UpdateView();
 	// device context for painting
 	// TODO:  在此处添加消息处理程序代码

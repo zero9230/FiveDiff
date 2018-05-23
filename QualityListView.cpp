@@ -59,6 +59,9 @@ BEGIN_MESSAGE_MAP(CQualityListView, CDialogEx)
 	ON_BN_CLICKED(IDC_QUALITY_LIST_DOWN_BUTTON, &CQualityListView::OnBnClickedQualityListDownButton)
 	ON_WM_PAINT()
 //	ON_WM_ERASEBKGND()
+//ON_WM_SYSCOMMAND()
+//ON_WM_SIZE()
+ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -173,6 +176,7 @@ void CQualityListView::InitListList()
 	//m_ListList.SetItemText(23, 4, L"fL");
 	//m_ListList.SetItemText(24, 4, L"fL");
 	//m_ListList.SetItemText(25, 4, L"%");
+
 
 }
 
@@ -510,13 +514,11 @@ void CQualityListView::Update_InitListList()
 
 void CQualityListView::OnPaint()
 {
-
 	CPaintDC dc(this);	
-	//CRect rect;
-	//GetClientRect(rect);
-	//dc.FillSolidRect(rect, RGB(255, 255, 255));
+
 	Update_InitListList();
-	UpdateListResultList();
+
+
 	UpdateView();
 	// device context for painting
 	// TODO:  在此处添加消息处理程序代码
@@ -533,3 +535,36 @@ void CQualityListView::OnPaint()
 //
 //	return CDialogEx::OnEraseBkgnd(pDC);
 //}
+
+//
+//void CQualityListView::OnSysCommand(UINT nID, LPARAM lParam)
+//{
+//	// TODO:  在此添加消息处理程序代码和/或调用默认值
+//
+//	//if ((nID & 0xFFF0) == IDD_QUALITY_LIST)
+//	//{
+//	//	CQualityListView dlgAbout;
+//	//	dlgAbout.DoModal();
+//	//}
+//	//else if (nID == SC_MINIMIZE)
+//	//{
+//	//	ShowWindow(SW_HIDE);
+//	//}
+//	//else if (nID == SC_RESTORE)
+//	//{
+//	//	ShowWindow(SW_SHOW);
+//	//}
+//	//else
+//	//{
+//	//	CQualityListView::OnSysCommand(nID, lParam);
+//	//}
+//}
+
+
+
+static int i=0;
+void CQualityListView::OnSize(UINT nType, int cx, int cy)
+{
+
+	// TODO:  在此处添加消息处理程序代码
+}

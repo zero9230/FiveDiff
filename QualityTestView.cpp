@@ -1141,6 +1141,7 @@ void CQualityTestView::PrintLMNEChart(qcresult_info *qcresultdata)
 	CRect rect;
 	CWnd* pWnd = GetDlgItem(IDC_CHART);
 	pWnd->GetClientRect(&rect); // 获取控件屏幕坐标
+
 	CDC* pDC = pWnd->GetDC();
 	pDC->SelectStockObject(WHITE_BRUSH);
 	pDC->Rectangle(rect);

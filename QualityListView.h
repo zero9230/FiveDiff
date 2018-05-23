@@ -58,4 +58,7 @@ public:
 	unsigned int m_nDrawType;
 	void  CQualityListView::Update_InitListList();
 //	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+//	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+//	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
