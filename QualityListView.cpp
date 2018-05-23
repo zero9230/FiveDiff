@@ -512,12 +512,12 @@ void CQualityListView::OnPaint()
 {
 
 	CPaintDC dc(this);	
-	CRect rect;
-	GetClientRect(rect);
-	dc.FillSolidRect(rect, RGB(255, 255, 255));
-	/*Update_InitListList();
+	//CRect rect;
+	//GetClientRect(rect);
+	//dc.FillSolidRect(rect, RGB(255, 255, 255));
+	Update_InitListList();
 	UpdateListResultList();
-	UpdateView();*/
+	UpdateView();
 	// device context for painting
 	// TODO:  在此处添加消息处理程序代码
 	// 不为绘图消息调用 CDialogEx::OnPaint()

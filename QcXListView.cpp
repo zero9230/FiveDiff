@@ -54,6 +54,7 @@ BEGIN_MESSAGE_MAP(CQcXListView, CDialogEx)
 	ON_MESSAGE(UM_REDRAW, OnRedraw)
 	ON_BN_CLICKED(IDC_QC_X_LIST_UP_BUTTON, &CQcXListView::OnBnClickedQcXListUpButton)
 	ON_BN_CLICKED(IDC_QC_X_LIST_DOWN_BUTTON, &CQcXListView::OnBnClickedQcXListDownButton)
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -463,4 +464,52 @@ void CQcXListView::UpdateView(){
 afx_msg LRESULT CQcXListView::OnRedraw(WPARAM, LPARAM){
 	UpdateView();
 	return 0;
+}
+void CQcXListView::Update_InitListList()
+{
+	/***************初始化表格**************/
+	CRect rect;
+	CString table[28] = { "日期", "时间", "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
+		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
+
+
+
+	LVCOLUMN m_vcolumn;
+	CString strText[8] = { "", "靶值", "偏差限", "1", "2", "3", "4", "5" };
+
+	// 获取编程语言列表视图控件的位置和大小   
+	m_ListList.GetClientRect(&rect);
+	m_ListList.SetRowHeigt(20);
+	// 为列表视图控件添加全行选中和栅格风格   
+	m_ListList.SetExtendedStyle(m_ListList.GetExtendedStyle() | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+
+	for (int i = 0; i < 8; i++)
+	{
+		m_vcolumn.mask = LVCF_TEXT;
+		m_vcolumn.pszText = strText[i].GetBuffer(0);
+		m_vcolumn.cchTextMax = strText[i].GetLength();
+		m_ListList.SetColumn(i, &m_vcolumn);
+	}
+
+	for (int i = 0; i < 28; i++)
+	{
+		m_ListList.SetItemText(i, 0, table[i]);
+	}
+	m_ListList.SetItemText(0, 1, _T(""));
+	m_ListList.SetItemText(0, 2, _T(""));
+	m_ListList.SetItemText(1, 1, _T(""));
+	m_ListList.SetItemText(1, 2, _T(""));
+
+}
+
+void CQcXListView::OnPaint()
+{
+	CPaintDC dc(this); 
+	
+	Update_InitListList();
+	UpdateListResultList();
+	UpdateView();
+	// device context for painting
+	// TODO:  在此处添加消息处理程序代码
+	// 不为绘图消息调用 CDialogEx::OnPaint()
 }

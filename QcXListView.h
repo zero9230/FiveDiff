@@ -10,7 +10,7 @@ class CQcXListView : public CDialogEx
 public:
 	CQcXListView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQcXListView();
-
+	void CQcXListView::Update_InitListList();
 // 对话框数据
 	enum { IDD = IDD_QC_X_LIST };
 
@@ -51,4 +51,5 @@ public:
 	afx_msg void OnBnClickedQcXListDownButton();
 	afx_msg LRESULT OnRedraw(WPARAM, LPARAM);
 	virtual BOOL OnInitDialog();
+	afx_msg void OnPaint();
 };
