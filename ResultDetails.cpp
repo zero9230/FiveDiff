@@ -3615,7 +3615,6 @@ void CResultDetails::OnBnClickedResultReturn()
 }
 
 
-
 void CResultDetails::OnEnSetfocusResultEdit3()
 {
 		CString nametemp;

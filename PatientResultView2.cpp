@@ -209,9 +209,9 @@ void CPatientResultView2::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		int nItem = m_PatientResultList.GetNextSelectedItem(pos);//获得病人信息编号
 		TRACE1("Item %d was selected!\n", nItem);
 		CString selectnum = m_PatientResultList.GetItemText(nItem, 1);
-		if (is_search == true)
+		/*if (is_search == true)
 			ThisResult2.nownum = ThisRelation.ado_pos[nItem];
-		else
+		else*/
 			ThisResult2.nownum = nItem;
 		if (m_PatientResultList.GetNextSelectedItem(pos) < m_PatientResultList.GetItemCount())
 		{

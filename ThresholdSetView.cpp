@@ -135,10 +135,34 @@ void CThresholdSetView::OnThresholdApplicate()
 	GetDlgItem(IDC_THRESHOLDS_PLT1)->GetWindowText(thresholdtemp[23]);
 	GetDlgItem(IDC_THRESHOLDS_PLT2)->GetWindowText(thresholdtemp[24]);
 
+	
+	uchar 		buff_len = 0;
 	for (int i = 0; i < 25; i++)
 	{
-		thresholdtemp[i].Format(L"%d", systemcfg.range.thresholds[i]);
+		buff_len = thresholdtemp[i].GetLength();
+		for (int j = 0; j < buff_len; j++){
+			if (!(thresholdtemp[i].GetAt(j) >= '0' && thresholdtemp[i].GetAt(j) <= '9')){	
+				if (systemcfg.language == CHINESE)
+					MessageBox(L"请输入合法数字!", L"警告！", MB_OK | MB_ICONINFORMATION);
+				else{
+
+				}
+				return;
+			}
+
+		}
+		if (_ttoi(thresholdtemp[i]) > 254)//不能存255，因为255存的是字符结束符，图形的255不存在，因为图形的255存的是结束符
+		{
+			if (systemcfg.language == CHINESE)
+				MessageBox(L"输入值超出范围!", L"警告!", MB_OK | MB_ICONINFORMATION);
+			else{
+
+			}
+			return;
+		}
+		//thresholdtemp[i].Format(L"%d", systemcfg.range.thresholds[i]);//这句阻止修改
 		systemcfg.range.thresholds[i] = _wtoi(thresholdtemp[i]);
 	}
 	WriteSystemcfgFile();
+	MessageBox(L"保存成功");
 }
