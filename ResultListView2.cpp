@@ -307,6 +307,9 @@ void CResultListView2::OnPaint()
 	// TODO:  在此处添加消息处理程序代码
 	// 不为绘图消息调用 CBCGPChartExampleView::OnPaint()
 	//UpdateResultList();
+	CRect rect;
+	GetClientRect(rect);
+	dc.FillSolidRect(rect, RGB(255, 255, 255));
 }
 
 void CResultListView2::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)

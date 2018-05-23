@@ -34,6 +34,7 @@ public:
 	CResultDetails*		m_pResultDetails2;
 	ResultToDisplay 	ThisResult2;
 	Relation            ThisRelation;
+	CBCGPButton			m_SearchButton;
 
 
 	BOOL  InitPatientResultForm();
@@ -50,4 +51,6 @@ public:
 	CComboBox patient_gender;
 	virtual BOOL OnInitDialog();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
