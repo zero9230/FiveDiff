@@ -182,7 +182,7 @@ void CConcentratecleanView::OnTimer(UINT_PTR nIDEvent)
 		sdata_cmd[0] = SPI_CMD_REQDSP_STATUS;
 		PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 		PC_RECEIVE_FRAME(rdata_state, SPI_TYPE_STATE);
-		SendMessage(MSG_ACKSPI, rdata_state[0], 0);
+		SendMessage(WM_ACKSPI, rdata_state[0], 0);
 		break;
 	default:
 		break;

@@ -515,7 +515,12 @@ void CQualityListView::Update_InitListList()
 void CQualityListView::OnPaint()
 {
 	CPaintDC dc(this);	
+	//CRect rect;
+	//GetClientRect(rect);
+	//dc.FillSolidRect(rect, RGB(255, 255, 255));
+	//dc.FillPath();
 
+	//CDialogEx::OnPaint();
 	Update_InitListList();
 
 
