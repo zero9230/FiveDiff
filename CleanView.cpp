@@ -237,21 +237,23 @@ afx_msg LRESULT CCleanView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			DSP_status = Free;
 			key_status = TRUE;
 		}
-		GetDlgItem(IDC_CLEAN_CYTO)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CLEAN_CHAMBERS)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CLEAN_DILUENTINTINE)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CLEAN_DILUENTEXTINE)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CLEAN_GEM)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CLEAN_SHEATFLOWPIPE)->EnableWindow(TRUE);
-		//GetDlgItem(IDC_CLEAN_RINSEBASO)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CLEAN_RINSEINTINE)->EnableWindow(TRUE);
-		GetDlgItem(IDC_CLEAN_RINSEEXTINE)->EnableWindow(TRUE);
-		//GetDlgItem(IDC_CLEAN_EXTERNNEEDLE)->EnableWindow(TRUE);
-		GetDlgItem(IDOK)->EnableWindow(TRUE);
-		GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 		break;
 	default:
 		break;
 	}
+	GetDlgItem(IDC_CLEAN_CYTO)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CLEAN_CHAMBERS)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CLEAN_DILUENTINTINE)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CLEAN_DILUENTEXTINE)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CLEAN_GEM)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CLEAN_SHEATFLOWPIPE)->EnableWindow(TRUE);
+	//GetDlgItem(IDC_CLEAN_RINSEBASO)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CLEAN_RINSEINTINE)->EnableWindow(TRUE);
+	GetDlgItem(IDC_CLEAN_RINSEEXTINE)->EnableWindow(TRUE);
+	//GetDlgItem(IDC_CLEAN_EXTERNNEEDLE)->EnableWindow(TRUE);
+	GetDlgItem(IDOK)->EnableWindow(TRUE);
+	GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 	return 0;
 }
