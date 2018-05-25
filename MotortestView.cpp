@@ -73,6 +73,7 @@ void CMotortestView::CheckMoters(const char* Mess, uchar CMD)
 		//GetDlgItem(IDC_CHMOTORS_CYTOSYR)->EnableWindow(TRUE);
 		//GetDlgItem(IDC_CHMOTORS_DILUSYR)->EnableWindow(TRUE);
 		//GetDlgItem(IDC_CHMOTORS_PUNCTURE)->EnableWindow(TRUE);
+		MessageBox(L"ÃüÁî·¢ËÍÊ§°Ü£¡");
 		return;
 	}
 	else
