@@ -139,7 +139,7 @@ void CConstantCurrentView::OnBnClickedConstantcurrentBaso()
 						else
 						{
 						baso_on_off = !baso_on_off;
-						 GetDlgItem(IDC_CONSTANTCURRENT_BASO)->SetWindowText(L"BASO恒流源  开");
+						 GetDlgItem(IDC_CONSTANTCURRENT_BASO)->SetWindowText(L"BASO恒流源  关");
 						}
 						//if(systemcfg.language == CHINESE)
 					//	{
@@ -161,7 +161,7 @@ void CConstantCurrentView::OnBnClickedConstantcurrentBaso()
 							else
 							{
 								baso_on_off = !baso_on_off;
-						 GetDlgItem(IDC_CONSTANTCURRENT_BASO)->SetWindowText(L"BASO恒流源  关");
+						 GetDlgItem(IDC_CONSTANTCURRENT_BASO)->SetWindowText(L"BASO恒流源  开");
 							}
 						//if(systemcfg.language == CHINESE)
 						//{
