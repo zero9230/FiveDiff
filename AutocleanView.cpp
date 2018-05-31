@@ -109,7 +109,7 @@ void CAutocleanView::OnBnClickedMianHydrAutoclean()
 		if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
 			MessageBox(L"命令发送不成功！", L"ERROR", MB_OKCANCEL);
 		else{
-			GetDlgItem(IDC_RECOIL)->SetWindowText(L"正在执行自动清洗！");
+			GetDlgItem(IDC_AUTOCLEAN)->SetWindowText(L"正在执行自动清洗！");
 			DSP_status = Busy;
 			SetTimer(POLLTIME, SPI_POLL_TIME3000, 0);
 			statusShowMess = 4;

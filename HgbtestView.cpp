@@ -109,7 +109,7 @@ void CHgbtestView::OnBnClickedHgbtestOk()
 					if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
 		                MessageBox(L"命令发送不成功！", L"ERROR", MB_OKCANCEL);
 	              else{
-	                     GetDlgItem(IDC_MICROPERFUSION)->SetWindowText(L"正在执行HGB测试！");//**##此处有异常
+	                     //GetDlgItem(IDC_MICROPERFUSION)->SetWindowText(L"正在执行HGB测试！");//**##此处有异常
 		                 SetTimer(POLLTIME, SPI_POLL_TIME1000,0);
 	                   }
 					
@@ -152,8 +152,8 @@ afx_msg LRESULT CHgbtestView::OnAckspi(WPARAM wParam, LPARAM lParam)
 					int HGB_Blank_int = 0;
 					float HGB_Background = 0.0;
 					float HGB_Blank = 0.0;
-					unsigned char HGB_Background_str[7] = "*.***V";
-					unsigned char HGB_Blank_str[7] = "*.***V";
+					CString HGB_Background_str = "*.***V";
+					CString HGB_Blank_str = "*.***V";
 					
 					//ARM_GPIOCMD(EN_GREEN);
 					KillTimer( POLLTIME);
@@ -170,6 +170,9 @@ afx_msg LRESULT CHgbtestView::OnAckspi(WPARAM wParam, LPARAM lParam)
 						HGB_Blank = (float)HGB_Blank_int/1000;
 						//sprintf(HGB_Background_str,"%.3fV",HGB_Background);
 						//sprintf(HGB_Blank_str,"%.3fV",HGB_Blank);
+						HGB_Background_str.Format(L"%.3fV", HGB_Background);
+						HGB_Blank_str.Format(L"%.3fV", HGB_Blank);
+
 					}
 					else
 					{
