@@ -93,14 +93,14 @@ void CReabentalarmView::OnBnClickedRegentsetOk()
 		warn_wasteliquid = TRUE;
 	else
 		warn_wasteliquid = FALSE;
-	        systemcfg2.warn_diluent = warn_diluent;
-			systemcfg2.warn_rinse = warn_rinse;
-			systemcfg2.warn_hgb = warn_hgblyse;
-			systemcfg2.warn_fix = warn_fixlyse;
-		    systemcfg2.warn_baso = warn_basolyse;
-			systemcfg2.warn_waste = warn_wasteliquid;
-			WriteSystemcfgFile(); 
-		MessageBox(L"设置成功，请返回！", L"OK", MB_OK);
+	systemcfg2.warn_diluent = warn_diluent;
+	systemcfg2.warn_rinse = warn_rinse;
+	systemcfg2.warn_hgb = warn_hgblyse;
+	systemcfg2.warn_fix = warn_fixlyse;
+	systemcfg2.warn_baso = warn_basolyse;
+	systemcfg2.warn_waste = warn_wasteliquid;
+	WriteSystemcfg2File(); 
+	MessageBox(L"设置成功，请返回！", L"OK", MB_OK);
 	// TODO: 在此添加控件通知处理程序代码
 }
 

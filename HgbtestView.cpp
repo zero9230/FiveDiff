@@ -179,9 +179,9 @@ afx_msg LRESULT CHgbtestView::OnAckspi(WPARAM wParam, LPARAM lParam)
 						printf("HGB TEST is not Normal----------#\n");
 					}
                         		//SetDlgItemText(IDC_HGBTEST_BACKGD,HGB_Background_str);	
-								GetDlgItem(IDC_HGBTEST_BACKGD)->SetWindowText((LPCTSTR)HGB_Background_str);
+					GetDlgItem(IDC_HGBTEST_BACKGD)->SetWindowText((LPCTSTR)HGB_Background_str);
 					//SetDlgItemText(IDC_HGBTEST_BLANK,HGB_Blank_str);
-								GetDlgItem(IDC_HGBTEST_BLANK)->SetWindowText((LPCTSTR)HGB_Blank_str);
+					GetDlgItem(IDC_HGBTEST_BLANK)->SetWindowText((LPCTSTR)HGB_Blank_str);
 					key_status = TRUE;
 					break;
 				}
