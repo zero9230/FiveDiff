@@ -190,17 +190,17 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
 			GetDlgItem(IDOK)->EnableWindow(TRUE);
 			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
-			if (systemcfg2.warn_rinse)
+			/*if (systemcfg2.warn_rinse)
 			{
 
 				if (systemcfg2.warn_rinse)
-				{
+				{*/
 					if (logfile.regent.rinse > 25.8)
 						logfile.regent.rinse = logfile.regent.rinse - 25.8;
 					else
 						logfile.regent.rinse = 0;
-				}
-			}
+				//}
+			//}
 			break;
 		case 2:
 			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
@@ -212,16 +212,16 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
 			GetDlgItem(IDOK)->EnableWindow(TRUE);
 			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
-			if (systemcfg2.warn_fix)
+		/*	if (systemcfg2.warn_fix)
 			{
 				if (systemcfg2.warn_fix)
-				{
+				{*/
 					if (logfile.regent.eoslyse> 25.8)
 						logfile.regent.eoslyse = logfile.regent.eoslyse - 25.8;
 					else
 						logfile.regent.eoslyse = 0;
-				}
-			}
+				//}
+			//}
 			break;
 		case 3:
 			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
@@ -233,17 +233,17 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
 			GetDlgItem(IDOK)->EnableWindow(TRUE);
 			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
-			if (systemcfg2.warn_baso)
+		/*	if (systemcfg2.warn_baso)
 			{
 				if (systemcfg2.warn_baso)
-				{
+				{*/
 					if (logfile.regent.baslyse > 25.8)
 						logfile.regent.baslyse = logfile.regent.baslyse - 25.8;
 					else
 						logfile.regent.baslyse = 0;
-				}
+				//}
 
-			}
+			//}
 			break;
 		case 4:
 			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
@@ -255,17 +255,17 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
 			GetDlgItem(IDOK)->EnableWindow(TRUE);
 			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
-			if (systemcfg2.warn_hgb)
+			/*if (systemcfg2.warn_hgb)
 			{
 				if (systemcfg2.warn_hgb)
-				{
+				{*/
 					if (logfile.regent.hgblyse > 4.2)
 						logfile.regent.hgblyse = logfile.regent.hgblyse - 4.2;
 					else
 						logfile.regent.hgblyse = 0;
-				}
+				//}
 
-			}
+			//}
 			break;
 		case 5:
 			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
@@ -277,40 +277,40 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
 			GetDlgItem(IDOK)->EnableWindow(TRUE);
 			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
-			if (systemcfg2.warn_diluent || systemcfg2.warn_baso || systemcfg2.warn_fix || systemcfg2.warn_hgb
+			/*if (systemcfg2.warn_diluent || systemcfg2.warn_baso || systemcfg2.warn_fix || systemcfg2.warn_hgb
 				|| systemcfg2.warn_rinse || systemcfg2.warn_waste)
 			{
 
 				if (systemcfg2.warn_rinse)
-				{
+				{*/
 					if (logfile.regent.rinse > 25.8)
 						logfile.regent.rinse = logfile.regent.rinse - 25.8;
 					else
 						logfile.regent.rinse = 0;
-				}
+				/*}
 				if (systemcfg2.warn_hgb)
-				{
+				{*/
 					if (logfile.regent.hgblyse > 4.2)
 						logfile.regent.hgblyse = logfile.regent.hgblyse - 4.2;
 					else
 						logfile.regent.hgblyse = 0;
-				}
+				/*}
 				if (systemcfg2.warn_fix)
-				{
+				{*/
 					if (logfile.regent.eoslyse > 25.8)
 						logfile.regent.eoslyse = logfile.regent.eoslyse - 25.8;
 					else
 						logfile.regent.eoslyse = 0;
-				}
+				/*}
 				if (systemcfg2.warn_baso)
-				{
+				{*/
 					if (logfile.regent.baslyse > 25.8)
 						logfile.regent.baslyse = logfile.regent.baslyse - 25.8;
 					else
 						logfile.regent.baslyse = 0;
-				}
+				//}
 
-			}
+			//}
 			break;
 		case 6:
 			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);

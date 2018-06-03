@@ -338,8 +338,8 @@ void CReagentmanagement2View::PaintLevel()
 	BITMAP bitmap;
 	cBitmap.Attach(hbitmap);
 	
-	int print = systemcfg.regentfull.baslyse;
-	print = (print*100 / BAS_Top_Level);
+	int print = logfile.regent.baslyse;
+	print = int(print*100.0 / BAS_Top_Level);//BAS_Top_Level       10000
 	CString str1;
 	str1.Format(L"%d",print);
 	CString str2 = str1 + "%";
@@ -349,7 +349,7 @@ void CReagentmanagement2View::PaintLevel()
 	dc.StretchBlt(rect_hb5d_bas.left + 25, rect_hb5d_bas.top - 10, 100, 200, &memDC, (10-print)*100, 0, 100, 200, SRCCOPY);
 	dc.TextOut(rect_hb5d_bas.left + 60, rect_hb5d_bas.top + 90, str2);
 	
-	print = systemcfg.regentfull.eoslyse;
+	print = logfile.regent.eoslyse;
 	print = (print * 100 / EOS_Top_Level);
 	//print = (print * 32 / EOS_Top_Level);
 	str1.Format(L"%d", print);
@@ -365,7 +365,7 @@ void CReagentmanagement2View::PaintLevel()
 	dc.TextOut(rect_hb5d_eos.left + 60, rect_hb5d_eos.top + 90, str2);
 	cBitmap.Detach();
 
-	print = systemcfg.regentfull.hgblyse;
+	print = logfile.regent.hgblyse;
 	print = (print * 100 / HGB_Top_Level);
 	str1.Format(L"%d", print);
 	str2 = str1 + "%";
@@ -379,7 +379,7 @@ void CReagentmanagement2View::PaintLevel()
 	dc.TextOut(rect_hb5d_hgb.left + 60, rect_hb5d_hgb.top + 90, str2);
 	cBitmap.Detach();
 
-	print = systemcfg.regentfull.rinse;
+	print = logfile.regent.rinse;
 	print = (print * 100 / Rinse_Top_Level);
 	str1.Format(L"%d", print);
 	str2 = str1 + "%";
@@ -405,5 +405,4 @@ void CReagentmanagement2View::PaintLevel()
 	cBitmap.GetBitmap(&bitmap);
 	dc.StretchBlt(rect_diluent.left + 25, rect_diluent.top - 10, 100, 200, &memDC, 100*(10-print), 0, 100, 200, SRCCOPY);
 	dc.TextOut(rect_diluent.left + 60, rect_diluent.top + 90, str2);
-
 }

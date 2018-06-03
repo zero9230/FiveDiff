@@ -903,6 +903,7 @@ int AddPatientRecord(patient_info *ppatientdata)
 	if (number_exsit){
 		//更新的时候，行号row不用更新
 		CString updatepatient = _T("update patientdata set name='") + name + "' , sex = '" + sex + "', code = '" + code + "', age = '" + age + "', doctor = " + doct_id + ", technician = '" + technician + "', rangetype = '" + rangetype + "' where number ='" + number + "'";// + "', technician = '" + technician + 
+		
 		ExeSql(m_pDB, m_pRs, updatepatient);
 	}
 	else{

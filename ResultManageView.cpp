@@ -49,7 +49,7 @@ void CResultManageView::Dump(CDumpContext& dc) const
 
 // CResultManageView 消息处理程序
 
-
+static int initCount = 0;
 void CResultManageView::OnInitialUpdate()
 {
 	CBCGPChartExampleView::OnInitialUpdate();
@@ -59,8 +59,11 @@ void CResultManageView::OnInitialUpdate()
 	CRect rectTab;
 	GetDlgItem(IDC_RESULT_TAB)->GetWindowRect(&rectTab);
 	ScreenToClient(&rectTab);
-
-	m_ResultManageTab.Create(CBCGPTabWnd::STYLE_3D, rectTab, this, 1, CBCGPTabWnd::LOCATION_TOP);
+	if (initCount == 0)
+	{
+		m_ResultManageTab.Create(CBCGPTabWnd::STYLE_3D, rectTab, this, 1, CBCGPTabWnd::LOCATION_TOP);
+		initCount++;
+	}
 	CRect rc;
 	m_ResultManageTab.GetClientRect(rc);
 	m_ResultManageTab.SetResizeMode(CBCGPTabWnd::RESIZE_VERT);

@@ -3075,39 +3075,39 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 		//------------------------------------------------------------------------------------------------
 		//日志文件的修改
 		//试剂剩余量
-		if (systemcfg2.warn_diluent || systemcfg2.warn_baso || systemcfg2.warn_fix || systemcfg2.warn_hgb
-			|| systemcfg2.warn_rinse || systemcfg2.warn_waste)
-		{
+		//if (systemcfg2.warn_diluent || systemcfg2.warn_baso || systemcfg2.warn_fix || systemcfg2.warn_hgb
+		//	|| systemcfg2.warn_rinse || systemcfg2.warn_waste)
+		//{
 			if (WHOLEDIFF == systemcfg.mode || DILUENTDIFF == systemcfg.mode)
 			{
-				if (systemcfg2.warn_rinse)
-				{
+				//if (systemcfg2.warn_rinse)//systemcfg.regentfull.rinse;
+				//{
 					if (logfile.regent.rinse > 11)
 						logfile.regent.rinse = logfile.regent.rinse - 11;
 					else
 						logfile.regent.rinse = 0;
-				}
-				if (systemcfg2.warn_hgb)
-				{
+				//}
+				//if (systemcfg2.warn_hgb)//systemcfg.regentfull.hgblyse
+				//{
 					if (logfile.regent.hgblyse > 4)
 						logfile.regent.hgblyse = logfile.regent.hgblyse - 4;
 					else
 						logfile.regent.hgblyse = 0;
-				}
-				if (systemcfg2.warn_fix)
-				{
+				//}
+				//if (systemcfg2.warn_fix)//systemcfg.regentfull.eoslyse
+				//{
 					if (logfile.regent.eoslyse > 10)
 						logfile.regent.eoslyse = logfile.regent.eoslyse - 10;
 					else
 						logfile.regent.eoslyse = 0;
-				}
-				if (systemcfg2.warn_baso)
-				{
+				//}
+				//if (systemcfg2.warn_baso)// systemcfg.regentfull.baslyse
+				//{
 					if (logfile.regent.baslyse > 21)
 						logfile.regent.baslyse = logfile.regent.baslyse - 21;
 					else
 						logfile.regent.baslyse = 0;
-				}
+				//}
 			}
 			else
 			{
@@ -3134,7 +3134,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 				}
 				//logfile.regent.fix = logfile.regent.eoslyse - 10;		//CBC模式不消耗
 			}
-		}
+		//}
 		//接收错误状态
 		GetErrInfo();
 		//日志文件处理		

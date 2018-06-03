@@ -3570,48 +3570,47 @@ void CResultDetails::OnDeleteRecord()
 		OnViewBack();
 	}
 }
-
+extern CView* pNewView;
 
 void CResultDetails::OnBnClickedResultReturn()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
-	CRect rect;
-	CRect rect1;
-	pMf->GetClentRectEx(rect);
+	//CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
+	//CRect rect;
+	//CRect rect1;
+	//pMf->GetClentRectEx(rect);
+	//CRuntimeClass *pClass = RUNTIME_CLASS(CResultManageView);
+	/*CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
 
-	CRuntimeClass *pClass = RUNTIME_CLASS(CResultManageView);
-	CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
+	ASSERT_VALID(pView);*/
+	//CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
 
-	ASSERT_VALID(pView);
-	CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
-
-	CCreateContext newContext;
-	newContext.m_pNewViewClass = NULL;
-	newContext.m_pNewDocTemplate = NULL;
-	newContext.m_pLastView = NULL;
-	newContext.m_pCurrentFrame = NULL;
-	newContext.m_pCurrentDoc = pCurrentDoc;
+	//CCreateContext newContext;
+	//newContext.m_pNewViewClass = NULL;
+	//newContext.m_pNewDocTemplate = NULL;
+	//newContext.m_pLastView = NULL;
+	//newContext.m_pCurrentFrame = NULL;
+	//newContext.m_pCurrentDoc = pCurrentDoc;
 
 
-	if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
-		rect, pMf, AFX_IDW_PANE_FIRST + 11, &newContext))
-	{
-		delete pView;
-		return;
-	}
-	pView->OnInitialUpdate();
+	//if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
+	//	rect, pMf, AFX_IDW_PANE_FIRST + 11, &newContext))
+	//{
+	//	delete pView;
+	//	return;
+	//}
+	pNewView->OnInitialUpdate();
 
 	CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();
 
 	UINT temp = ::GetWindowLong(pActiveView->m_hWnd, GWL_ID);
 	::SetWindowLong(pActiveView->m_hWnd, GWL_ID,
-	::GetWindowLong(pView->m_hWnd, GWL_ID));
-	::SetWindowLong(pView->m_hWnd, GWL_ID, temp);
+		::GetWindowLong(pNewView->m_hWnd, GWL_ID));
+	::SetWindowLong(pNewView->m_hWnd, GWL_ID, temp);
 	
 	pActiveView->ShowWindow(SW_HIDE);
-	pView->ShowWindow(SW_SHOW);
-	((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
+	pNewView->ShowWindow(SW_SHOW);
+	((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pNewView);
 }
 
 
@@ -3745,4 +3744,5 @@ void CResultDetails::OnBnClickedButton3()
 
 
 	AddPatientRecord(patientdata);
+	MessageBox(L"  保存成功！");
 }
