@@ -285,6 +285,7 @@
 #define IDC_AUTO_CALIBRATE              1287
 #define IDC_CONFIRM_TARGETVALUE         1288
 #define IDC_TARGETVALUE                 1288
+#define IDC_MANUAL_CALIBRATION_SAVE     1288
 #define IDC_WBC_TARGET                  1289
 #define IDC_RBC_TARGET                  1290
 #define IDC_HGB_TARGET                  1291

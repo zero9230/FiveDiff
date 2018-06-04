@@ -359,12 +359,14 @@ int loadpatient(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs, patient_info &pa
 				char sex = m_pRs->GetCollect("sex");
 				(param).sex = sex;
 			}
-			var = m_pRs->GetCollect("rangetype");
+			var = m_pRs->GetCollect("doctor");
 			if (var.vt != VT_NULL)
 			{
-				char rangetype = m_pRs->GetCollect("rangetype");
-				(param).rangetype = rangetype;
+				CString doctor = m_pRs->GetCollect("doctor");
+				temp = W2A(doctor);
+				strncpy(param.doctor, temp, sizeof(param.doctor) / sizeof(char));
 			}
+
 			var = m_pRs->GetCollect("age");
 			if (var.vt != VT_NULL)
 			{
@@ -386,13 +388,13 @@ int loadpatient(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs, patient_info &pa
 				temp = W2A(technician);
 				strncpy(param.technician, temp, sizeof(param.technician) / sizeof(char));
 			}
-			var = m_pRs->GetCollect("doctor");
+			var = m_pRs->GetCollect("rangetype");
 			if (var.vt != VT_NULL)
 			{
-				CString doctor = m_pRs->GetCollect("doctor");
-				temp = W2A(doctor);
-				strncpy(param.doctor, temp, sizeof(param.doctor) / sizeof(char));
+				char rangetype = m_pRs->GetCollect("rangetype");
+				(param).rangetype = rangetype;
 			}
+
 		}
 	}
 	catch (_com_error &e)

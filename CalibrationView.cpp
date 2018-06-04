@@ -42,13 +42,14 @@ BEGIN_MESSAGE_MAP(CCalibrationView, CBCGPChartExampleView)
 	ON_BN_CLICKED(IDC_AUTO_CALIBRATE, &CCalibrationView::OnAutoCalibrateStart)
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_ACKSPI, &CCalibrationView::OnAckspi)
-	ON_BN_CLICKED(IDC_CONFIRM_TARGETVALUE, &CCalibrationView::OnTargetvalue)
+	//ON_BN_CLICKED(IDC_MANUAL_CALIBRATION_SAVE, &CCalibrationView::OnTargetvalue)
 	ON_NOTIFY(NM_CLICK, IDC_LIST2, &CCalibrationView::OnNMClickCoefficientList)
 	ON_BN_CLICKED(IDC_AUTO_MODE_RADIO, &CCalibrationView::OnBnClickedAutoModeRadio)
 	ON_BN_CLICKED(IDC_AUTO_MODE_RADIO2, &CCalibrationView::OnBnClickedAutoModeRadio2)
 	ON_BN_CLICKED(IDC_AUTO_TESTMODE_RADIO, &CCalibrationView::OnBnClickedAutoTestmodeRadio)
 	ON_BN_CLICKED(IDC_AUTO_TESTMODE_RADIO2, &CCalibrationView::OnBnClickedAutoTestmodeRadio2)
 	ON_BN_CLICKED(IDC_CALIBRATION_TEST, &CCalibrationView::OnCalibrationTest)
+	ON_BN_CLICKED(IDC_MANUAL_CALIBRATION_SAVE, &CCalibrationView::OnBnClickedManualCalibrationSave)
 END_MESSAGE_MAP()
 
 
@@ -199,7 +200,7 @@ void CCalibrationView::UpdateTargetvalue()
 
 }
 
-void CCalibrationView::OnTargetvalue()
+void CCalibrationView::OnBnClickedManualCalibrationSave()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	//unsigned int		i;
@@ -776,3 +777,5 @@ void CCalibrationView::initData(){
 		_tcscpy(plt_buff[i].GetBuffer(plt_buff[i].GetLength() + 1), plt_buff_temp[i]);
 	}	
 }
+
+

@@ -96,7 +96,7 @@ private:
 protected:
 	afx_msg LRESULT OnAckspi(WPARAM wParam, LPARAM lParam);
 public:
-	afx_msg void OnTargetvalue();
+	//afx_msg void OnTargetvalue();
 	afx_msg void OnNMClickCoefficientList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedTestmodeRadio();
 	int m_modeRadio;
@@ -112,6 +112,7 @@ public:
 	void		initData();
 
 
+	afx_msg void OnBnClickedManualCalibrationSave();
 };
 
 

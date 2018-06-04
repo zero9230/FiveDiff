@@ -146,7 +146,7 @@ void CManualCalibrationView::OnOK()
 	GetDlgItem(IDC_MANCALIB_PLTF)->GetWindowText(calibrationtemp[TestMode][4]);
 	for (int i = 0; i < 5; i++)
 	{
-		systemcfg.calibration[TestMode][i] = _wtoi(calibrationtemp[TestMode][i]);
+		systemcfg.calibration[TestMode][i] = _wtof(calibrationtemp[TestMode][i]);
 	}
 	WriteSystemcfgFile();
 	CDialogEx::OnOK();
