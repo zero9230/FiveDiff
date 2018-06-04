@@ -35,23 +35,28 @@ CReagentmanagement2View::~CReagentmanagement2View()
 void CReagentmanagement2View::DoDataExchange(CDataExchange* pDX)
 {
 	CBCGPChartExampleView::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_START_TIMEPICKER1, m_DiluentStartDate);
-	DDX_Control(pDX, IDC_START_TIMEPICKER2, m_RinseStartDate);
-	DDX_Control(pDX, IDC_START_TIMEPICKER3, m_HGBStartDate);
-	DDX_Control(pDX, IDC_START_TIMEPICKER4, m_EOSStartDate);
-	DDX_Control(pDX, IDC_START_TIMEPICKER5, m_BASStartDate);
-	DDX_Control(pDX, IDC_END_TIMEPICKER1, m_DiluentEndDate);
-	DDX_Control(pDX, IDC_END_TIMEPICKER2, m_RinseEndDate);
-	DDX_Control(pDX, IDC_END_TIMEPICKER3, m_HGBEndDate);
-	DDX_Control(pDX, IDC_END_TIMEPICKER4, m_EOSEndDate);
-	DDX_Control(pDX, IDC_END_TIMEPICKER5, m_BASEndDate);
-	DDX_Control(pDX, IDC_DILUENT, m_Diluent_Status);
+	//DDX_Control(pDX, IDC_START_TIMEPICKER1, m_DiluentStartDate);
+	//DDX_Control(pDX, IDC_START_TIMEPICKER2, m_RinseStartDate);
+	//DDX_Control(pDX, IDC_START_TIMEPICKER3, m_HGBStartDate);
+	//DDX_Control(pDX, IDC_START_TIMEPICKER4, m_EOSStartDate);
+	//DDX_Control(pDX, IDC_START_TIMEPICKER5, m_BASStartDate);
+	//DDX_Control(pDX, IDC_END_TIMEPICKER1, m_DiluentEndDate);
+	//DDX_Control(pDX, IDC_END_TIMEPICKER2, m_RinseEndDate);
+	//DDX_Control(pDX, IDC_END_TIMEPICKER3, m_HGBEndDate);
+	//DDX_Control(pDX, IDC_END_TIMEPICKER4, m_EOSEndDate);
+	//DDX_Control(pDX, IDC_END_TIMEPICKER5, m_BASEndDate);
+	//DDX_Control(pDX, IDC_DILUENT, m_Diluent_Status);
+	//DDX_Control(pDX, IDC_STATIC_RINSE, idc_static_rise);
 }
 
 BEGIN_MESSAGE_MAP(CReagentmanagement2View, CBCGPChartExampleView)
 	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_CHANGE_ALL_REAGENT, &CReagentmanagement2View::OnChangeAllReagent)
-	ON_BN_CLICKED(IDC_CHANGE_REAGENT, &CReagentmanagement2View::OnChangeReagent)
+	//ON_BN_CLICKED(IDC_CHANGE_ALL_REAGENT, &CReagentmanagement2View::OnChangeAllReagent)
+//	ON_BN_CLICKED(IDC_CHANGE_REAGENT, &CReagentmanagement2View::OnChangeReagent)
+	ON_BN_CLICKED(IDC_CHANGE_RINSE, &CReagentmanagement2View::OnBnClickedChangeRinse)
+	ON_BN_CLICKED(IDC_CHANGE_HGB, &CReagentmanagement2View::OnBnClickedChangeHgb)
+	ON_BN_CLICKED(IDC_CHANGE_EOS, &CReagentmanagement2View::OnBnClickedChangeEos)
+	ON_BN_CLICKED(IDC_CHANGE_BAS, &CReagentmanagement2View::OnBnClickedChangeBas)
 END_MESSAGE_MAP()
 
 
@@ -86,14 +91,6 @@ void CReagentmanagement2View::OnPaint()
 	
 	CWnd *pWnd = 0;
 	pWnd = GetDlgItem(IDC_HB5D_BAS);
-	pWnd->GetClientRect(&rc);
-	pWnd->ValidateRect(&rc);
-	
-
-
-
-
-	pWnd = GetDlgItem(IDC_DILUENT);
 	pWnd->GetClientRect(&rc);
 	pWnd->ValidateRect(&rc);
 	pWnd = GetDlgItem(IDC_RINSE);
@@ -281,18 +278,18 @@ void CReagentmanagement2View::OnChangeAllReagent()
 }
 
 
-void CReagentmanagement2View::OnChangeReagent()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	CChangeReagentView changereagentdlg;
-	if (!changereagentdlg.DoModal())
-	{
-		MessageBox(L"生成更换所有试剂窗口失败");
-		return;
-	}
-	UpdateReagentDate();
-	return;
-}
+//void CReagentmanagement2View::OnChangeReagent()
+//{
+//	// TODO:  在此添加控件通知处理程序代码
+//	CChangeReagentView changereagentdlg;
+//	if (!changereagentdlg.DoModal())
+//	{
+//		MessageBox(L"生成更换所有试剂窗口失败");
+//		return;
+//	}
+//	UpdateReagentDate();
+//	return;
+//}
 
 
 BOOL CReagentmanagement2View::PreCreateWindow(CREATESTRUCT& cs)
@@ -309,15 +306,16 @@ void CReagentmanagement2View::PaintLevel()
 {
 	CPaintDC dc(this); 
 	
-	CRect rect_diluent, rect_rinse, rect_hb5d_hgb, rect_hb5d_eos, rect_hb5d_bas;
+	CRect  rect_rinse, rect_hb5d_hgb, rect_hb5d_eos, rect_hb5d_bas;
 
-	GetDlgItem(IDC_DILUENT)->GetWindowRect(rect_diluent);
+	//GetDlgItem(IDC_DILUENT)->GetWindowRect(rect_diluent);
+
 	GetDlgItem(IDC_RINSE)->GetWindowRect(rect_rinse);
 	GetDlgItem(IDC_HB5D_HGB)->GetWindowRect(rect_hb5d_hgb);
 	GetDlgItem(IDC_HB5D_EOS)->GetWindowRect(rect_hb5d_eos);
 	GetDlgItem(IDC_HB5D_BAS)->GetWindowRect(rect_hb5d_bas);
 
-	ScreenToClient(&rect_diluent);
+	//ScreenToClient(&rect_diluent);
 	ScreenToClient(&rect_rinse);
 	ScreenToClient(&rect_hb5d_hgb);
 	ScreenToClient(&rect_hb5d_eos);
@@ -343,12 +341,13 @@ void CReagentmanagement2View::PaintLevel()
 	CString str1;
 	str1.Format(L"%d",print);
 	CString str2 = str1 + "%";
+	
 	memDC.SelectObject(hbitmap);
 	cBitmap.GetBitmap(&bitmap);
 	print = (print + 5) / 10;
 	dc.StretchBlt(rect_hb5d_bas.left + 25, rect_hb5d_bas.top - 10, 100, 200, &memDC, (10-print)*100, 0, 100, 200, SRCCOPY);
-	dc.TextOut(rect_hb5d_bas.left + 60, rect_hb5d_bas.top + 90, str2);
-	
+	dc.TextOutW(rect_hb5d_bas.left + 60, rect_hb5d_bas.top + 90, str2);
+
 	print = logfile.regent.eoslyse;
 	print = (print * 100 / EOS_Top_Level);
 	//print = (print * 32 / EOS_Top_Level);
@@ -393,16 +392,49 @@ void CReagentmanagement2View::PaintLevel()
 	dc.TextOut(rect_rinse.left + 60, rect_rinse.top + 90, str2);
 	cBitmap.Detach();
 
-	print = systemcfg.regentfull.diluent;
-	print = (print * 100 / Diluent_Top_Level);
-	str1.Format(L"%d", print);
-	str2 = str1 + "%";
-	print = (print + 5) / 10;
-	image.Load(_T("res/diluent.png"));
-	hbitmap = image.Detach();
-	cBitmap.Attach(hbitmap);
-	memDC.SelectObject(hbitmap);
-	cBitmap.GetBitmap(&bitmap);
-	dc.StretchBlt(rect_diluent.left + 25, rect_diluent.top - 10, 100, 200, &memDC, 100*(10-print), 0, 100, 200, SRCCOPY);
-	dc.TextOut(rect_diluent.left + 60, rect_diluent.top + 90, str2);
+	
+}
+
+
+void CReagentmanagement2View::OnBnClickedChangeRinse()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	logfile.regent.rinse=10000;
+	WriteLogFile();
+	MessageBox(L"更换清洗剂成功");
+	OnInitialUpdate();
+
+}
+
+
+void CReagentmanagement2View::OnBnClickedChangeHgb()
+{
+		// TODO:  在此添加控件通知处理程序代码
+	logfile.regent.hgblyse = 10000;
+	WriteLogFile();
+	MessageBox(L"更换HGB剂成功");
+	OnInitialUpdate();
+
+}
+
+
+void CReagentmanagement2View::OnBnClickedChangeEos()
+{
+	logfile.regent.eoslyse = 10000;
+	WriteLogFile();
+	MessageBox(L"更换EOS剂成功");
+	OnInitialUpdate();
+
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CReagentmanagement2View::OnBnClickedChangeBas()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	logfile.regent.baslyse = 10000;
+	WriteLogFile();
+	MessageBox(L"更换BAS剂成功");
+	OnInitialUpdate();
+
 }

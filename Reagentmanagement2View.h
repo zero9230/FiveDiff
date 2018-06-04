@@ -4,6 +4,7 @@
 //#include "BCGPChartExampleView.h"
 //#include "C:\Program Files (x86)\BCGSoft\BCGControlBarPro\BCGCBPro\BCGPButton.h"
 #include "Includes_app.h"
+#include "afxwin.h"
 
 // CReagentmanagement2View ¥∞ÃÂ ”Õº
 
@@ -56,9 +57,14 @@ public:
 	void			UpdateReagentDate();
 	CBCGPButton		m_Diluent_Status;
 	afx_msg void	OnChangeAllReagent();
-	afx_msg void	OnChangeReagent();
+//	afx_msg void	OnChangeReagent();
 	virtual BOOL	PreCreateWindow(CREATESTRUCT& cs);
 	void PaintLevel();
+	afx_msg void OnBnClickedChangeRinse();
+	afx_msg void OnBnClickedChangeHgb();
+	afx_msg void OnBnClickedChangeEos();
+	afx_msg void OnBnClickedChangeBas();
+	//CStatic idc_static_rise;
 };
 
 

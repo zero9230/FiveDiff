@@ -307,12 +307,15 @@
 #define IDC_START_TIMEPICKER3           1308
 #define IDC_CHANGE_ALL_REAGENT          1309
 #define IDC_CHANGE_REAGENT              1310
+#define IDC_CHANGE_RINSE                1310
 #define IDC_EDIT13                      1311
 #define IDC_EDIT14                      1312
 #define IDC_CHANGE_BAS_STARTDATE        1313
 #define IDC_CHANGE_D_ENDDATE            1314
 #define IDC_CHANGE_R_ENDDATE            1315
+#define IDC_CHANGE_HGB                  1315
 #define IDC_CHANGE_HGB_ENDDATE          1316
+#define IDC_CHANGE_EOS                  1316
 #define IDC_CHANGE_EOS_ENDDATE          1317
 #define IDC_BUTTON10                    1318
 #define IDC_CHANGE_BAS_ENDDATE          1318
@@ -1098,6 +1101,8 @@
 #define IDC_QC_XR_CHART_STATIC0         2000
 #define IDC_RESULT_SAVE                 2001
 #define IDC_RESULT_TAB                  2002
+#define IDC_CHANGE_BAS                  2003
+#define IDC_STATIC_RINSE                2004
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1271,7 +1276,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        307
 #define _APS_NEXT_COMMAND_VALUE         33010
-#define _APS_NEXT_CONTROL_VALUE         2003
+#define _APS_NEXT_CONTROL_VALUE         2008
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif
