@@ -202,35 +202,48 @@ void CCalibrationView::UpdateTargetvalue()
 
 void CCalibrationView::OnBnClickedManualCalibrationSave()
 {
-	// TODO:  在此添加控件通知处理程序代码
-	//unsigned int		i;
-	//CString			buffer[6] = {"0"};
-	//uchar			num = 0;
-	//USES_CONVERSION;
-	//for (i = IDC_WBC_TARGET; i <= IDC_PLT_TARGET; i++)
-	//{
-	//	GetDlgItem(i)->GetWindowText(buffer[i-IDC_WBC_TARGET]);
-	//	buffer[5] = '\0';
 
-	//	//ori: num = i - IDC_AUTOCALIB_BASE
-	//	//之前定标因子恒为0.7，估计问题出于此处
-	//	num = i - IDC_WBC_TARGET;
-	//	strcpy((char*)ref_ac[num],W2A( buffer[i - IDC_WBC_TARGET]));
-
-	//	if (atof((const char*)ref_ac[num]) <= 0 || atof((const char*)ref_ac[num]) > 1000)
-	//	{
-	//		if (systemcfg.language == CHINESE)
-	//			MessageBox(L"靶值输入错误!\n请重新输入!", L"警告!");
-	//		return ;
-	//	}
-	//}
-	//ref_flag = 1;
-	CManualCalibrationView m_manualcalibrationdlg;
-	if (m_manualcalibrationdlg.DoModal()==IDOK)
+	CString calibrationtemp[4][5];
+	GetDlgItem(IDC_WBC_TARGET)->GetWindowText(calibrationtemp[TestMode][0]);
+	GetDlgItem(IDC_RBC_TARGET)->GetWindowText(calibrationtemp[TestMode][1]);
+	GetDlgItem(IDC_HGB_TARGET)->GetWindowText(calibrationtemp[TestMode][2]);
+	GetDlgItem(IDC_MCV_TARGET)->GetWindowText(calibrationtemp[TestMode][3]);
+	GetDlgItem(IDC_PLT_TARGET)->GetWindowText(calibrationtemp[TestMode][4]);
+	for (int i = 0; i < 5; i++)
 	{
-		Showtarget();
-		UpdateTargetvalue();
+		systemcfg.calibration[TestMode][i] = _wtof(calibrationtemp[TestMode][i]);
 	}
+	WriteSystemcfgFile();
+	// TODO:  在此添加控件通知处理程序代码
+	/*unsigned int		i;
+	CString			buffer[6] = {"0"};
+	uchar			num = 0;
+	USES_CONVERSION;
+	for (i = IDC_WBC_TARGET; i <= IDC_PLT_TARGET; i++)
+	{
+		GetDlgItem(i)->GetWindowText(buffer[i-IDC_WBC_TARGET]);
+		buffer[5] = '\0';
+		//ori: num = i - IDC_AUTOCALIB_BASE
+		//之前定标因子恒为0.7，估计问题出于此处
+		num = i - IDC_WBC_TARGET;
+		strcpy((char*)ref_ac[num],W2A( buffer[i - IDC_WBC_TARGET]));
+
+		if (atof((const char*)ref_ac[num]) <= 0 || atof((const char*)ref_ac[num]) > 1000)
+		{
+			if (systemcfg.language == CHINESE)
+				MessageBox(L"靶值输入错误!\n请重新输入!", L"警告!");
+			return ;
+		}
+	}
+	ref_flag = 1;*/
+
+
+	//CManualCalibrationView m_manualcalibrationdlg;
+	//if (m_manualcalibrationdlg.DoModal()==IDOK)
+	//{
+	//	Showtarget();
+	//	UpdateTargetvalue();
+	//}
 }
 
 /*************************处理数据*********************************
