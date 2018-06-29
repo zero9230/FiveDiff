@@ -1103,6 +1103,14 @@
 #define IDC_RESULT_TAB                  2002
 #define IDC_CHANGE_BAS                  2003
 #define IDC_STATIC_RINSE                2004
+#define IDC_PAGE_HOME                   2008
+#define IDC_PAGE_TRAILER                2009
+#define IDC_PAGE_HOME2                  2010
+#define IDC_PAGE_NEXT                   2010
+#define IDC_PAGE_FRONT                  2011
+#define IDC_PAGE_COUNT                  2012
+#define IDC_PAGE_JUMP                   2013
+#define IDC_PAGE_SELECT                 2014
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1264,10 +1272,10 @@
 #define ID_33006                        33006
 #define ID_QC_TEST                      33007
 #define IDS_PROGRESS                    59142
-#define ID_INDICATOR_OPERATOR           61446
 #define ID_INDICATOR_DATE               61447
 #define ID_INDICATOR_CLOCK              61448
 #define ID_REAGENT_ALARM                61449
+#define ID_INDICATOR_OPERATOR           61450
 
 // Next default values for new objects
 // 
@@ -1276,7 +1284,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        307
 #define _APS_NEXT_COMMAND_VALUE         33010
-#define _APS_NEXT_CONTROL_VALUE         2008
+#define _APS_NEXT_CONTROL_VALUE         2015
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

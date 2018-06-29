@@ -202,7 +202,7 @@ void CResultListView2::UpdateResultList(COleDateTime Date)
 			var = m_pRs->GetCollect("number");
 			if (var.vt != VT_NULL)
 				strNum = (LPCSTR)_bstr_t(var);
-			ThisResult.numofrs[i] = strNum;
+			ThisResult.numofrs.push_back(strNum);
 			strNum = strtemp + strNum;
 			m_ResultList.InsertItem(i, _T(""));
 			m_ResultList.SetItemText(i, 1, strNum);
@@ -341,7 +341,7 @@ void CResultListView2::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)
 			CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
 
 			this->m_pResultDetails = (CResultDetails*)pView;
-			m_pResultDetails->pThisResult = &ThisResult;
+			//m_pResultDetails->pThisResult = &ThisResult;
 
 
 			ASSERT_VALID(pView);

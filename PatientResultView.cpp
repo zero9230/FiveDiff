@@ -14,6 +14,7 @@ CPatientResultView::CPatientResultView()
 : CBCGPChartExampleView(CPatientResultView::IDD)
 , m_patientname(_T(""))
 
+
 {
 
 }
@@ -29,7 +30,9 @@ void CPatientResultView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DAILY_RESULT2, m_daily_result);
 	DDX_Text(pDX, IDC_EDIT_NAME, m_patientname);
 	//DDX_Text(pDX, IDC_EDIT_GENDER, m_patientGender);
-	DDX_Control(pDX, IDC_COMBOX_SEX, patient_gender);
+	//DDX_Control(pDX, IDC_COMBOX_SEX, patient_gender);
+
+	DDX_Control(pDX, IDC_PAGE_COUNT, text_page_count);
 }
 
 
@@ -41,6 +44,11 @@ BEGIN_MESSAGE_MAP(CPatientResultView, CBCGPChartExampleView)
 	//ON_BN_CLICKED(IDC_BUTTON3, &CPatientResultView::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CPatientResultView::OnBnClickedButtonSearch)
 	ON_WM_PAINT()
+	ON_BN_CLICKED(IDC_PAGE_FRONT, &CPatientResultView::OnBnClickedPageFront)
+	ON_BN_CLICKED(IDC_PAGE_HOME, &CPatientResultView::OnBnClickedPageHome)
+	ON_BN_CLICKED(IDC_PAGE_NEXT, &CPatientResultView::OnBnClickedPageNext)
+	ON_BN_CLICKED(IDC_PAGE_TRAILER, &CPatientResultView::OnBnClickedPageTrailer)
+	ON_BN_CLICKED(IDC_PAGE_JUMP, &CPatientResultView::OnBnClickedPageJump)
 END_MESSAGE_MAP()
 
 
@@ -478,4 +486,34 @@ void CPatientResultView::OnPaint()
 	
 	// TODO:  在此处添加消息处理程序代码
 	// 不为绘图消息调用 CBCGPChartExampleView::OnPaint()
+}
+
+
+void CPatientResultView::OnBnClickedPageFront()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CPatientResultView::OnBnClickedPageHome()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CPatientResultView::OnBnClickedPageNext()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CPatientResultView::OnBnClickedPageTrailer()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CPatientResultView::OnBnClickedPageJump()
+{
+	// TODO:  在此添加控件通知处理程序代码
 }

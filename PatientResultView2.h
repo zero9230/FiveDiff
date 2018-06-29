@@ -6,7 +6,7 @@
 #include "ResultDetails.h"
 
 // CPatientResultView2 对话框
-
+extern ResultToDisplay 	ThisResult;
 class CPatientResultView2 : public CDialogEx
 {
 	DECLARE_DYNAMIC(CPatientResultView2)
@@ -23,7 +23,7 @@ public:
 //	virtual void Dump(CDumpContext& dc) const;
 //#endif
 //#endif
-
+	
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
@@ -38,6 +38,7 @@ public:
 
 
 	BOOL  InitPatientResultForm();
+	BOOL UpdatePatientResultForm();
 	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	bool is_search;
 	afx_msg void OnBnClickedButton1();
@@ -53,4 +54,11 @@ public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnPaint();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnBnClickedPageFront();
+	afx_msg void OnBnClickedPageHome();
+	afx_msg void OnBnClickedPageNext();
+	afx_msg void OnBnClickedPageTrailer();
+	afx_msg void OnBnClickedPageJump();
+	CStatic text_page_count;
+	CFont cfont;
 };

@@ -226,7 +226,7 @@ void CResultListView::UpdateResultList(COleDateTime Date)
 			var = m_pRs->GetCollect("number");
 			if (var.vt != VT_NULL)
 				strNum = (LPCSTR)_bstr_t(var);
-			ThisResult.numofrs[i] = strNum;
+			ThisResult.numofrs.push_back(strNum);
 			strNum = strtemp + strNum;
 			m_ResultList.InsertItem(i, _T(""));
 			m_ResultList.SetItemText(i, 1, strNum);

@@ -15,9 +15,14 @@
 #include "afxwin.h"
 
 typedef struct{
-	CString			numofrs[1000];
-	int				totalnums;
-	int				nownum;
+	vector<CString>	numofrs;    //存储id
+	int				totalnums;  //当前显示id个数
+	int				nownum;     //当前选中的id序号
+	
+	int				page_count;  //数据库总页数
+	int				page_index;  //当前页数
+	long				data_count;	//数据库id总数
+	int				page_num; //一页显示的id个数
 }ResultToDisplay;
 typedef	ResultToDisplay*	pResultToDisplay;
 

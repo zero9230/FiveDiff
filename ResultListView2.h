@@ -13,7 +13,7 @@ public:
 	CResultListView2(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CResultListView2();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_RESULTLIST };
 
 protected:
@@ -32,7 +32,7 @@ public:
 	CBCGPDateTimeCtrl	m_ResultDate;
 
 
-	
+
 	BOOL				InitResultForm();
 
 	void				UpdateResultList(COleDateTime);

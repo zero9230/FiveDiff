@@ -3567,38 +3567,20 @@ void CResultDetails::OnDeleteRecord()
 			pThisResult->numofrs[i] = pThisResult->numofrs[i + 1];
 		}
 		MessageBox(L"删除成功！");
-		OnViewBack();
+	//	OnViewBack();
 	}
+	pThisResult->data_count--;//对于数据总量进行递减
+	if (pThisResult->page_index == pThisResult->page_count && pThisResult->totalnums == 1)
+	{
+		pThisResult->page_index--;//其实这句没有意义，因为在显示页面仍存在static变量无法进行递减。
+		pThisResult->page_count--;//保证index不超过范围
+	}
+	OnBnClickedResultReturn();
 }
 extern CView* pNewView;
 
 void CResultDetails::OnBnClickedResultReturn()
 {
-	// TODO:  在此添加控件通知处理程序代码
-	//CMainFrame* pMf = (CMainFrame*)AfxGetMainWnd();
-	//CRect rect;
-	//CRect rect1;
-	//pMf->GetClentRectEx(rect);
-	//CRuntimeClass *pClass = RUNTIME_CLASS(CResultManageView);
-	/*CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
-
-	ASSERT_VALID(pView);*/
-	//CDocument* pCurrentDoc = ((CMainFrame*)::AfxGetMainWnd())->GetActiveDocument();
-
-	//CCreateContext newContext;
-	//newContext.m_pNewViewClass = NULL;
-	//newContext.m_pNewDocTemplate = NULL;
-	//newContext.m_pLastView = NULL;
-	//newContext.m_pCurrentFrame = NULL;
-	//newContext.m_pCurrentDoc = pCurrentDoc;
-
-
-	//if (!pView->Create(NULL, _T(""), (AFX_WS_DEFAULT_VIEW & ~WS_VISIBLE),
-	//	rect, pMf, AFX_IDW_PANE_FIRST + 11, &newContext))
-	//{
-	//	delete pView;
-	//	return;
-	//}
 	pNewView->OnInitialUpdate();
 
 	CView* pActiveView = ((CMainFrame*)::AfxGetMainWnd())->GetActiveView();

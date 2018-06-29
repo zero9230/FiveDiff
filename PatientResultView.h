@@ -56,6 +56,17 @@ public:
 	afx_msg void OnBnClickedButtonSearch();
 	CComboBox patient_gender;
 	afx_msg void OnPaint();
+	
+	afx_msg void OnBnClickedPageFront();
+	afx_msg void OnBnClickedPageHome();
+	afx_msg void OnBnClickedPageNext();
+	afx_msg void OnBnClickedPageTrailer();
+	//CStatic text_page_count;
+	//CString text_page_count;
+	//CStatic text_page_count;
+	CFont cfont;
+	CStatic text_page_count;
+	afx_msg void OnBnClickedPageJump();
 };
 
 

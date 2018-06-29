@@ -4,7 +4,8 @@
 #include "stdafx.h"
 #include "BCGPChartExample.h"
 #include "TestmainView.h"
-
+#include "PatientResultView2.h"
+#include "ResultDetails.h"
 //#include "MainFrm.h"
 //#include "Includes_app.h"
 #include "ThreadAS.h"
@@ -3992,22 +3993,43 @@ void CTestmainView::deepClone(char * dest, char * src, int srcLength){
 void CTestmainView::OnBnClickedButton1()
 {
 	//// TODO:  在此添加控件通知处理程序代码
-	////GetPatientInfo();
-	//char* c2 = "张三";
-	//CString cs2 = "李四";
+	ULONGLONG size;
+	CString strFilePath = "appdata.accdb";
+	CFileStatus fileStatus;
 
+	if (CFile::GetStatus(strFilePath, fileStatus))
+	{
+		size = fileStatus.m_size / 1024 / 1024;
+	}
+	if (size > 20)
+	{
+		MessageBox(_T("数据库已满，请手动备份数据库"));
+		MessageBox(_T("数据库已满，将数据顶出"));
+		CString filename;
+		CString number;
+
+		CString delete_patientdata = "delete from patientdata where ID = (select top 1  ID from patientdata order by ID)";
+		CString delete_sampledata = "delete from patientdata where ID = (select top 1  ID from sampledata order by ID)";
+		if (IDOK == MessageBox(L"确认删除？", L"提示", MB_YESNO | MB_ICONINFORMATION));
+		{
+			filename.Format(_T("appdata.accdb"));
+			_ConnectionPtr m_pDB;
+			_RecordsetPtr m_pRs;
+			if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+				return;
+			ExeSql(m_pDB, m_pRs, delete_patientdata);
+			ExeSql(m_pDB, m_pRs, delete_sampledata);
+			CloseDataBase(m_pDB, m_pRs);
+			MessageBox(L"删除成功！");
+			//	OnViewBack();
+		}
+	}
 	USES_CONVERSION;
 	GetPatientInfo(&patientdata);
 	AddPatientRecord(&patientdata);
+	
 
 
-	//USES_CONVERSION;	
-	//GetPatientInfo(&patientdata);
-	//AddPatientRecord(&patientdata);
-	////_tcscpy(cs1.GetBuffer(cs2.GetLength()+1), cs2);
-	////strncpy(c1, c2,1);
-	////strcpy(c1, c2);
-	//c1 = T2A(cs2.GetBuffer(0));
 
 }
 
