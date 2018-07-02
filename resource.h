@@ -144,6 +144,8 @@
 #define IDD_QC_XR_LIST                  304
 #define IDD_DIALOG10                    306
 #define IDD_RESULT_MANAGE               307
+#define IDD_LANGUAGE_CHOOSE             308
+#define IDD_MULTILANG_TEST              309
 #define IDC_COMPANY_URL                 1041
 #define IDC_CHART_COLUMN                1054
 #define IDC_CHART_LINE                  1055
@@ -1111,6 +1113,11 @@
 #define IDC_PAGE_COUNT                  2012
 #define IDC_PAGE_JUMP                   2013
 #define IDC_PAGE_SELECT                 2014
+#define IDC_RADIO_CHINESE               2015
+#define IDC_RADIO_ENGLISH               2016
+#define IDC_RADIO_FRENCH                2017
+#define IDC_RADIO_RUSSIAN               2018
+#define IDC_RADIO_SPANISH               2019
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1271,6 +1278,10 @@
 #define ID_33005                        33005
 #define ID_33006                        33006
 #define ID_QC_TEST                      33007
+#define ID_33010                        33010
+#define ID_LANGUAGE_CHOOSE              33011
+#define ID_33012                        33012
+#define ID_MULTILANG_TEST               33013
 #define IDS_PROGRESS                    59142
 #define ID_INDICATOR_DATE               61447
 #define ID_INDICATOR_CLOCK              61448
@@ -1282,9 +1293,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        307
-#define _APS_NEXT_COMMAND_VALUE         33010
-#define _APS_NEXT_CONTROL_VALUE         2015
+#define _APS_NEXT_RESOURCE_VALUE        310
+#define _APS_NEXT_COMMAND_VALUE         33014
+#define _APS_NEXT_CONTROL_VALUE         2020
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

@@ -126,12 +126,15 @@ public:
 		//    DO NOT EDIT what you see in these blocks of generated code !
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-
+private:
+	int m_nLangChoose;		//0~4，依次表示中文、英文、法文、俄文、西班牙文
+	HINSTANCE m_hLangDLL;
 protected:
 	CBCGPChartTheme m_CustomColorTheme;
 	CBCGPChartTheme m_CustomTexturedTheme;
 public:
 	int ExitInstanc(void);
+	virtual int ExitInstance();
 };
 
 extern CBCGPChartExampleApp theApp;

@@ -267,6 +267,8 @@ extern int ListFocusItem;
 
 extern int CurView;
 
+extern BOOL m_bRestartFlag;  // 重启对话框的标识
+
 extern	HANDLE		SendMutex;//互斥量，控制发送消息；
 extern	HANDLE		SendEvent;//互斥量，控制发送消息；
 extern  HANDLE		TestmainEvent;//轮询条形码线程控制事件
