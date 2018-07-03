@@ -12,7 +12,7 @@ public:
 	CQcXChartView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQcXChartView();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_QC_X_CHART };
 
 protected:
@@ -65,6 +65,13 @@ public:
 	double			upperlimit[26];//上限
 	double			lowerlimit[26];//下限
 	double			data[26][31];//质控结果
+	float Mean[26];
+	float SD[26];
+	float CV[26];
+
 	CString number;
 	CString deadline;
+	afx_msg void OnBnClickedPrinttX();
+	void Compute_MSC();//计算每个项目的Mean,SD,CV的值
+	void Draw_X(CString type, CDC &pDC, int Xorg, int Yorg, double y_max, int num);
 };

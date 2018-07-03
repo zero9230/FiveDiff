@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(CQcXrChartView, CDialogEx)
 
 CQcXrChartView::CQcXrChartView(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CQcXrChartView::IDD, pParent)
+: CDialogEx(CQcXrChartView::IDD, pParent)
 {
 	curpage = 0;
 	qcXrChartFileExistEdit = 0;
@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(CQcXrChartView, CDialogEx)
 
 	ON_BN_CLICKED(IDC_QC_XR_CHART_GRAPH_UP, &CQcXrChartView::OnBnClickedQcXrChartGraphUp)
 	ON_BN_CLICKED(IDC_QC_XR_CHART_GRAPH_DOWN, &CQcXrChartView::OnBnClickedQcXrChartGraphDown)
+	ON_BN_CLICKED(IDC_PRINTXR, &CQcXrChartView::OnBnClickedPrintxr)
 END_MESSAGE_MAP()
 
 
@@ -103,7 +104,7 @@ BOOL CQcXrChartView::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 
 	//显示质控类型和文件号
-	CString item_temp, done_temp,pageInfo;
+	CString item_temp, done_temp, pageInfo;
 	int nRow, mRow;
 	switch (Controltype)
 	{
@@ -158,9 +159,9 @@ void CQcXrChartView::InitLineChart1()
 	CBCGPChartSeries* pSeries2 = pChart1->CreateSeries(_T("靶值上限"));
 	CBCGPChartSeries* pSeries3 = pChart1->CreateSeries(_T("靶值下限"));
 
-	for (int i = 0; i < 62; i+=2){
-		if (data[curpage ][i] >= 0)
-			pSeries1->AddDataPoint(data[curpage ][i]);
+	for (int i = 0; i < 62; i += 2){
+		if (data[curpage][i] >= 0)
+			pSeries1->AddDataPoint(data[curpage][i]);
 		pSeries2->AddDataPoint(qcAve[curpage] + qcRan[curpage]);
 		pSeries3->AddDataPoint(qcAve[curpage] - qcRan[curpage]);
 	}
@@ -194,11 +195,11 @@ void CQcXrChartView::InitLineChart2()
 	CBCGPChartSeries* pSeries2 = pChart2->CreateSeries(_T("靶值上限"));
 	CBCGPChartSeries* pSeries3 = pChart2->CreateSeries(_T("靶值下限"));
 
-	for (int i = 1; i < 31*2; i+=2){
-		if (data[curpage ][i] >= 0)
+	for (int i = 1; i < 31 * 2; i += 2){
+		if (data[curpage][i] >= 0)
 			pSeries1->AddDataPoint(data[curpage][i]);
-		pSeries2->AddDataPoint(3* qcRan[curpage]);
-		pSeries3->AddDataPoint(0* qcRan[curpage]);   
+		pSeries2->AddDataPoint(3 * qcRan[curpage]);
+		pSeries3->AddDataPoint(0 * qcRan[curpage]);
 	}
 
 	CBCGPChartAxis* pYAxis = pChart2->GetChartAxis(BCGP_CHART_Y_PRIMARY_AXIS);
@@ -372,8 +373,8 @@ int CQcXrChartView::GetQcXrEdit(int controltype, int controlfile)
 	double deviationTemp;
 	double targetTemp;
 	for (int i = 0; i < 26; i++){
-	//	lowerlimit[i] = 0;
-	//	upperlimit[i] = 0;
+		//	lowerlimit[i] = 0;
+		//	upperlimit[i] = 0;
 	}
 
 	//getNumdea = L"select * from qceditdata where qctype = " + controltype + " and filenum =" + controlfile + ";";// , controltype, controlfile);
@@ -488,12 +489,12 @@ void CQcXrChartView::setQcAveRan(){
 	if (qcXrChartGraphNum == 0) return;
 	double aveSum = 0, ranSum = 0;
 	for (int i = 0; i < 26; i++){
-		for (int j = 0; j < qcXrChartGraphNum*2 ; j +=2){
+		for (int j = 0; j < qcXrChartGraphNum * 2; j += 2){
 			aveSum += data[i][j];
-			ranSum += data[i][j+1];
+			ranSum += data[i][j + 1];
 		}
-		qcAve[i] =  aveSum / qcXrChartGraphNum;
-		qcRan[i] =  ranSum / qcXrChartGraphNum;
+		qcAve[i] = aveSum / qcXrChartGraphNum;
+		qcRan[i] = ranSum / qcXrChartGraphNum;
 		aveSum = 0;
 		ranSum = 0;
 	}
@@ -549,8 +550,367 @@ afx_msg LRESULT CQcXrChartView::OnRedraw(WPARAM, LPARAM){
 	InitLineChart2();
 
 	UpdateMaterialInfoList();
-	
+
 	//RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME);
 	return 0;
 }
 
+
+
+void CQcXrChartView::OnBnClickedPrintxr()
+{
+	PRINTDLG pd;
+	// Initialize PRINTDLG
+	ZeroMemory(&pd, sizeof(PRINTDLG));
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.hwndOwner = NULL;
+	pd.hDevMode = NULL;     // Don't forget to free or store hDevMode
+	pd.hDevNames = NULL;     // Don't forget to free or store hDevNames
+	pd.Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+	pd.nCopies = 1;
+	pd.nFromPage = 0xFFFF;
+	pd.nToPage = 0xFFFF;
+	pd.nMinPage = 1;
+	pd.nMaxPage = 0xFFFF;
+	//PrintDlg(&pd);
+	if (PrintDlg(&pd) == TRUE)
+	{
+		// GDI calls to render output. 
+		DOCINFO di;
+		ZeroMemory(&di, sizeof(DOCINFO));
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = _T("NewDoc");
+		StartDoc(pd.hDC, &di);
+		StartPage(pd.hDC);
+		CDC pDC;
+		pDC.Attach(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"WBC", pDC, 450, 1300, 0.2, 0.2, 0, 0);
+		Draw_Xr(L"LYM%", pDC, 450, 3300, 7, 7, 0, 1);
+		Draw_Xr(L"NEU%", pDC, 450, 5300, 10, 10, 0, 2);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"MONO%", pDC, 450, 1300, 12.5, 12.5, 0, 3);
+		Draw_Xr(L"EOS%", pDC, 450, 3300, 12.5, 15, 0, 4);
+		Draw_Xr(L"BASO%", pDC, 450, 5300, 10, 12.5, 0, 5);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"ALY%", pDC, 450, 1300, 5, 7, -1, 6);
+		Draw_Xr(L"LIC%", pDC, 450, 3300, 12.5, 15, 0, 7);
+		Draw_Xr(L"LYM#", pDC, 450, 5300, 0.05, 0.05, -1, 8);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"NEU#", pDC, 450, 1300, 0.05, 0.05, 0, 9);
+		Draw_Xr(L"MONO#", pDC, 450, 3300, 0.07, 0.1, -1, 10);
+		Draw_Xr(L"EOS#", pDC, 450, 5300, 0.02, 0.02, -1, 11);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"BASO#", pDC, 450, 1300, 0.04, 0.04, -1, 12);
+		Draw_Xr(L"ALY#", pDC, 450, 3300, 0.01, 0.01, -1, 13);
+		Draw_Xr(L"LIC#", pDC, 450, 5300, 0.02, 0.02, 0, 14);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"RBC", pDC, 450, 1300, 0.01, 0.01, -1, 15);
+		Draw_Xr(L"HGB", pDC, 450, 3300, 0.1, 0.05, 0, 16);
+		Draw_Xr(L"HCT", pDC, 450, 5300, 0.1, 0.05, 0, 17);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"MCV", pDC, 450, 1300, 40, 7, 0, 18);
+		Draw_Xr(L"MCH", pDC, 450, 3300, 0.1, 0.05, 0, 19);
+		Draw_Xr(L"MCHC", pDC, 450, 5300, 0.02, 0.02, 0, 20);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"RDW", pDC, 450, 1300, 20, 7, 0, 21);
+		Draw_Xr(L"PLT", pDC, 450, 3300, 2.5, 2, 0, 22);
+		Draw_Xr(L"MPV", pDC, 450, 5300, 2.5, 1, 0, 23);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X-R质控图");
+		Draw_Xr(L"PDW", pDC, 450, 1300, 2, 2, -1, 24);
+		Draw_Xr(L"PCT", pDC, 450, 3300, 0.003, 0.004, 0, 25);
+		EndPage(pd.hDC);
+		EndDoc(pd.hDC);
+		// Delete DC when done.
+		DeleteDC(pd.hDC);
+	}
+}
+void CQcXrChartView::Draw_Xr(CString type, CDC &pDC, int Xorg, int Yorg, double y1, double y2, int flag, int num)
+{
+	CPen penBlack;
+	LOGBRUSH redBrush, greenBrush;
+	CPen penData;
+	CFont font;
+	CString str;
+	//pDC.Attach(hdc);
+	//创建虚线画笔用于绘制靶值上限和下限
+	redBrush.lbStyle = BS_SOLID;
+	redBrush.lbColor = RGB(255, 192, 203);
+	CPen penUpperlimit(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND, 10, &redBrush);
+
+	greenBrush.lbStyle = BS_SOLID;
+	greenBrush.lbColor = RGB(48, 128, 20);
+	CPen penLowerlimit(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND, 10, &greenBrush);
+	//字体
+	font.CreateFont(60, 25, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+	//黑色画笔
+	penBlack.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+	//penUpperlimit.CreatePen(PS_DOT, 1, RGB(255, 192, 203));
+	//penLowerlimit.CreatePen(PS_DOT, 10, RGB(48, 128, 20));
+	penData.CreatePen(PS_SOLID, 10, RGB(30, 144, 255));
+	CFont *poldfont = pDC.SelectObject(&font);
+	CPen *pOldpen = pDC.SelectObject(&penBlack);
+
+	//写X 横坐标刻度
+	for (int i = 1; i < 32; i++)
+	{
+		pDC.MoveTo(i * 120, -10);
+		pDC.LineTo(i * 120, 10);
+		str.Format(L"%d", i);
+		pDC.TextOutW(i * 119, 20, str);
+	}
+	if (flag == -1)
+	{
+		//X质控图
+		pDC.SetViewportOrg(Xorg, Yorg - 200);
+		//绘制坐标轴
+		pDC.MoveTo(0, 0);
+		pDC.LineTo(3720, 0);
+		pDC.MoveTo(0, 200);
+		pDC.LineTo(0, -600);
+		//写纵坐标刻度
+		for (int i = -1; i < 4; i++)
+		{
+			pDC.MoveTo(-10, -i * 200);
+			pDC.LineTo(10, -i * 200);
+		}
+		//根据y轴刻度保留不同的小数位，并写纵坐标刻度
+		if (y1 > 1)
+		{
+			str.Format(L"%.1f", -y1);
+			pDC.TextOutW(-150, 200, str);
+			pDC.TextOutW(-100, 0, L"0");
+			str.Format(L"%.1f", y1);
+			pDC.TextOutW(-150, -200, str);
+			str.Format(L"%.1f", y1 * 2);
+			pDC.TextOutW(-150, -400, str);
+			str.Format(L"%.1f", y1 * 3);
+			pDC.TextOutW(-150, -600, str);
+		}
+		else if (y1 <= 1 && y1 >= 0.01)
+		{
+			str.Format(L"%.2f", -y1);
+			pDC.TextOutW(-150, 200, str);
+			pDC.TextOutW(-100, 0, L"0");
+			str.Format(L"%.2f", y1);
+			pDC.TextOutW(-150, -200, str);
+			str.Format(L"%.2f", y1 * 2);
+			pDC.TextOutW(-150, -400, str);
+			str.Format(L"%.2f", y1 * 3);
+			pDC.TextOutW(-150, -600, str);
+		}
+		//if (y1<0.01)
+		else
+		{
+			str.Format(L"%.3f", -y1);
+			pDC.TextOutW(-200, 200, str);
+			pDC.TextOutW(-100, 0, L"0");
+			str.Format(L"%.3f", y1);
+			pDC.TextOutW(-200, -200, str);
+			str.Format(L"%.3f", y1 * 2);
+			pDC.TextOutW(-200, -400, str);
+			str.Format(L"%.3f", y1 * 3);
+			pDC.TextOutW(-200, -600, str);
+		}
+
+		pDC.TextOutW(-350, -600, L"X");
+		pDC.TextOutW(-350, -700, type);
+		//绘制靶值上限和靶值下限
+		pDC.SelectObject(&penUpperlimit);
+		pDC.MoveTo(120, -600 / (y1 * 3)*(qcAve[num] + qcRan[num]));
+		pDC.LineTo(120 * 31, -600 / (y1 * 3)*(qcAve[num] + qcRan[num]));
+		pDC.SelectObject(&penLowerlimit);
+		pDC.MoveTo(120, -200 / y1*(qcAve[num] - qcRan[num]));
+		pDC.LineTo(120 * 31, -200 / y1 *(qcAve[num] - qcRan[num]));
+		//绘制靶值
+		pDC.SelectObject(&penData);
+		for (int i = 2; i < 62; i += 2)
+		{
+			if (data[num][i] >= 0)
+			{
+				pDC.MoveTo(120 * ((i - 2) / 2 + 1), -600 / (y1 * 3)*data[num][i - 2]);
+				pDC.LineTo(120 * (i / 2 + 1), -600 / (y1 * 3)*data[num][i]);
+			}
+		}
+	}
+	else
+	{
+		pDC.SetViewportOrg(Xorg, Yorg);
+		//绘制坐标轴
+		pDC.MoveTo(0, 0);
+		pDC.LineTo(3720, 0);
+		pDC.MoveTo(0, 0);
+		pDC.LineTo(0, -800);
+		//写纵坐标刻度
+		for (int i = 0; i < 5; i++)
+		{
+			pDC.MoveTo(-10, -i * 200);
+			pDC.LineTo(10, -i * 200);
+		}
+		//根据y轴刻度保留不同的小数位，并写纵坐标刻度
+		if (y1 > 1)
+		{
+			pDC.TextOutW(-100, 0, L"0");
+			str.Format(L"%.1f", y1);
+			pDC.TextOutW(-150, -200, str);
+			str.Format(L"%.1f", y1 * 2);
+			pDC.TextOutW(-150, -400, str);
+			str.Format(L"%.1f", y1 * 3);
+			pDC.TextOutW(-150, -600, str);
+			str.Format(L"%.1f", y1 * 4);
+			pDC.TextOutW(-150, -800, str);
+		}
+		else if (y1 <= 1 && y1 >= 0.01)
+		{
+			pDC.TextOutW(-100, 0, L"0");
+			str.Format(L"%.2f", y1);
+			pDC.TextOutW(-150, -200, str);
+			str.Format(L"%.2f", y1 * 2);
+			pDC.TextOutW(-150, -400, str);
+			str.Format(L"%.2f", y1 * 3);
+			pDC.TextOutW(-150, -600, str);
+			str.Format(L"%.2f", y1 * 4);
+			pDC.TextOutW(-150, -800, str);
+		}
+		else
+		{
+			pDC.TextOutW(-100, 0, L"0");
+			str.Format(L"%.3f", y1);
+			pDC.TextOutW(-200, -200, str);
+			str.Format(L"%.3f", y1 * 2);
+			pDC.TextOutW(-200, -400, str);
+			str.Format(L"%.3f", y1 * 3);
+			pDC.TextOutW(-200, -600, str);
+			str.Format(L"%.3f", y1 * 4);
+			pDC.TextOutW(-200, -800, str);
+		}
+
+		pDC.TextOutW(-350, -800, L"X");
+		pDC.TextOutW(-350, -900, type);
+		//绘制靶值上限和靶值下限
+		pDC.SelectObject(&penUpperlimit);
+		pDC.MoveTo(120, -800 / (y1 * 4)*(qcAve[num] + qcRan[num]));
+		pDC.LineTo(120 * 31, -800 / (y1 * 4)*(qcAve[num] + qcRan[num]));
+		pDC.SelectObject(&penLowerlimit);
+		pDC.MoveTo(120, -800 / (y1 * 4)*(qcAve[num] - qcRan[num]));
+		pDC.LineTo(120 * 31, -800 / (y1 * 4)*(qcAve[num] - qcRan[num]));
+		//绘制靶值
+		pDC.SelectObject(&penData);
+		for (int i = 2; i < 62; i += 2)
+		{
+			if (data[num][i] >= 0)
+			{
+				pDC.MoveTo(120 * ((i - 2) / 2 + 1), -800 / (y1 * 4)*data[num][i - 2]);
+				pDC.LineTo(120 * (i / 2 + 1), -800 / (y1 * 4)*data[num][i]);
+			}
+		}
+	}
+	pDC.SelectObject(&font);
+	pDC.SelectObject(&penBlack);
+	//R质控图
+	pDC.SetViewportOrg(Xorg, Yorg + 1000);
+	//绘制坐标轴
+	pDC.MoveTo(0, 0);
+	pDC.LineTo(3720, 0);
+	pDC.MoveTo(0, 0);
+	pDC.LineTo(0, -800);
+	//写R 纵坐标刻度
+	for (int i = 0; i < 5; i++)
+	{
+		pDC.MoveTo(-10, -i * 200);
+		pDC.LineTo(10, -i * 200);
+	}
+	//根据y轴刻度保留不同的小数位，并写纵坐标刻度
+	if (y2 > 1)
+	{
+		pDC.TextOutW(-100, 0, L"0");
+		str.Format(L"%.1f", y2);
+		pDC.TextOutW(-150, -200, str);
+		str.Format(L"%.1f", y2 * 2);
+		pDC.TextOutW(-150, -400, str);
+		str.Format(L"%.1f", y2 * 3);
+		pDC.TextOutW(-150, -600, str);
+		str.Format(L"%.1f", y2 * 4);
+		pDC.TextOutW(-150, -800, str);
+	}
+	else if (y2 <= 1 && y2 >= 0.01)
+	{
+		pDC.TextOutW(-100, 0, L"0");
+		str.Format(L"%.2f", y2);
+		pDC.TextOutW(-150, -200, str);
+		str.Format(L"%.2f", y2 * 2);
+		pDC.TextOutW(-150, -400, str);
+		str.Format(L"%.2f", y2 * 3);
+		pDC.TextOutW(-150, -600, str);
+		str.Format(L"%.2f", y2 * 4);
+		pDC.TextOutW(-150, -800, str);
+	}
+	else
+	{
+		pDC.TextOutW(-100, 0, L"0");
+		str.Format(L"%.3f", y2);
+		pDC.TextOutW(-200, -200, str);
+		str.Format(L"%.3f", y2 * 2);
+		pDC.TextOutW(-200, -400, str);
+		str.Format(L"%.3f", y2 * 3);
+		pDC.TextOutW(-200, -600, str);
+		str.Format(L"%.3f", y2 * 4);
+		pDC.TextOutW(-200, -800, str);
+	}
+
+	pDC.TextOutW(-350, -800, L"R");
+	//写横坐标刻度
+	for (int i = 1; i < 32; i++)
+	{
+		pDC.MoveTo(i * 120, -10);
+		pDC.LineTo(i * 120, 10);
+		str.Format(L"%d", i);
+		pDC.TextOutW(i * 119, 20, str);
+	}
+	//绘制靶值上限和靶值下限
+	pDC.SelectObject(&penUpperlimit);
+	pDC.MoveTo(120, -800 / (y2 * 4) * 3 * qcRan[num]);
+	pDC.LineTo(120 * 31, -800 / (y2 * 4) * 3 * qcRan[num]);
+	pDC.SelectObject(&penLowerlimit);
+	pDC.MoveTo(120, -800 / (y2 * 4) * 0 * qcRan[num]);
+	pDC.LineTo(120 * 31, -800 / (y2 * 4) * 0 * qcRan[num]);
+	//绘制靶值
+	pDC.SelectObject(&penData);
+	for (int i = 3; i < 62; i += 2)
+	{
+		if (data[num][i] >= 0)
+		{
+			pDC.MoveTo(120 * ((i - 2) / 2 + 1), -800 / (y2 * 4)*data[num][i - 2]);
+			pDC.LineTo(120 * (i / 2 + 1), -800 / (y2 * 4)*data[num][i]);
+		}
+	}
+	//恢复原来的画笔和字体
+	pDC.SelectObject(pOldpen);
+	pDC.SelectObject(poldfont);
+	font.DeleteObject();
+	penBlack.DeleteObject();
+}

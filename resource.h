@@ -764,6 +764,8 @@
 #define IDC_GRAPH_UP                    1649
 #define IDC_GRAPH_DOWN                  1650
 #define IDC_QUALITY_TARGETVALUE_LIST    1651
+#define IDC_GRAPH_DOWN2                 1651
+#define IDC_GRAPH_PRINT                 1651
 #define IDC_PROJECT_EDIT                1652
 #define IDC_PROJECTTARGET_EDIT          1653
 #define IDC_PROJECTRANGE_EDIT           1654
@@ -1055,6 +1057,7 @@
 #define IDC_QC_X_STATIC2                1942
 #define IDC_QC_X_STATIC3                1943
 #define IDC_QC_X_STATIC4                1944
+#define IDC_PRINTT_X                    1945
 #define IDC_QUALITY_LIST_LIST           1950
 #define IDC_QUALITY_LIST_NUMBER         1951
 #define IDC_QUALITY_LIST_DEADLINE       1952
@@ -1092,6 +1095,7 @@
 #define IDC_QC_XR_TEST_STATIC_ITEM      1990
 #define IDC_QC_XR_CHART_STATIC_ITEM     1990
 #define IDC_QC_XR_LIST_LIST             1991
+#define IDC_PRINTXR                     1991
 #define IDC_QC_XR_LIST_NUMBER           1992
 #define IDC_QC_XR_LIST_DEADLINE         1993
 #define IDC_QC_XR_LIST_UP_BUTTON        1994

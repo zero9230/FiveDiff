@@ -67,6 +67,7 @@ BEGIN_MESSAGE_MAP(CQualityControlChartView, CDialogEx)
 	ON_MESSAGE(UM_REDRAW, OnRedraw)
 	ON_BN_CLICKED(IDC_GRAPH_UP, &CQualityControlChartView::OnGraphUp)
 	ON_BN_CLICKED(IDC_GRAPH_DOWN, &CQualityControlChartView::OnGraphDown)
+	ON_BN_CLICKED(IDC_GRAPH_PRINT, &CQualityControlChartView::OnBnClickedGraphPrint)
 END_MESSAGE_MAP()
 
 
@@ -90,7 +91,7 @@ BOOL CQualityControlChartView::OnInitDialog()
 	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
 
 	//ÏÔÊ¾ÖÊ¿ØÀàÐÍºÍÎÄ¼þºÅ
-	CString item_temp,done_temp;
+	CString item_temp, done_temp;
 	int nRow, mRow;
 	switch (Controltype)
 	{
@@ -138,6 +139,7 @@ BOOL CQualityControlChartView::OnInitDialog()
 	InitLineChart4();
 	InitmaterialInfoList();
 	UpdateMSC();
+	Compute_MSC();//¼ÆËãÃ¿¸öÏîÄ¿Mean,SD,CVµÄÖµ£¬²¢·ÅÈëMean[26]£¬SD[26]£¬CV[26]Êý×éÖÐ
 	GetDlgItem(IDC_GRAPH_UP)->EnableWindow(false);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// Òì³£:  OCX ÊôÐÔÒ³Ó¦·µ»Ø FALSE
@@ -194,17 +196,17 @@ void CQualityControlChartView::InitLineChart()
 	//pSeries2->AddDataPoint(19.);
 	//pSeries2->AddDataPoint(21.);
 	//pSeries2->AddDataPoint(23.);
-/*	//´Ë¶ÎÎªÊ¦ÐÖ´úÂë£¬ÉÏÏÂÏÞ¾ù²»Õý³£
+	/*	//´Ë¶ÎÎªÊ¦ÐÖ´úÂë£¬ÉÏÏÂÏÞ¾ù²»Õý³£
 	CArray <double, double> m_upperarray, m_lowerarray, m_dataarray;
 	m_upperarray.SetSize(31);
 	m_lowerarray.SetSize(31);
 	m_dataarray.SetSize(31);
 	for (int i = 0; i < 31; i++)
 	{
-		//m_upperarray.SetAtGrow(i, upperlimit[0]);
-		m_upperarray.SetAtGrow(i, upperlimit[curpage * 4]);
-		m_lowerarray.SetAtGrow(i, lowerlimit[curpage * 4]);
-		m_dataarray.SetAtGrow(i, data[curpage * 4][i]);
+	//m_upperarray.SetAtGrow(i, upperlimit[0]);
+	m_upperarray.SetAtGrow(i, upperlimit[curpage * 4]);
+	m_lowerarray.SetAtGrow(i, lowerlimit[curpage * 4]);
+	m_dataarray.SetAtGrow(i, data[curpage * 4][i]);
 	}
 	//pSeries2->AddDataPoint(upperlimit[0]);
 	pSeries1->AddDataPoints(m_dataarray);
@@ -215,9 +217,9 @@ void CQualityControlChartView::InitLineChart()
 
 	for (int i = 0; i < 31; i++){
 		if (data[curpage * 4][i] >= 0)
-			pSeries1->AddDataPoint(data[curpage * 4 ][i]);
-		pSeries2->AddDataPoint(upperlimit[curpage * 4 ]);
-		pSeries3->AddDataPoint(lowerlimit[curpage * 4 ]);
+			pSeries1->AddDataPoint(data[curpage * 4][i]);
+		pSeries2->AddDataPoint(upperlimit[curpage * 4]);
+		pSeries3->AddDataPoint(lowerlimit[curpage * 4]);
 	}
 
 
@@ -252,7 +254,7 @@ void CQualityControlChartView::InitLineChart2()
 	(m_Feature == CDemoFeature::BCGP_StackedLine || m_Feature == CDemoFeature::BCGP_StackedLineSpline) ? BCGP_CT_STACKED :
 	(m_Feature == CDemoFeature::BCGP_StackedLine100) ?
 	BCGP_CT_100STACKED : BCGP_CT_SIMPLE;*/
-	
+
 	//BCGPChartType type = BCGP_CT_STACKED;
 	BCGPChartType type = BCGP_CT_SIMPLE;
 
@@ -288,7 +290,7 @@ void CQualityControlChartView::InitLineChart2()
 	//pSeries3->AddDataPoints(m_lowerarray);
 
 	for (int i = 0; i < 31; i++){
-		if (data[curpage * 4 +1][i] >= 0)
+		if (data[curpage * 4 + 1][i] >= 0)
 			pSeries1->AddDataPoint(data[curpage * 4 + 1][i]);
 		pSeries2->AddDataPoint(upperlimit[curpage * 4 + 1]);
 		pSeries3->AddDataPoint(lowerlimit[curpage * 4 + 1]);
@@ -345,9 +347,9 @@ void CQualityControlChartView::InitLineChart3()
 		m_dataarray.SetSize(31);
 		for (int i = 0; i < 31; i++)
 		{
-			m_upperarray.SetAtGrow(i, upperlimit[curpage * 4 + 2]);
-			m_lowerarray.SetAtGrow(i, lowerlimit[curpage * 4 + 2]);
-			m_dataarray.SetAtGrow(i, data[curpage * 4 + 2][i]);
+		m_upperarray.SetAtGrow(i, upperlimit[curpage * 4 + 2]);
+		m_lowerarray.SetAtGrow(i, lowerlimit[curpage * 4 + 2]);
+		m_dataarray.SetAtGrow(i, data[curpage * 4 + 2][i]);
 		}
 		//pSeries2->AddDataPoint(upperlimit[0]);
 		pSeries1->AddDataPoints(m_dataarray);
@@ -355,7 +357,7 @@ void CQualityControlChartView::InitLineChart3()
 		pSeries3->AddDataPoints(m_lowerarray);
 		*/
 		for (int i = 0; i < 31; i++){
-			if (data[curpage * 4+2][i] >= 0)
+			if (data[curpage * 4 + 2][i] >= 0)
 				pSeries1->AddDataPoint(data[curpage * 4 + 2][i]);
 			pSeries2->AddDataPoint(upperlimit[curpage * 4 + 2]);
 			pSeries3->AddDataPoint(lowerlimit[curpage * 4 + 2]);
@@ -417,9 +419,9 @@ void CQualityControlChartView::InitLineChart4()
 		m_dataarray.SetSize(31);
 		for (int i = 0; i < 31; i++)
 		{
-			m_upperarray.SetAtGrow(i, upperlimit[curpage * 4 + 3]);
-			m_lowerarray.SetAtGrow(i, lowerlimit[curpage * 4 + 3]);
-			m_dataarray.SetAtGrow(i, data[curpage * 4 + 3][i]);
+		m_upperarray.SetAtGrow(i, upperlimit[curpage * 4 + 3]);
+		m_lowerarray.SetAtGrow(i, lowerlimit[curpage * 4 + 3]);
+		m_dataarray.SetAtGrow(i, data[curpage * 4 + 3][i]);
 		}
 		//pSeries2->AddDataPoint(upperlimit[0]);
 		pSeries1->AddDataPoints(m_dataarray);
@@ -427,7 +429,7 @@ void CQualityControlChartView::InitLineChart4()
 		pSeries3->AddDataPoints(m_lowerarray);
 		*/
 		for (int i = 0; i < 31; i++){
-			if (data[curpage * 4+3][i] >= 0)
+			if (data[curpage * 4 + 3][i] >= 0)
 				pSeries1->AddDataPoint(data[curpage * 4 + 3][i]);
 			pSeries2->AddDataPoint(upperlimit[curpage * 4 + 3]);
 			pSeries3->AddDataPoint(lowerlimit[curpage * 4 + 3]);
@@ -614,7 +616,7 @@ void CQualityControlChartView::OnGraphUp()
 	GetDlgItem(IDC_STATIC3)->SetWindowText(quality_table[curpage * 4 + 2]);
 	GetDlgItem(IDC_STATIC4)->SetWindowText(quality_table[curpage * 4 + 3]);
 	GetDlgItem(IDC_STATIC5)->SetWindowText(pageInfo);
-	
+
 	InitLineChart();
 	InitLineChart2();
 	InitLineChart3();
@@ -740,7 +742,7 @@ int CQualityControlChartView::GetNumDea(int controltype, int controlfile)//Õâ¸öº
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
 	_variant_t var;
-	CString strTemp; 
+	CString strTemp;
 	double deviationTemp;
 	double targetTemp;
 	for (int i = 0; i < 26; i++){
@@ -786,8 +788,8 @@ int CQualityControlChartView::GetNumDea(int controltype, int controlfile)//Õâ¸öº
 				var = m_pRs->GetFields()->GetItem((long)5 + i)->Value;//ÕâÊÇÏòÄÇ¸ö±äÁ¿ÌîÖµ£¿,´Ë´¦Ö±½Ó±¨´íÁË£¬ÓÐÎÊÌâ
 				if (var.vt != VT_NULL){
 					strTemp = (LPCSTR)_bstr_t(var);
-					targetTemp= _wtof(strTemp);
-					
+					targetTemp = _wtof(strTemp);
+
 				}
 				var = m_pRs->GetFields()->GetItem((long)5 + 26 + i)->Value;
 				if (var.vt != VT_NULL){
@@ -832,7 +834,7 @@ int CQualityControlChartView::GetDetail(int controltype, int controlfile)
 		return -1;
 	ExeSql(m_pDB, m_pRs, select_detail);
 	rownum = int(m_pRs->GetRecordCount());
-	
+
 	try
 	{
 		if (!m_pRs->BOF){
@@ -862,14 +864,14 @@ int CQualityControlChartView::GetDetail(int controltype, int controlfile)
 	catch (_com_error &e)
 	{
 		TRACE("GetDetailº¯Êý³ÌÐòÒì³£\n");
-	}	
+	}
 	CloseDataBase(m_pDB, m_pRs);
 	return rownum;
 }
 
 void CQualityControlChartView::UpdateView()
 {
-	CString item_temp,done_temp;
+	CString item_temp, done_temp;
 	int nRow, mRow;
 	switch (Controltype)
 	{
@@ -902,7 +904,7 @@ void CQualityControlChartView::UpdateView()
 		qcLjGraphNum = mRow;
 		if (mRow > 31)
 			qcLjGraphNum = 31;
-	} 
+	}
 	else
 		qcLjGraphNum = 0;
 	done_temp.Format(L"ÒÑ×ö×éÊý£º%d", qcLjGraphNum);
@@ -915,7 +917,7 @@ void CQualityControlChartView::UpdateView()
 	InitLineChart4();
 	UpdateMaterialInfoList();
 	UpdateMSC();
-	
+
 }
 
 afx_msg LRESULT CQualityControlChartView::OnRedraw(WPARAM, LPARAM){
@@ -924,4 +926,205 @@ afx_msg LRESULT CQualityControlChartView::OnRedraw(WPARAM, LPARAM){
 	UpdateView();
 	//RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME);
 	return 0;
+}
+//»æÖÆ×ø±êÏµ£¬Xorg,YorgÎª×ø±êÏµÔ­µãÎ»ÖÃ£¬y_maxÎª×Ý×ø±ê·¶Î§;typeÎªÏîÄ¿ÀàÐÍ
+void CQualityControlChartView::Draw_LJ(CString type, CDC &pDC, int Xorg, int Yorg, float y_max, int num)
+{
+	CPen penBlack;
+	LOGBRUSH redBrush, greenBrush;
+	CPen penData;
+	CFont font;
+	CString str;
+	CString S_Mean;
+	CString S_SD;
+	CString S_CV;
+	//pDC.Attach(hdc);
+	//´´½¨ÐéÏß»­±ÊÓÃÓÚ»æÖÆ°ÐÖµÉÏÏÞºÍÏÂÏÞ
+	redBrush.lbStyle = BS_SOLID;
+	redBrush.lbColor = RGB(255, 192, 203);
+	CPen penUpperlimit(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND, 10, &redBrush);
+
+	greenBrush.lbStyle = BS_SOLID;
+	greenBrush.lbColor = RGB(48, 128, 20);
+	CPen penLowerlimit(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND, 10, &greenBrush);
+	//×ÖÌå
+	font.CreateFont(60, 25, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+	//ºÚÉ«»­±Ê
+	penBlack.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+	//penUpperlimit.CreatePen(PS_DOT, 1, RGB(255, 192, 203));
+	//penLowerlimit.CreatePen(PS_DOT, 10, RGB(48, 128, 20));
+	penData.CreatePen(PS_SOLID, 10, RGB(30, 144, 255));
+	CFont *poldfont = pDC.SelectObject(&font);
+	CPen *pOldpen = pDC.SelectObject(&penBlack);
+
+	pDC.SetViewportOrg(Xorg, Yorg);
+	//»æÖÆ×ø±êÖá
+	pDC.MoveTo(0, 0);
+	pDC.LineTo(3720, 0);
+	pDC.MoveTo(0, 0);
+	pDC.LineTo(0, -800);
+	//Ð´ºá×ø±ê¿Ì¶È
+	for (int i = 0; i < 32; i++)
+	{
+		pDC.MoveTo(i * 120, -10);
+		pDC.LineTo(i * 120, 10);
+		str.Format(L"%d", i);
+		pDC.TextOutW(i * 119, 20, str);
+	}
+	//Ð´×Ý×ø±ê¿Ì¶È
+	for (int i = 0; i < 3; i++)
+	{
+		pDC.MoveTo(-10, -i * 400);
+		pDC.LineTo(10, -i * 400);
+	}
+	str.Format(L"%.0f", y_max / 2);
+	pDC.TextOutW(-100, -400, str);
+	str.Format(L"%.0f", y_max);
+	pDC.TextOutW(-100, -800, str);
+	//ÖÊ¿ØÏîÄ¿ÀàÐÍ
+	pDC.TextOutW(-350, -400, type);
+
+	S_Mean.Format(L"%.2f", Mean[num]);
+	S_SD.Format(L"%.2f", SD[num]);
+	S_CV.Format(L"%.2f", CV[num]);
+	//»Ö¸´Ô­À´µÄ»­±Ê
+	//	pDC.SelectObject(pOldpen);
+	pDC.SelectObject(poldfont);
+	//Ð´¾ùÖµ£¬±ê×¼²îµÈÊý¾Ý
+	pDC.TextOutW(3900, -700, L"Mean: " + S_Mean);
+	pDC.TextOutW(3900, -400, L"SD: " + S_SD);
+	pDC.TextOutW(3900, -100, L"CV%: " + S_CV);
+	//»æÖÆ°ÐÖµÉÏÏÞ
+	pDC.SelectObject(&penUpperlimit);
+	pDC.MoveTo(120, -800.0 / y_max*upperlimit[num]);
+	pDC.LineTo(120 * 31, -800.0 / y_max*upperlimit[num]);
+	//»æÖÆ°ÐÖµÏÂÏÞ
+	pDC.SelectObject(&penLowerlimit);
+	pDC.MoveTo(120, -800.0 / y_max*lowerlimit[num]);
+	pDC.LineTo(120 * 31, -800.0 / y_max*lowerlimit[num]);
+	//»æÖÆ°ÐÖµ
+	pDC.SelectObject(&penData);
+	for (int i = 1; i < 31; i++)
+	{
+		if (data[num][i] >= 0)
+		{
+			pDC.MoveTo(i * 120, -800.0 / y_max*data[num][i - 1]);
+			pDC.LineTo((i + 1) * 120, -800.0 / y_max*data[num][i]);
+		}
+	}
+	pDC.SelectObject(pOldpen);
+	font.DeleteObject();
+	penBlack.DeleteObject();
+
+}
+
+void CQualityControlChartView::OnBnClickedGraphPrint()
+{
+
+	PRINTDLG pd;
+	// Initialize PRINTDLG
+	ZeroMemory(&pd, sizeof(PRINTDLG));
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.hwndOwner = NULL;
+	pd.hDevMode = NULL;     // Don't forget to free or store hDevMode
+	pd.hDevNames = NULL;     // Don't forget to free or store hDevNames
+	pd.Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+	pd.nCopies = 1;
+	pd.nFromPage = 0xFFFF;
+	pd.nToPage = 0xFFFF;
+	pd.nMinPage = 1;
+	pd.nMaxPage = 0xFFFF;
+	//PrintDlg(&pd);
+	if (PrintDlg(&pd) == TRUE)
+	{
+		// GDI calls to render output. 
+		DOCINFO di;
+		ZeroMemory(&di, sizeof(DOCINFO));
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = _T("NewDoc");
+		StartDoc(pd.hDC, &di);
+		StartPage(pd.hDC);
+		CDC pDC;
+		pDC.Attach(pd.hDC);
+		pDC.TextOutW(2300, 200, L"L-JÖÊ¿ØÍ¼");
+		Draw_LJ(L"WBC", pDC, 450, 1300, 100.0, 0);
+		Draw_LJ(L"LYM%", pDC, 450, 2300, 100.0, 1);
+		Draw_LJ(L"NEU%", pDC, 450, 3300, 30.0, 2);
+		Draw_LJ(L"MONO%", pDC, 450, 4300, 100.0, 3);
+		Draw_LJ(L"EOS%", pDC, 450, 5300, 100.0, 4);
+		Draw_LJ(L"BASO%", pDC, 450, 6300, 100.0, 5);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"L-JÖÊ¿ØÍ¼");
+		Draw_LJ(L"ALY%", pDC, 450, 1300, 100.0, 6);
+		Draw_LJ(L"LIC%", pDC, 450, 2300, 10.0, 7);
+		Draw_LJ(L"LYM#", pDC, 450, 3300, 10.0, 8);
+		Draw_LJ(L"NEU#", pDC, 450, 4300, 10.0, 9);
+		Draw_LJ(L"MONO#", pDC, 450, 5300, 10.0, 10);
+		Draw_LJ(L"EOS#", pDC, 450, 6500, 10.0, 11);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"L-JÖÊ¿ØÍ¼");
+		Draw_LJ(L"BASO#", pDC, 450, 1300, 10.0, 12);
+		Draw_LJ(L"ALY#", pDC, 450, 2300, 10.0, 13);
+		Draw_LJ(L"LIC#", pDC, 450, 3300, 10.0, 14);
+		Draw_LJ(L"RBC", pDC, 450, 4300, 10.0, 15);
+		Draw_LJ(L"HGB", pDC, 450, 5300, 150.0, 16);
+		Draw_LJ(L"HCT", pDC, 450, 6300, 60.0, 17);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"L-JÖÊ¿ØÍ¼");
+		Draw_LJ(L"MCV", pDC, 450, 1300, 200.0, 18);
+		Draw_LJ(L"MCH", pDC, 450, 2300, 40.0, 19);
+		Draw_LJ(L"MCHC", pDC, 450, 3300, 300.0, 20);
+		Draw_LJ(L"RDW", pDC, 450, 4300, 100.0, 21);
+		Draw_LJ(L"PLT", pDC, 450, 5300, 1000.0, 22);
+		Draw_LJ(L"MPV", pDC, 450, 6300, 15.0, 23);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"L-JÖÊ¿ØÍ¼");
+		Draw_LJ(L"PWD", pDC, 450, 1300, 15.0, 24);
+		Draw_LJ(L"PCT", pDC, 450, 2300, 10.0, 25);
+		EndPage(pd.hDC);
+		EndDoc(pd.hDC);
+
+		// Delete DC when done.
+		DeleteDC(pd.hDC);
+	}
+}
+void CQualityControlChartView::Compute_MSC()
+{
+	float sum = 0;
+	float square = 0;
+	for (int i = 0; i < 26; i++)
+	{
+		sum = 0;
+		for (int j = 0; j < qcLjGraphNum; j++)
+		{
+			sum += data[i][j];
+		}
+		Mean[i] = sum / qcLjGraphNum;
+		if (qcLjGraphNum > 1)
+		{
+			square = 0;
+			for (int j = 0; j < qcLjGraphNum; j++)
+			{
+				square += (data[i][j] - Mean[i])*(data[i][j] - Mean[i]);
+			}
+			SD[i] = sqrt(square / (qcLjGraphNum - 1));
+			if (Mean[i] < 0.00001)
+			{
+				CV[i] = 0.00;
+			}
+			else
+			{
+				CV[i] = SD[i] / Mean[i] * 100;
+			}
+		}
+
+	}
 }

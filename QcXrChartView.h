@@ -11,7 +11,7 @@ public:
 	CQcXrChartView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQcXrChartView();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_QC_XR_CHART };
 
 protected:
@@ -46,7 +46,7 @@ public:
 	void			InitLineChart2();
 	void			OnUpdateChart(int num);
 	void			setQcAveRan();
-	
+
 
 	bool			InitmaterialInfoList();
 	bool			UpdateMaterialInfoList();
@@ -61,4 +61,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedQcXrChartGraphUp();
 	afx_msg void OnBnClickedQcXrChartGraphDown();
+	afx_msg void OnBnClickedPrintxr();
+	//绘制X和R质控图，(Xorg,Yorg)为坐标原点，y1为X质控图的y坐标轴刻度，y2为R质控图的y坐标刻度，falg=-1表示靶值下限为负值，num为第几个图
+	void Draw_Xr(CString type, CDC &pDC, int Xorg, int Yorg, double y1, double y2, int flag, int num);
 };

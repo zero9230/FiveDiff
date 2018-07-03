@@ -1,6 +1,7 @@
 #pragma once
 #include "BCGPChartCtrl.h"
 #include "BCGPListCtrl.h"
+//#include <CString>
 
 
 // CQualityControlChartView 对话框
@@ -68,6 +69,15 @@ public:
 	double			upperlimit[26];//上限
 	double			lowerlimit[26];//下限
 	double			data[26][31];//质控结果
+	float Mean[26];
+	float SD[26];
+	float CV[26];
 	CString number;
 	CString deadline;
+
+	//void Draw_LJ(int Orgx, int Orgy, HDC hdc);
+	afx_msg void OnBnClickedGraphPrint();
+	//void Draw_LJ(int Orgx, int Orgy, int y_max, int num, HDC hdc);
+	void Draw_LJ(CString type, CDC &pDC, int Xorg, int Yorg, float y_max, int num);
+	void Compute_MSC();//计算每个项目的Mean,SD,CV的值
 };
