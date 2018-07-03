@@ -11,6 +11,7 @@
 //#include "ListCtrl.h"
 #include "Includes_app.h"
 #include "BCGPComboBox.h"
+#include "afxwin.h"
 
 static sample_info	 sampledata;			//与界面交互和数据库交互的变量
 static patient_info	 patientdata;
@@ -202,6 +203,7 @@ public:
 	char* c1;
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
+	CEdit TestMain_number;
 };
 
 

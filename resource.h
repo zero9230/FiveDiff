@@ -257,11 +257,13 @@
 #define IDC_RESULT_EDIT2                1260
 #define IDC_RESULT_EDIT3                1261
 #define IDC_RESULT_PAGE_UP              1261
+#define IDC_RESULT_PAGE_FRONT           1261
 #define IDC_RESULT_EDIT4                1262
 #define IDC_RESULT_TIMEPICKER4          1262
 #define IDC_RESULT_PAGE_JUMP            1262
 #define IDC_RESULT_COMBO_SEX            1263
 #define IDC_RESULT_PAGE_DOWN            1263
+#define IDC_RESULT_PAGE_NEXT            1263
 #define IDC_RESULT_EDIT5                1264
 #define IDC_RESULT_PAGE_TRAILER         1264
 #define IDC_RESULT_COMBO_DOCTOR         1265

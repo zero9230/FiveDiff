@@ -85,6 +85,7 @@ void CTestmainView::DoDataExchange(CDataExchange* pDX)
 	//AfxMessageBox(_T("56"));
 	DDX_Control(pDX, IDC_COMBO_SEX, m_sexcombo);
 	DDX_Control(pDX, IDC_COMBO_DOCTOR, m_doctorcombo);
+	DDX_Control(pDX, IDC_TESTMAIN_NUMBER, TestMain_number);
 }
 
 BEGIN_MESSAGE_MAP(CTestmainView, CBCGPChartExampleView)
@@ -136,7 +137,7 @@ void CTestmainView::Dump(CDumpContext& dc) const
 #endif
 #endif //_DEBUG
 
-
+/**************************/
 // CTestmainView 消息处理程序
 void CTestmainView::OnInitialUpdate()
 {
@@ -2533,9 +2534,9 @@ void CTestmainView::AutoClean_MainWnd(RECT* STATUS)
 
 void CTestmainView::GetPatientInfo(patient_info* ppatientdata)
 {
-	CString m_number,m_sex,m_technician,m_name, m_age, m_doctor, m_barcode;
+	CString m_sex,m_technician,m_name, m_age, m_doctor, m_barcode;
 
-	GetDlgItem(IDC_TESTMAIN_NUMBER)->GetWindowText(m_number);
+	//GetDlgItem(IDC_TESTMAIN_NUMBER)->GetWindowText(m_number);
 	GetDlgItem(IDC_TESTMAIN_NAME)->GetWindowText(m_name);
 	GetDlgItem(IDC_TESTMAIN_AGE)->GetWindowText(m_age);
 	GetDlgItem(IDC_TESTMAIN_BARCODE)->GetWindowText(m_barcode);	
@@ -2557,7 +2558,7 @@ void CTestmainView::GetPatientInfo(patient_info* ppatientdata)
 	strcpy(ppatientdata->technician, temp);
 	//sprintf(ppatientdata->technician, "%s", temp);
 		
-	ppatientdata->number = _ttoi(m_number);
+	//ppatientdata->number = _ttoi(m_number);
 
 	ppatientdata->sex = m_sexcombo.GetCurSel();
 	CString doctortemp;
@@ -3207,8 +3208,16 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//向病人信息表插入病人编号，注册以和病人数据表记录同步
 			patientdata.row = sampledata.row;
 			patientdata.number = sampledata.number;
+
+			TestMain_number.EnableWindow(true);
 			GetPatientInfo(&patientdata);//获取窗口病人信息//此处可能有乱码
 			AddPatientRecord(&patientdata);
+			//UpdateData(TRUE);
+			CString p_num;
+			p_num.Format(_T("%d"), sampledata.number);
+			TestMain_number.SetWindowTextW(p_num);
+
+			TestMain_number.EnableWindow(false);
 			/*if (1 == systemcfg.printercfg.mode)//如果打印模式为自动
 			{
 			PrintResults(&sampledata, &patientdata);
