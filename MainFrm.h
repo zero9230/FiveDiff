@@ -273,6 +273,9 @@ protected:
 	afx_msg LRESULT OnUpdateErrStatus(WPARAM wParam, LPARAM lParam);
 
 	afx_msg LRESULT OnReagentAlarm(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnLanguageChoose();
+	afx_msg void OnMultilangTest();
 };
 
 /////////////////////////////////////////////////////////////////////////////

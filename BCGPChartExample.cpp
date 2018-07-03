@@ -126,6 +126,8 @@ CBCGPChartExampleApp::CBCGPChartExampleApp()
     InitSeriesColors(m_CustomTexturedTheme.m_seriesColors[2], CBCGPColor::RosyBrown, IDR_TEXTURE3);
     InitSeriesColors(m_CustomTexturedTheme.m_seriesColors[3], CBCGPColor::CadetBlue, IDR_TEXTURE4);
     InitSeriesColors(m_CustomTexturedTheme.m_seriesColors[4], CBCGPColor::Goldenrod, IDR_TEXTURE5);
+	
+	m_hLangDLL = NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -167,9 +169,46 @@ BOOL CBCGPChartExampleApp::InitInstance()
 	// such as the name of your company or organization.
 	SetRegistryKey(_T("Sinnowa\\HA7501"));
 
+
+
+	// 判断是否存在配置文件，如果存在，从配置文件中读取语言设置
+	CString strFileName = _T("Language.ini");
+	LCID lcidThread = 0;
+	if (PathFileExists(strFileName))
+	{
+
+		CFile file;
+		file.Open(strFileName, CFile::modeRead | CFile::typeBinary);
+		file.Read(&lcidThread, sizeof(LCID));
+		file.Close();
+		SetThreadUILanguage(lcidThread);
+	}
+	//多语言支持模块，工程修缮完备后，需制作相关的dll以补全该模块
+	switch (PRIMARYLANGID(LANGIDFROMLCID(lcidThread))){
+		//case 0:	//加载中文dll
+		//	m_hLangDLL = ::LoadLibrary(L"Chinese.dll");
+		//	break;
+	//case LANG_ENGLISH:	//加载英语dll
+	//	m_hLangDLL = ::LoadLibrary(L"English.dll");
+	//	AfxSetResourceHandle(m_hLangDLL);
+	//	break;
+	case LANG_FRENCH:	//加载法语dll
+		m_hLangDLL = ::LoadLibrary(L"French.dll");
+		AfxSetResourceHandle(m_hLangDLL);
+		break;
+	case LANG_RUSSIAN:	//加载俄语dll
+		m_hLangDLL = ::LoadLibrary(L"Russian.dll");
+		AfxSetResourceHandle(m_hLangDLL);
+		break;
+	case LANG_SPANISH:	//加载西班牙语dll
+		m_hLangDLL = ::LoadLibrary(L"Spanish.dll");
+		AfxSetResourceHandle(m_hLangDLL);
+		break;
+	}
+
 	LoadStdProfileSettings();  // Load standard INI file options (including MRU)
 
-	SetRegistryBase (_T("Settings"));
+	SetRegistryBase(_T("Settings"));
 
 	// Register the application's document templates.  Document templates
 	//  serve as the connection between documents, frame windows and views.
@@ -200,7 +239,7 @@ BOOL CBCGPChartExampleApp::InitInstance()
 
 
 	CMainFrame* pMainFrame = (CMainFrame*)AfxGetMainWnd();//预开启开机画面
-	pMainFrame->SelectView(pMainFrame->GetCurrentViewType());
+	//pMainFrame->SelectView(pMainFrame->GetCurrentViewType());
 	pMainFrame->SelectView(1);
 	//pMainFrame->SelectView(2);
 	//CurView = 1;
@@ -230,3 +269,12 @@ void CBCGPChartExampleApp::PreLoadState ()
 
 /////////////////////////////////////////////////////////////////////////////
 // CBCGPChartExampleApp message handlers
+
+
+int CBCGPChartExampleApp::ExitInstance()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+	if (m_hLangDLL)
+		AfxFreeLibrary(m_hLangDLL);
+	return CBCGPWinApp::ExitInstance();
+}

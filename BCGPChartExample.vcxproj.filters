@@ -384,6 +384,12 @@
     <ClCompile Include="ResultListView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LanguageChoose.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiLangTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BCGPChartExample.rc">
@@ -785,6 +791,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResultListView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LanguageChoose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiLangTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

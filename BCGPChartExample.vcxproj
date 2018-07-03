@@ -139,7 +139,7 @@
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>F:\BCG\Dll;$(IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files (x86)\BCGSoft\BCGControlBarPro\BCGCBPro;C:\Program Files (x86)\BCGSoft\BCGControlBarPro\BCGCBPro</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -165,8 +165,8 @@
       <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>E:\Sinnowa\BCGPChartExample\Dll;.\..\..\BCGCBPro;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>.\..\..\BCGCBPro;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
@@ -498,6 +498,7 @@
     <ClCompile Include="HeaderCtrl.cpp" />
     <ClCompile Include="HgbtestView.cpp" />
     <ClCompile Include="Hook.cpp" />
+    <ClCompile Include="LanguageChoose.cpp" />
     <ClCompile Include="ListCtrl.cpp" />
     <ClCompile Include="LMNESetView.cpp" />
     <ClCompile Include="LmnetestView.cpp" />
@@ -511,6 +512,7 @@
     <ClCompile Include="MicroperfusionView.cpp" />
     <ClCompile Include="MotorSetView.cpp" />
     <ClCompile Include="MotortestView.cpp" />
+    <ClCompile Include="MultiLangTest.cpp" />
     <ClCompile Include="PatientInfoView.cpp" />
     <ClCompile Include="PatientResultView.cpp" />
     <ClCompile Include="PatientResultView2.cpp" />
@@ -647,6 +649,7 @@
     <ClInclude Include="HgbtestView.h" />
     <ClInclude Include="Hook.h" />
     <ClInclude Include="Includes_app.h" />
+    <ClInclude Include="LanguageChoose.h" />
     <ClInclude Include="ListCtrl.h" />
     <ClInclude Include="LMNESetView.h" />
     <ClInclude Include="LmnetestView.h" />
@@ -660,6 +663,7 @@
     <ClInclude Include="MicroperfusionView.h" />
     <ClInclude Include="MotorSetView.h" />
     <ClInclude Include="MotortestView.h" />
+    <ClInclude Include="MultiLangTest.h" />
     <ClInclude Include="PatientInfoView.h" />
     <ClInclude Include="PatientResultView.h" />
     <ClInclude Include="PatientResultView2.h" />

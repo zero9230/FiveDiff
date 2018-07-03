@@ -1976,6 +1976,30 @@ BEGIN
     CONTROL         "",IDC_RESULT_TAB,"Static",SS_BLACKFRAME | NOT WS_VISIBLE,7,7,872,495
 END
 
+IDD_LANGUAGE_CHOOSE DIALOGEX 0, 0, 201, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "语言选择"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,35,100,50,14
+    PUSHBUTTON      "取消",IDCANCEL,120,101,50,14
+    CONTROL         "中文",IDC_RADIO_CHINESE,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,37,20,32,10
+    CONTROL         "英语",IDC_RADIO_ENGLISH,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,122,20,32,10
+    CONTROL         "法语",IDC_RADIO_FRENCH,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,37,48,32,10
+    CONTROL         "俄语",IDC_RADIO_RUSSIAN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,122,48,32,10
+    CONTROL         "西班牙语",IDC_RADIO_SPANISH,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,37,76,48,10
+    LTEXT           "(工程完成前请勿切换)",IDC_STATIC,107,78,78,8
+END
+
+IDD_MULTILANG_TEST DIALOGEX 0, 0, 179, 114
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "测试窗口"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,62,58,50,14
+    LTEXT           "多语言测试窗口",IDC_STATIC,60,27,57,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2657,6 +2681,22 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 523
     END
+
+    IDD_LANGUAGE_CHOOSE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 143
+    END
+
+    IDD_MULTILANG_TEST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 172
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 107
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -2789,6 +2829,7 @@ BEGIN
             MENUITEM "定位与定量",                       ID_LOCATION_QUANTITATIVE,MFT_STRING,MFS_ENABLED
             MENUITEM "图形调试",                        ID_GRAPHIC_DEBUG,MFT_STRING,MFS_ENABLED
             MENUITEM "故障统计",                        ID_FAULT_STATISTICS,MFT_STRING,MFS_ENABLED
+            MENUITEM "语言选择",                        ID_LANGUAGE_CHOOSE,MFT_STRING,MFS_ENABLED
             MENUITEM "试剂报警设置",                      ID_REAGENT_ALARM_SET,MFT_STRING,MFS_ENABLED
             MENUITEM "温度控制",                        ID_TEMPERATURE_CONTROL,MFT_STRING,MFS_ENABLED
             MENUITEM "BASO界标设置（质控）",                ID_BASO_LANDMARK_SET,MFT_STRING,MFS_ENABLED
@@ -2799,6 +2840,7 @@ BEGIN
     BEGIN
         MENUITEM "关于SINNOWA...",                ID_APP_ABOUT,MFT_STRING,MFS_ENABLED
         MENUITEM "分析仪帮助",                       ID_HELP_32910,MFT_STRING,MFS_ENABLED
+        MENUITEM "多语言测试",                       ID_MULTILANG_TEST,MFT_STRING,MFS_ENABLED
     END
 END
 
@@ -2869,6 +2911,15 @@ BEGIN
     CONTROL         "",IDC_TITLE,"Static",SS_BLACKFRAME | NOT WS_VISIBLE,16,16,490,20
 END
 
+IDD_MULTILANG_TEST DIALOGEX 0, 0, 179, 114
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Test Window"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,62,58,50,14
+    LTEXT           "MultiLanguage Test Window",IDC_STATIC,60,27,90,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2884,6 +2935,14 @@ BEGIN
         RIGHTMARGIN, 525
         TOPMARGIN, 7
         BOTTOMMARGIN, 298
+    END
+
+    IDD_MULTILANG_TEST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 172
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 107
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -3180,6 +3239,50 @@ BEGIN
 END
 
 #endif    // 英语(美国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 法语(法国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MULTILANG_TEST DIALOGEX 0, 0, 179, 114
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Fen阾re de test"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,62,58,50,14
+    LTEXT           "Fen阾re de test multilingue",IDC_STATIC,60,27,86,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MULTILANG_TEST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 172
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 107
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // 法语(法国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
