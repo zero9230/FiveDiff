@@ -59,7 +59,10 @@ CPatientResultView2::CPatientResultView2(CWnd* pParent /*=NULL*/)
 	CloseDataBase(m_pDB, m_pRs);
 	/******************************/
 
-	ThisResult2.page_count = (ThisResult2.data_count % ThisResult2.page_num == 0 ? ThisResult2.data_count / ThisResult2.page_num : ThisResult2.data_count / ThisResult2.page_num + 1);
+	if (ThisResult2.data_count != 0)
+		ThisResult2.page_count = (ThisResult2.data_count % ThisResult2.page_num == 0 ? ThisResult2.data_count / ThisResult2.page_num : ThisResult2.data_count / ThisResult2.page_num + 1);
+	else
+		ThisResult2.page_count = 1;
 	if (reserve_index <= ThisResult2.page_count)
 		ThisResult2.page_index = reserve_index;
 	else
@@ -178,7 +181,12 @@ BOOL CPatientResultView2::OnInitDialog()
 	CloseDataBase(m_pDB, m_pRs);
 	/******************************/
 
-	ThisResult2.page_count = (ThisResult2.data_count % ThisResult2.page_num == 0 ? ThisResult2.data_count / ThisResult2.page_num : ThisResult2.data_count / ThisResult2.page_num + 1);
+
+	if (ThisResult2.data_count != 0)
+		ThisResult2.page_count = (ThisResult2.data_count % ThisResult2.page_num == 0 ? ThisResult2.data_count / ThisResult2.page_num : ThisResult2.data_count / ThisResult2.page_num + 1);
+	else
+		ThisResult2.page_count = 1;
+
 	if (reserve_index <= ThisResult2.page_count)
 		ThisResult2.page_index = reserve_index;
 	else
@@ -666,7 +674,11 @@ void CPatientResultView2::OnBnClickedButtonSearch()
 	CloseDataBase(m_pDB, m_pRs);
 	/******************************/
 
-	ThisResult2.page_count = (ThisResult2.data_count % ThisResult2.page_num == 0 ? ThisResult2.data_count / ThisResult2.page_num : ThisResult2.data_count / ThisResult2.page_num + 1);
+
+	if (ThisResult2.data_count != 0)
+		ThisResult2.page_count = (ThisResult2.data_count % ThisResult2.page_num == 0 ? ThisResult2.data_count / ThisResult2.page_num : ThisResult2.data_count / ThisResult2.page_num + 1);
+	else
+		ThisResult2.page_count = 1;
 	if (reserve_index <= ThisResult2.page_count)
 		ThisResult2.page_index = reserve_index;
 	else

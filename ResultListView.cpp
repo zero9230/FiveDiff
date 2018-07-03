@@ -42,6 +42,11 @@ BEGIN_MESSAGE_MAP(CResultListView, CBCGPChartExampleView)
 	ON_WM_PAINT()
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CResultListView::OnNMDblclkList)
 	ON_BN_CLICKED(IDC_PAITIENT_RESULT, &CResultListView::OnPaitientResult)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_UP, &CResultListView::OnBnClickedResultPageUp)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_DOWN, &CResultListView::OnBnClickedResultPageDown)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_TRAILER, &CResultListView::OnBnClickedResultPageTrailer)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_JUMP, &CResultListView::OnBnClickedResultPageJump)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_HOME, &CResultListView::OnBnClickedResultPageHome)
 END_MESSAGE_MAP()
 
 
@@ -438,4 +443,34 @@ void CResultListView::OnPaitientResult()
 	pActiveView->ShowWindow(SW_HIDE);
 	pView->ShowWindow(SW_SHOW);
 	((CMainFrame*)::AfxGetMainWnd())->SetActiveView(pView);
+}
+
+
+void CResultListView::OnBnClickedResultPageUp()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultListView::OnBnClickedResultPageDown()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultListView::OnBnClickedResultPageTrailer()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultListView::OnBnClickedResultPageJump()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CResultListView::OnBnClickedResultPageHome()
+{
+	// TODO:  在此添加控件通知处理程序代码
 }

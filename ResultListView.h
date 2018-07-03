@@ -56,6 +56,11 @@ public:
 	CResultDetails*		m_pResultDetails;
 	CBCGPButton			m_paitient_result;
 	afx_msg void		OnPaitientResult();
+	afx_msg void OnBnClickedResultPageUp();
+	afx_msg void OnBnClickedResultPageDown();
+	afx_msg void OnBnClickedResultPageTrailer();
+	afx_msg void OnBnClickedResultPageJump();
+	afx_msg void OnBnClickedResultPageHome();
 };
 
 
