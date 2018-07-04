@@ -17,7 +17,7 @@ CPatientResultView2::CPatientResultView2(CWnd* pParent /*=NULL*/)
 
 	is_search = false;
 
-
+	
 	ThisResult2.numofrs.reserve(20);
 	ThisResult2.numofrs.clear();
 
@@ -66,7 +66,7 @@ CPatientResultView2::CPatientResultView2(CWnd* pParent /*=NULL*/)
 	if (reserve_index <= ThisResult2.page_count)
 		ThisResult2.page_index = reserve_index;
 	else
-		reserve_index = ThisResult2.page_index = ThisResult2.page_count;
+		ThisResult2.page_index = reserve_index = ThisResult2.page_count - 1;
 	
 	//SetDlgItemText(IDC_PAGE_COUNT,_T(""));
 	//SetDlgItemText(IDC_PAGE_COUNT, text_page);
@@ -88,6 +88,12 @@ void CPatientResultView2::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBOX_SEX, patient_gender);
 	DDX_Control(pDX, IDC_BUTTON_SEARCH, m_SearchButton);
 	DDX_Control(pDX, IDC_PAGE_COUNT, text_page_count);
+
+
+	DDX_Control(pDX, IDC_PAGE_HOME, PatientResult_Page_Home);
+	DDX_Control(pDX, IDC_PAGE_FRONT, PatientResult_Page_Front);
+	DDX_Control(pDX, IDC_PAGE_NEXT, PatientResult_Page_Next);
+	DDX_Control(pDX, IDC_PAGE_TRAILER, PatientResult_Page_Trailer);
 }
 
 
@@ -190,13 +196,33 @@ BOOL CPatientResultView2::OnInitDialog()
 	if (reserve_index <= ThisResult2.page_count)
 		ThisResult2.page_index = reserve_index;
 	else
-		reserve_index = ThisResult2.page_index = ThisResult2.page_count;
+		ThisResult2.page_index = reserve_index = ThisResult2.page_count - 1;
 
 
 	// TODO:  在此添加额外的初始化
 	InitPatientResultForm();
 
-
+	if (reserve_index == 0)
+	{
+		PatientResult_Page_Home.EnableWindow(false);
+		PatientResult_Page_Front.EnableWindow(false);
+		PatientResult_Page_Next.EnableWindow(true);
+		PatientResult_Page_Trailer.EnableWindow(true);
+	}
+	else if (reserve_index == ThisResult2.page_count - 1)
+	{
+		PatientResult_Page_Home.EnableWindow(true);
+		PatientResult_Page_Front.EnableWindow(true);
+		PatientResult_Page_Next.EnableWindow(false);
+		PatientResult_Page_Trailer.EnableWindow(false);
+	}
+	else
+	{
+		PatientResult_Page_Home.EnableWindow(true);
+		PatientResult_Page_Front.EnableWindow(true);
+		PatientResult_Page_Next.EnableWindow(true);
+		PatientResult_Page_Trailer.EnableWindow(true);
+	}
 
 
 	CString count;
@@ -534,8 +560,28 @@ BOOL CPatientResultView2::UpdatePatientResultForm()
 		TRACE("UpdateResultList异常");
 	}
 
-
-		return TRUE;
+	if (reserve_index == 0)
+	{
+		PatientResult_Page_Home.EnableWindow(false);
+		PatientResult_Page_Front.EnableWindow(false);
+		PatientResult_Page_Next.EnableWindow(true);
+		PatientResult_Page_Trailer.EnableWindow(true);
+	}
+	else if (reserve_index == ThisResult2.page_count - 1)
+	{
+		PatientResult_Page_Home.EnableWindow(true);
+		PatientResult_Page_Front.EnableWindow(true);
+		PatientResult_Page_Next.EnableWindow(false);
+		PatientResult_Page_Trailer.EnableWindow(false);
+	}
+	else
+	{
+		PatientResult_Page_Home.EnableWindow(true);
+		PatientResult_Page_Front.EnableWindow(true);
+		PatientResult_Page_Next.EnableWindow(true);
+		PatientResult_Page_Trailer.EnableWindow(true);
+	}
+	return TRUE;
 	
 }
 
@@ -682,7 +728,7 @@ void CPatientResultView2::OnBnClickedButtonSearch()
 	if (reserve_index <= ThisResult2.page_count)
 		ThisResult2.page_index = reserve_index;
 	else
-		reserve_index = ThisResult2.page_index = ThisResult2.page_count;
+		ThisResult2.page_index = reserve_index = ThisResult2.page_count - 1;
 
 	CString count;
 	count.Format(_T("%d"), ThisResult2.page_count);

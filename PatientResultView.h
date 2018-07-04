@@ -67,6 +67,10 @@ public:
 	CFont cfont;
 	CStatic text_page_count;
 	afx_msg void OnBnClickedPageJump();
+	CButton PatientResult_Page_Home;
+	CButton PatientResult_Page_Front;
+	CButton PatientResult_Page_Next;
+	CButton PatientResult_Page_Trailer;
 };
 
 

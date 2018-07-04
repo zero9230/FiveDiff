@@ -33,6 +33,10 @@ void CPatientResultView::DoDataExchange(CDataExchange* pDX)
 	//DDX_Control(pDX, IDC_COMBOX_SEX, patient_gender);
 
 	DDX_Control(pDX, IDC_PAGE_COUNT, text_page_count);
+	DDX_Control(pDX, IDC_PAGE_HOME, PatientResult_Page_Home);
+	DDX_Control(pDX, IDC_PAGE_FRONT, PatientResult_Page_Front);
+	DDX_Control(pDX, IDC_PAGE_NEXT, PatientResult_Page_Next);
+	DDX_Control(pDX, IDC_PAGE_TRAILER, PatientResult_Page_Trailer);
 }
 
 

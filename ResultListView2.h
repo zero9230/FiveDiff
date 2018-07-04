@@ -49,4 +49,9 @@ public:
 	afx_msg void OnBnClickedResultPageTrailer();
 	afx_msg void OnBnClickedResultPageJump();
 	afx_msg void OnBnClickedResultPageHome();
+
+	CButton ResultList_Page_Home;
+	CButton ResultList_Page_Front;
+	CButton ResultList_Page_Next;
+	CButton ResultList_Page_Trailer;
 };

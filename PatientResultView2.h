@@ -61,4 +61,9 @@ public:
 	afx_msg void OnBnClickedPageJump();
 	CStatic text_page_count;
 	CFont cfont;
+
+	CButton PatientResult_Page_Home;
+	CButton PatientResult_Page_Front;
+	CButton PatientResult_Page_Next;
+	CButton PatientResult_Page_Trailer;
 };

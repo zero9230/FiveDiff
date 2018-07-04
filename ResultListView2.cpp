@@ -103,7 +103,7 @@ CResultListView2::CResultListView2(CWnd* pParent /*=NULL*/)
 	if (reserve_index <= ThisResult.page_count)//检测是否超出页面范围
 		ThisResult.page_index = reserve_index;
 	else
-		reserve_index = ThisResult.page_index = ThisResult.page_count;
+		ThisResult.page_index = reserve_index = ThisResult.page_count - 1;
 
 	/********************/
 	//UpdateResultList(m_Date);
@@ -120,6 +120,10 @@ void CResultListView2::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_ResultList);
 	DDX_Control(pDX, IDC_RESULT_TIMEPICKER, m_ResultDate);
+	DDX_Control(pDX, IDC_RESULT_PAGE_HOME, ResultList_Page_Home);
+	DDX_Control(pDX, IDC_RESULT_PAGE_UP, ResultList_Page_Front);
+	DDX_Control(pDX, IDC_RESULT_PAGE_DOWN, ResultList_Page_Next);
+	DDX_Control(pDX, IDC_RESULT_PAGE_TRAILER, ResultList_Page_Trailer);
 	//DDX_Control(pDX, IDC_PAITIENT_RESULT, m_paitient_result);
 }
 
@@ -253,7 +257,7 @@ BOOL CResultListView2::OnInitDialog()
 	if (reserve_index <= ThisResult.page_count)//检测是否超出页面范围
 		ThisResult.page_index = reserve_index;
 	else
-		reserve_index = ThisResult.page_index = ThisResult.page_count;
+		ThisResult.page_index = reserve_index = ThisResult.page_count - 1;
 
 	/********************/
 	UpdateResultList(m_Date);
@@ -270,14 +274,35 @@ BOOL CResultListView2::OnInitDialog()
 	int row;
 	//将所有查询结果的编号进行保存，用于详细信息翻页用
 	row = m_ResultList.GetItemCount();
-	//if ((ThisResult.numofrs = (int *)malloc(row*sizeof(int))) == NULL)
-	//{
-	//	printf("Memory allocation for ResultsList failed--------!\n");
-	//	exit(1);
-	//}
-	//GetDlgItem(IDC_DAILY_RESULT)->EnableWindow(FALSE);
+	
+	if (reserve_index == 0)
+	{
+		ResultList_Page_Home.EnableWindow(false);
+		ResultList_Page_Front.EnableWindow(false);
+		ResultList_Page_Next.EnableWindow(true);
+		ResultList_Page_Trailer.EnableWindow(true);
+	}
+	else if (reserve_index == ThisResult.page_count - 1)
+	{
+		ResultList_Page_Home.EnableWindow(true);
+		ResultList_Page_Front.EnableWindow(true);
+		ResultList_Page_Next.EnableWindow(false);
+		ResultList_Page_Trailer.EnableWindow(false);
+	}
+	else
+	{
+		ResultList_Page_Home.EnableWindow(true);
+		ResultList_Page_Front.EnableWindow(true);
+		ResultList_Page_Next.EnableWindow(true);
+		ResultList_Page_Trailer.EnableWindow(true);
+	}
+
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// 异常:  OCX 属性页应返回 FALSE
+
+
+
 }
 
 
@@ -500,6 +525,29 @@ void CResultListView2::UpdateResultList(COleDateTime Date)
 	}
 	CloseDataBase(m_pDB, m_pRs);
 
+
+	if (reserve_index == 0)
+	{
+		ResultList_Page_Home.EnableWindow(false);
+		ResultList_Page_Front.EnableWindow(false);
+		ResultList_Page_Next.EnableWindow(true);
+		ResultList_Page_Trailer.EnableWindow(true);
+	}
+	else if (reserve_index == ThisResult.page_count - 1)
+	{
+		ResultList_Page_Home.EnableWindow(true);
+		ResultList_Page_Front.EnableWindow(true);
+		ResultList_Page_Next.EnableWindow(false);
+		ResultList_Page_Trailer.EnableWindow(false);
+	}
+	else
+	{
+		ResultList_Page_Home.EnableWindow(true);
+		ResultList_Page_Front.EnableWindow(true);
+		ResultList_Page_Next.EnableWindow(true);
+		ResultList_Page_Trailer.EnableWindow(true);
+	}
+
 }
 
 
@@ -588,7 +636,7 @@ void CResultListView2::OnCloseupResultTimepicker()
 	if (reserve_index <= ThisResult.page_count)//检测是否超出页面范围
 		ThisResult.page_index = reserve_index;
 	else
-		reserve_index = ThisResult.page_index = ThisResult.page_count;
+		ThisResult.page_index = reserve_index = ThisResult.page_count - 1;
 
 	/********************/
 	UpdateResultList(m_Date);

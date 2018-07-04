@@ -34,6 +34,10 @@ void CResultListView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST1, m_ResultList);
 	DDX_Control(pDX, IDC_RESULT_TIMEPICKER, m_ResultDate);
 	DDX_Control(pDX, IDC_PAITIENT_RESULT, m_paitient_result);
+	DDX_Control(pDX, IDC_RESULT_PAGE_HOME, ResultList_Page_Home);
+	DDX_Control(pDX, IDC_RESULT_PAGE_UP, ResultList_Page_Front);
+	DDX_Control(pDX, IDC_RESULT_PAGE_DOWN, ResultList_Page_Next);
+	DDX_Control(pDX, IDC_RESULT_PAGE_TRAILER, ResultList_Page_Trailer);
 }
 
 BEGIN_MESSAGE_MAP(CResultListView, CBCGPChartExampleView)
