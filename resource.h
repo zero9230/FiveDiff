@@ -372,10 +372,15 @@
 #define IDC_RESET_XYMOTOR               1355
 #define IDC_SAVE                        1356
 #define IDC_MODIFYSET_RDWCVF_C          1357
+#define IDC_DOCT_PAGE_HOME              1357
 #define IDC_MODIFYSET_RDWSDF_A          1358
+#define IDC_DOCT_PAGE_FRONT             1358
 #define IDC_MODIFYSET_RDWSDF_B          1359
+#define IDC_DOCT_PAGE_NEXT              1359
 #define IDC_MODIFYSET_RDWSDF_C          1360
+#define IDC_DOCT_PAGE_TRAILER           1360
 #define IDC_MODIFYSET_PLTF_A            1361
+#define IDC_DOCT_PAGE_JUMP              1361
 #define IDC_MODIFYSET_PLTF_B            1362
 #define IDC_MODIFYSET_PLTF_C            1363
 #define IDC_MODIFYSET_MPVF_A            1364
@@ -1126,6 +1131,8 @@
 #define IDC_RADIO_FRENCH                2017
 #define IDC_RADIO_RUSSIAN               2018
 #define IDC_RADIO_SPANISH               2019
+#define IDC_DOCT_PAGE_SELECT            2020
+#define IDC_DOCT_PAGE_COUNT             2021
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1303,7 +1310,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        310
 #define _APS_NEXT_COMMAND_VALUE         33014
-#define _APS_NEXT_CONTROL_VALUE         2020
+#define _APS_NEXT_CONTROL_VALUE         2022
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

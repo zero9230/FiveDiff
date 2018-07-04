@@ -288,12 +288,13 @@ void CTestmainView::InitControl()
 //表格批量初始化，调用其余的表格初始化函数
 BOOL CTestmainView::InitForm(sample_info* psampledata)
 {
-	InitWBCForm(psampledata);
+	//InitWBCForm(psampledata);
 	InitRBCForm(psampledata);
 	InitPLTForm(psampledata);
 	InitCRPForm();
 	InitRETForm();
 	//AfxMessageBox(_T("1112"));
+	TestMain_number.EnableWindow(false);
 	return TRUE;
 
 }
