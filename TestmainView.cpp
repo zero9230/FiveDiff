@@ -3431,7 +3431,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 				ASCur_EN = TRUE;	//不需要做自动清洗的时候，可以使能自动进样系统(只有自动进样系统用到)
 			}
 		}
-		if (TimesofTest >= 500)   //Add:20150430
+		if (TimesofTest >= 500)   //Add:20150430PUNCTURE
 		{
 			int 		response;
 			MesBox	Message;

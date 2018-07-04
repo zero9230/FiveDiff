@@ -10,11 +10,105 @@
 // CResultListView2 对话框
 
 IMPLEMENT_DYNAMIC(CResultListView2, CDialogEx)
-
+static int reserve_index = 0;
 CResultListView2::CResultListView2(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CResultListView2::IDD, pParent)
 {
 	m_nFirstDayOfWeek = 1;
+
+	ThisResult.numofrs.reserve(20);
+	ThisResult.numofrs.clear();
+
+	ThisResult.page_num = 20; //一页显示的id个数
+	ThisResult.data_count = 0;  //数据库总id数
+
+	int	i = 0;
+	static unsigned int date;
+	static unsigned int today_start_num;
+	static unsigned int today_end_num;
+	m_Date = m_ResultDate.GetDate();
+	int day = m_Date.GetDay();
+	int month = m_Date.GetMonth();
+	int year = m_Date.GetYear();
+	TRACE("DAY:%d\n", day);
+	TRACE("month:%d\n", month);
+	TRACE("YEAR:%d\n", year);
+	/******************************/
+
+	ThisResult.page_num = 20; //一页显示的id个数
+	ThisResult.data_count = 0;
+	date = year * 10000 + month * 100 + day;
+	//由于位数原因，编号在存入数据库的日期的高两位截取掉
+	today_start_num = (date % 1000000) * 10000;
+	today_end_num = today_start_num + 9999;
+	//代表一整天
+	CString today_start_num_1;
+	CString today_end_num_1;
+
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+
+	_variant_t var;
+
+	today_start_num_1.Format(_T("%d"), today_start_num);
+	today_end_num_1.Format(_T("%d"), today_end_num);
+
+	CString select_condition_1 = _T(" where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("' ");
+
+
+
+	CString select_number_sample;//排除第一页的情况
+	select_number_sample = _T("select  * from sampledata " + select_condition_1);
+
+	CString select_number_patient;//排除第一页的情况
+	select_number_patient = _T("select  * from patientdata " + select_condition_1);
+
+
+
+	CString filename;
+	filename.Format(_T("appdata.accdb"));
+
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return;
+	ExeSql(m_pDB, m_pRs, select_number_sample);//把特定编号的数据选取出来
+
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+			//return;
+		}
+		while (!m_pRs->adoEOF)
+		{
+			ThisResult.data_count++;
+			m_pRs->MoveNext();
+		}
+
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+	CloseDataBase(m_pDB, m_pRs);
+	/******************************/
+
+	if (ThisResult.data_count != 0)
+		ThisResult.page_count = (ThisResult.data_count % ThisResult.page_num == 0 ? ThisResult.data_count / ThisResult.page_num : ThisResult.data_count / ThisResult.page_num + 1);
+	else
+		ThisResult.page_count = 1;
+	if (reserve_index <= ThisResult.page_count)//检测是否超出页面范围
+		ThisResult.page_index = reserve_index;
+	else
+		reserve_index = ThisResult.page_index = ThisResult.page_count;
+
+	/********************/
+	//UpdateResultList(m_Date);
+
+	
 }
 
 CResultListView2::~CResultListView2()
@@ -36,6 +130,11 @@ BEGIN_MESSAGE_MAP(CResultListView2, CDialogEx)
 	ON_WM_PAINT()
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CResultListView2::OnNMDblclkList)
 	ON_WM_ERASEBKGND()
+	ON_BN_CLICKED(IDC_RESULT_PAGE_UP, &CResultListView2::OnBnClickedResultPageUp)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_DOWN, &CResultListView2::OnBnClickedResultPageDown)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_TRAILER, &CResultListView2::OnBnClickedResultPageTrailer)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_JUMP, &CResultListView2::OnBnClickedResultPageJump)
+	ON_BN_CLICKED(IDC_RESULT_PAGE_HOME, &CResultListView2::OnBnClickedResultPageHome)
 END_MESSAGE_MAP()
 
 
@@ -45,6 +144,8 @@ END_MESSAGE_MAP()
 BOOL CResultListView2::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+
 
 	// TODO:  在此添加额外的初始化
 	m_ResultDate.SizeToContent();
@@ -65,6 +166,106 @@ BOOL CResultListView2::OnInitDialog()
 	m_ResultDate.SetDate(m_Date);
 	InitResultForm();
 	UpdateResultList(m_Date);
+
+	ThisResult.numofrs.reserve(20);
+	ThisResult.numofrs.clear();
+
+	ThisResult.page_num = 20; //一页显示的id个数
+	ThisResult.data_count = 0;  //数据库总id数
+
+	int	i = 0;
+	static unsigned int date;
+	static unsigned int today_start_num;
+	static unsigned int today_end_num;
+	m_Date = m_ResultDate.GetDate();
+	int day = m_Date.GetDay();
+	int month = m_Date.GetMonth();
+	int year = m_Date.GetYear();
+	TRACE("DAY:%d\n", day);
+	TRACE("month:%d\n", month);
+	TRACE("YEAR:%d\n", year);
+	/******************************/
+
+	ThisResult.page_num = 20; //一页显示的id个数
+	ThisResult.data_count = 0;
+	date = year * 10000 + month * 100 + day;
+	//由于位数原因，编号在存入数据库的日期的高两位截取掉
+	today_start_num = (date % 1000000) * 10000;
+	today_end_num = today_start_num + 9999;
+	//代表一整天
+	CString today_start_num_1;
+	CString today_end_num_1;
+
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+
+	_variant_t var;
+
+	today_start_num_1.Format(_T("%d"), today_start_num);
+	today_end_num_1.Format(_T("%d"), today_end_num);
+
+	CString select_condition_1 = _T(" where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("' ");
+
+
+
+	CString select_number_sample;//排除第一页的情况
+	select_number_sample = _T("select  * from sampledata " + select_condition_1);
+
+	CString select_number_patient;//排除第一页的情况
+	select_number_patient = _T("select  * from patientdata " + select_condition_1);
+
+
+
+	CString filename;
+	filename.Format(_T("appdata.accdb"));
+
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return 0;
+	ExeSql(m_pDB, m_pRs, select_number_sample);//把特定编号的数据选取出来
+
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+		//	return 0;
+		}
+		while (!m_pRs->adoEOF)
+		{
+			ThisResult.data_count++;
+			m_pRs->MoveNext();
+		}
+
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+	CloseDataBase(m_pDB, m_pRs);
+	/******************************/
+	if (ThisResult.data_count != 0)
+		ThisResult.page_count = (ThisResult.data_count % ThisResult.page_num == 0 ? ThisResult.data_count / ThisResult.page_num : ThisResult.data_count / ThisResult.page_num + 1);
+	else
+		ThisResult.page_count = 1;
+	if (reserve_index <= ThisResult.page_count)//检测是否超出页面范围
+		ThisResult.page_index = reserve_index;
+	else
+		reserve_index = ThisResult.page_index = ThisResult.page_count;
+
+	/********************/
+	UpdateResultList(m_Date);
+
+	CString count;
+	count.Format(_T("%d"), ThisResult.page_count);
+	count = "/" + count;
+	SetDlgItemText(IDC_PAGE_COUNT, count);
+
+	CString select;
+	select.Format(_T("%d"), ThisResult.page_index + 1);
+	SetDlgItemText(IDC_PAGE_SELECT, select);
 
 	int row;
 	//将所有查询结果的编号进行保存，用于详细信息翻页用
@@ -164,7 +365,7 @@ void CResultListView2::UpdateResultList(COleDateTime Date)
 	CString strtemp;
 	strtemp = "20";
 	CString strSex[3] = { "男", "女", "" };
-	m_ResultList.DeleteAllItems();//清空列表刷新
+
 	int day = Date.GetDay();
 	int month = Date.GetMonth();
 	int year = Date.GetYear();
@@ -178,8 +379,25 @@ void CResultListView2::UpdateResultList(COleDateTime Date)
 	today_start_num_1.Format(_T("%d"), today_start_num);
 	today_end_num_1.Format(_T("%d"), today_end_num);
 
-	CString select_number_sample = _T("select * from sampledata where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("'");
-	CString select_number_patient = _T("select * from patientdata where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("'");
+	CString select_condition_1 = _T(" where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("' ");
+	CString select_condition_2 = _T(" and number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("' ");
+
+	CString pagenum;
+	pagenum.Format(_T("%d"), ThisResult.page_num);
+	CString pageindex;
+	pageindex.Format(_T("%d"), ThisResult.page_num*(ThisResult.page_index));
+
+
+
+	CString select_number_sample;//排除第一页的情况
+	select_number_sample = (ThisResult.page_index > 0) ? (_T("select top ") + pagenum + " * from sampledata where number not in(select top " + pageindex + " number from patientdata " + select_condition_1 + " order by number ) " + select_condition_2 + " order by number ") :
+		(_T("select top ") + pagenum + " * from sampledata " + select_condition_1);
+
+	CString select_number_patient;//排除第一页的情况
+	select_number_patient = (ThisResult.page_index > 0) ? (_T("select top ") + pagenum + " * from patientdata where number not in(select top " + pageindex + " number from patientdata " + select_condition_1 + " order by number ) " + select_condition_2 + " order by number ") :
+		(_T("select top ") + pagenum + " * from patientdata " + select_condition_1);
+
+
 
 	CString filename;
 	filename.Format(_T("appdata.accdb"));
@@ -187,6 +405,7 @@ void CResultListView2::UpdateResultList(COleDateTime Date)
 	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
 		return;
 	ExeSql(m_pDB, m_pRs, select_number_sample);//把特定编号的数据选取出来
+	m_ResultList.DeleteAllItems();
 	try
 	{
 		if (!m_pRs->BOF){
@@ -234,6 +453,7 @@ void CResultListView2::UpdateResultList(COleDateTime Date)
 			m_pRs->MoveNext();
 		}
 		ThisResult.totalnums = m_ResultList.GetItemCount();
+
 	}
 	catch (_com_error &e)
 	{
@@ -286,6 +506,10 @@ void CResultListView2::UpdateResultList(COleDateTime Date)
 void CResultListView2::OnCloseupResultTimepicker()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	int	i = 0;
+	static unsigned int date;
+	static unsigned int today_start_num;
+	static unsigned int today_end_num;
 	m_Date = m_ResultDate.GetDate();
 	int day = m_Date.GetDay();
 	int month = m_Date.GetMonth();
@@ -293,14 +517,94 @@ void CResultListView2::OnCloseupResultTimepicker()
 	TRACE("DAY:%d\n", day);
 	TRACE("month:%d\n", month);
 	TRACE("YEAR:%d\n", year);
+	/******************************/
+
+	ThisResult.page_num = 20; //一页显示的id个数
+	ThisResult.data_count = 0;
+	date = year * 10000 + month * 100 + day;
+	//由于位数原因，编号在存入数据库的日期的高两位截取掉
+	today_start_num = (date % 1000000) * 10000;
+	today_end_num = today_start_num + 9999;
+	//代表一整天
+	CString today_start_num_1;
+	CString today_end_num_1;
+
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+
+	_variant_t var;
+
+	today_start_num_1.Format(_T("%d"), today_start_num);
+	today_end_num_1.Format(_T("%d"), today_end_num);
+
+	CString select_condition_1 = _T(" where number >='") + today_start_num_1 + _T("' and number <='") + today_end_num_1 + _T("' ");
+	
+
+
+	CString select_number_sample;//排除第一页的情况
+	select_number_sample = _T("select  * from sampledata " + select_condition_1);
+
+	CString select_number_patient;//排除第一页的情况
+	select_number_patient = _T("select  * from patientdata " + select_condition_1);
+
+
+
+	CString filename;
+	filename.Format(_T("appdata.accdb"));
+
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return;
+	ExeSql(m_pDB, m_pRs, select_number_sample);//把特定编号的数据选取出来
+	m_ResultList.DeleteAllItems();
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+			return;
+		}
+		while (!m_pRs->adoEOF)
+		{
+			ThisResult.data_count++;
+			m_pRs->MoveNext();
+		}
+
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+	CloseDataBase(m_pDB, m_pRs);
+	/******************************/
+
+
+	if (ThisResult.data_count != 0)
+		ThisResult.page_count = (ThisResult.data_count % ThisResult.page_num == 0 ? ThisResult.data_count / ThisResult.page_num : ThisResult.data_count / ThisResult.page_num + 1);
+	else
+		ThisResult.page_count = 1;
+	if (reserve_index <= ThisResult.page_count)//检测是否超出页面范围
+		ThisResult.page_index = reserve_index;
+	else
+		reserve_index = ThisResult.page_index = ThisResult.page_count;
+
+	/********************/
 	UpdateResultList(m_Date);
+
+	/********************/
+	CString count;
+	count.Format(_T("%d"), ThisResult.page_count);
+	count = "/" + count;
+	SetDlgItemText(IDC_PAGE_COUNT, count);
 }
 
 
 void CResultListView2::OnPaint()
 {
 	CPaintDC dc(this); 
-	OnCloseupResultTimepicker();
+	//OnCloseupResultTimepicker();
 	//InitResultForm();
 
 	// device context for painting
@@ -341,7 +645,7 @@ void CResultListView2::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)
 			CView* pView = DYNAMIC_DOWNCAST(CView, pClass->CreateObject());
 
 			this->m_pResultDetails = (CResultDetails*)pView;
-			//m_pResultDetails->pThisResult = &ThisResult;
+			m_pResultDetails->pThisResult = &ThisResult;
 
 
 			ASSERT_VALID(pView);
@@ -377,3 +681,76 @@ void CResultListView2::OnNMDblclkList(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 }
+void CResultListView2::OnBnClickedResultPageHome()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	ThisResult.page_index = reserve_index = 0;
+	ThisResult.numofrs.reserve(20);
+	ThisResult.numofrs.clear();
+	OnCloseupResultTimepicker();
+	CString select;
+	select.Format(_T("%d"), ThisResult.page_index + 1);
+	SetDlgItemText(IDC_PAGE_SELECT, select);
+}
+void CResultListView2::OnBnClickedResultPageUp()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (reserve_index > 0)
+		reserve_index--;
+	ThisResult.page_index = reserve_index;
+	ThisResult.numofrs.reserve(20);
+	ThisResult.numofrs.clear();
+	OnCloseupResultTimepicker();
+	CString select;
+	select.Format(_T("%d"), ThisResult.page_index + 1);
+	SetDlgItemText(IDC_PAGE_SELECT, select);
+}
+
+
+void CResultListView2::OnBnClickedResultPageDown()
+{
+	if (reserve_index < ThisResult.page_count - 1)
+		reserve_index++;
+	ThisResult.page_index = reserve_index;
+	ThisResult.numofrs.reserve(20);
+	ThisResult.numofrs.clear();
+	OnCloseupResultTimepicker();
+	CString select;
+	select.Format(_T("%d"), ThisResult.page_index + 1);
+	SetDlgItemText(IDC_PAGE_SELECT, select);
+
+}
+
+
+void CResultListView2::OnBnClickedResultPageTrailer()
+{
+
+	reserve_index = ThisResult.page_count - 1;
+
+	ThisResult.page_index = reserve_index;
+	ThisResult.numofrs.reserve(20);
+	ThisResult.numofrs.clear();
+	OnCloseupResultTimepicker();
+	CString select;
+	select.Format(_T("%d"), ThisResult.page_index + 1);
+	SetDlgItemText(IDC_PAGE_SELECT, select);
+}
+
+
+void CResultListView2::OnBnClickedResultPageJump()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	int page = GetDlgItemInt(IDC_PAGE_SELECT);
+	if (page > 0 && page <= ThisResult.page_count)
+		reserve_index = page - 1;
+	ThisResult.page_index = reserve_index;
+	ThisResult.numofrs.reserve(20);
+	ThisResult.numofrs.clear();
+	OnCloseupResultTimepicker();
+	CString select;
+	select.Format(_T("%d"), ThisResult.page_index + 1);
+	SetDlgItemText(IDC_PAGE_SELECT, select);
+}
+
+
+

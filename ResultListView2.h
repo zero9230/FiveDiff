@@ -44,4 +44,9 @@ public:
 
 	virtual BOOL OnInitDialog();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnBnClickedResultPageUp();
+	afx_msg void OnBnClickedResultPageDown();
+	afx_msg void OnBnClickedResultPageTrailer();
+	afx_msg void OnBnClickedResultPageJump();
+	afx_msg void OnBnClickedResultPageHome();
 };
