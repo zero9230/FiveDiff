@@ -25,7 +25,7 @@ typedef struct{
 	int				page_num; //一页显示的id个数
 }ResultToDisplay;
 typedef	ResultToDisplay*	pResultToDisplay;
-
+extern int reserve_index;
 
 ///***** 用于医生id与姓名的匹配*******/
 //struct doct_match
@@ -100,7 +100,7 @@ private:
 	BOOL			InitRETForm();
 	BOOL			InitCRPForm();
 
-
+	BOOL			UpdatePatientResultForm();
 	BOOL			UpdateForm(sample_info* psampledata);
 	BOOL			UpdateWBCForm(sample_info* psampledata);
 	BOOL			UpdateRBCForm(sample_info* psampledata);
