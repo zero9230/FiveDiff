@@ -57,6 +57,7 @@ BEGIN_MESSAGE_MAP(CQualityTargetValueView, CDialogEx)
 	ON_NOTIFY(NM_CLICK, IDC_QUALITY_TARGETVALUE_LIST, &CQualityTargetValueView::OnNMClickQualityTargetvalueList)
 	ON_BN_CLICKED(IDC_QUALITYTARGET_CONFIRM, &CQualityTargetValueView::OnQualitytargetConfirm)
 	ON_BN_CLICKED(IDC_RANGE_CONFIRM, &CQualityTargetValueView::OnRangeConfirm)
+	ON_BN_CLICKED(IDC_QUALITYTARGET_PRINT, &CQualityTargetValueView::OnBnClickedQualitytargetPrint)
 END_MESSAGE_MAP()
 
 
@@ -98,13 +99,13 @@ BOOL CQualityTargetValueView::OnInitDialog()
 	}
 	SetDlgItemText(IDC_STATIC0, item_temp);
 	GetDlgItem(IDC_STATIC0)->SetFont(&textfont);
-	
+
 	haveeditcreate = false;
 	QcLjFileExist = 0;
 	InitTargetValueList();
 	GetQcFile();
-	
-	
+
+
 	//if (nRow == 0)
 	//	QcLjFileExist = 0;
 	//else{
@@ -112,7 +113,7 @@ BOOL CQualityTargetValueView::OnInitDialog()
 	//	MessageBox(L"FillForm");
 	//	FillForm();
 	//}
-	
+
 
 	GetDlgItem(IDC_PROJECT_EDIT)->EnableWindow(false);//项目名
 	GetDlgItem(IDC_PROJECTTARGET_EDIT)->EnableWindow(false);//靶值
@@ -146,7 +147,7 @@ void CQualityTargetValueView::InitTargetValueList()
 {
 	CRect rect;
 	CString table[26] = { "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
-							"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
+		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
 	// 获取编程语言列表视图控件的位置和大小   
 	m_TargetValueList.GetClientRect(&rect);
 	m_TargetValueList.SetRowHeigt(20);
@@ -155,7 +156,7 @@ void CQualityTargetValueView::InitTargetValueList()
 
 
 	// 为列表视图控件添加四列
-	m_TargetValueList.InsertColumn(0, _T("项目"), LVCFMT_CENTER, rect.Width() * 1 /8, 0);
+	m_TargetValueList.InsertColumn(0, _T("项目"), LVCFMT_CENTER, rect.Width() * 1 / 8, 0);
 	m_TargetValueList.InsertColumn(1, _T("下限"), LVCFMT_CENTER, rect.Width() * 1 / 4, 1);
 	m_TargetValueList.InsertColumn(2, _T("靶值"), LVCFMT_CENTER, rect.Width() * 1 / 4, 2);
 	m_TargetValueList.InsertColumn(3, _T("上限"), LVCFMT_CENTER, rect.Width() * 1 / 4, 3);
@@ -171,7 +172,7 @@ void CQualityTargetValueView::InitTargetValueList()
 	//m_TargetValueList.InsertItem(4, _T("新系数"));
 	for (int i = 0; i < 26; i++)
 	{
-		m_TargetValueList.InsertItem(i,table[i]);
+		m_TargetValueList.InsertItem(i, table[i]);
 	}
 
 	m_TargetValueList.SetItemText(0, 4, L"10^9/L");
@@ -226,9 +227,9 @@ void CQualityTargetValueView::distroyEdit(CListCtrl *list, CEdit* distroyedit, i
 {
 	CString meditdata;
 	try{
-		
+
 		distroyedit->GetWindowTextW(meditdata);
-		
+
 	}
 	catch (_com_error &e)
 	{
@@ -309,11 +310,11 @@ void CQualityTargetValueView::OnNMClickQualityTargetvalueList(NMHDR *pNMHDR, LRE
 void CQualityTargetValueView::GetQcLimitData()
 {
 	qcLjEditData.qctype = Controltype + 48;
-	qcLjEditData.filenum =Controlfile + 48;
-	
+	qcLjEditData.filenum = Controlfile + 48;
+
 
 	USES_CONVERSION;
-	
+
 	strcpy(qcLjEditData.Number, W2A(tempLjNumber));
 	strcpy(qcLjEditData.Deadline, W2A(tempLjDeadline));
 
@@ -338,7 +339,7 @@ void CQualityTargetValueView::GetQcLimitData()
 	strcpy(qcLjEditData.rbctarget.hct, W2A(m_TargetValueList.GetItemText(17, 2).Trim()));
 	strcpy(qcLjEditData.rbctarget.mcv, W2A(m_TargetValueList.GetItemText(18, 2).Trim()));
 	strcpy(qcLjEditData.rbctarget.mch, W2A(m_TargetValueList.GetItemText(19, 2).Trim()));
-	strcpy(qcLjEditData.rbctarget.mchc,W2A(m_TargetValueList.GetItemText(20, 2).Trim()));
+	strcpy(qcLjEditData.rbctarget.mchc, W2A(m_TargetValueList.GetItemText(20, 2).Trim()));
 	strcpy(qcLjEditData.rbctarget.rdw, W2A(m_TargetValueList.GetItemText(21, 2).Trim()));
 	strcpy(qcLjEditData.plttarget.plt, W2A(m_TargetValueList.GetItemText(22, 2).Trim()));
 	strcpy(qcLjEditData.plttarget.mpv, W2A(m_TargetValueList.GetItemText(23, 2).Trim()));
@@ -383,7 +384,7 @@ void CQualityTargetValueView::OnQualitytargetConfirm()
 	//数据校验
 	if (tempLjNumber.Trim() == "" || tempLjDeadline.Trim() == "")
 	{
-		MessageBox(L"信息不能为空!",L"警告!");
+		MessageBox(L"信息不能为空!", L"警告!");
 		return;
 	}
 	for (int i = 0; i < 1; i++)//i<26
@@ -399,13 +400,13 @@ void CQualityTargetValueView::OnQualitytargetConfirm()
 			return;
 		}
 	}
-	
+
 	////测试语句
 	//for (int i = 0; i < 1; i++){
 	//	_wtof(m_TargetValueList.GetItemText(i, 2));
 	//	_wtof(TargetLimit[i]);
 	//}
-	
+
 	GetQcLimitData();
 
 	//qcLjEditData.qctype=Controltype+48;
@@ -427,16 +428,16 @@ void CQualityTargetValueView::OnQualitytargetConfirm()
 	if (rc == 0)
 	{
 		if (systemcfg.language == CHINESE)
-			MessageBox(L"保存成功",L"提示", MB_OK | MB_ICONINFORMATION);
+			MessageBox(L"保存成功", L"提示", MB_OK | MB_ICONINFORMATION);
 		//else if (systemcfg.language == ENGLISH)
 		//	CreateWarningBoxNonCHDlg(hDlg, "Successfully", "Presentation");
 	}
 	else if (rc == -5)
 	{
 		if (systemcfg.language == CHINESE)
-			MessageBox(L"保存失败",L"提示", MB_OK | MB_ICONINFORMATION);
-	/*	else if (systemcfg.language == ENGLISH)
-			CreateWarningBoxNonCHDlg(hDlg, "Failed", "Presentation");*/
+			MessageBox(L"保存失败", L"提示", MB_OK | MB_ICONINFORMATION);
+		/*	else if (systemcfg.language == ENGLISH)
+		CreateWarningBoxNonCHDlg(hDlg, "Failed", "Presentation");*/
 	}
 }
 
@@ -444,9 +445,9 @@ void CQualityTargetValueView::OnRangeConfirm()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	CString Content;
-	
-	
-	
+
+
+
 	USES_CONVERSION;
 	GetDlgItem(IDC_PROJECTRANGE_EDIT)->GetWindowText(Content);//获取控件中的限制范围
 	if (Content == "")
@@ -462,11 +463,11 @@ void CQualityTargetValueView::OnRangeConfirm()
 	CString targettemp;
 	float   TargetLimit1, TargetLimit2;
 	CString CTargetLimit1, CTargetLimit2;
-	targettemp=m_TargetValueList.GetItemText(item_focused, 2);//获取控件中的靶值
-	TargetLimit1=_wtof(targettemp) - _wtof(Content);//下限
-	TargetLimit2=_wtof(targettemp) + _wtof(Content);//上限
-	CTargetLimit1.Format(L"%.2f",TargetLimit1);
-	CTargetLimit2.Format(L"%.2f",TargetLimit2);
+	targettemp = m_TargetValueList.GetItemText(item_focused, 2);//获取控件中的靶值
+	TargetLimit1 = _wtof(targettemp) - _wtof(Content);//下限
+	TargetLimit2 = _wtof(targettemp) + _wtof(Content);//上限
+	CTargetLimit1.Format(L"%.2f", TargetLimit1);
+	CTargetLimit2.Format(L"%.2f", TargetLimit2);
 
 	//此处需要将偏差值写入对应行
 	m_TargetValueList.SetItemText(item_focused, 1, CTargetLimit1);
@@ -519,14 +520,14 @@ bool CQualityTargetValueView::GetQcFile()
 	filename.Format(_T("appdata.accdb"));
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
-	
+
 	_variant_t var;
 	CString strTemp;
 	int temprow;
 
-	qctypetemp.Format( L"%d",Controltype);
-	qcFileNumtemp.Format(L"%d",Controlfile);
-	CString inital_target = _T("select * from qceditdata where qctype ='") + qctypetemp +"'and filenum ='" + qcFileNumtemp + "';";
+	qctypetemp.Format(L"%d", Controltype);
+	qcFileNumtemp.Format(L"%d", Controlfile);
+	CString inital_target = _T("select * from qceditdata where qctype ='") + qctypetemp + "'and filenum ='" + qcFileNumtemp + "';";
 
 	if (-1 == OpenDataBase(filename, m_pDB, m_pRs)){
 		//MessageBox(L"Open Failure!");
@@ -537,15 +538,15 @@ bool CQualityTargetValueView::GetQcFile()
 	{
 		if (!m_pRs->BOF){
 			m_pRs->MoveFirst();
-			
+
 		}
 		else
 		{
-			TRACE("\n表内数据为空!\n");			
+			TRACE("\n表内数据为空!\n");
 			//return FALSE;//由于此处需要将表格中的数据置为空，所以不可直接返回
-		}		
+		}
 		temprow = int(m_pRs->GetRecordCount());
-		
+
 		//TRACE("\n###temprow=%d\n",temprow);
 		//TRACE("\n###nRow=%d", nRow);
 		nRow = temprow;
@@ -568,7 +569,7 @@ bool CQualityTargetValueView::GetQcFile()
 		else
 		{
 			QcLjFileExist = 1;
-			
+
 			var = m_pRs->GetCollect("number");
 			if (var.vt != VT_NULL)
 			{
@@ -585,7 +586,7 @@ bool CQualityTargetValueView::GetQcFile()
 				GetDlgItem(IDC_QUALITY_DEADLINE)->SetWindowText(tempLjDeadline);
 				//填入截止日期
 			}
-			
+
 			//填入靶值
 			for (int j = 0; j < 26; j++)
 			{
@@ -708,7 +709,7 @@ bool CQualityTargetValueView::GetQcFile()
 
 void CQualityTargetValueView::UpdateView()
 {
-		CString item_temp;
+	CString item_temp;
 	switch (Controltype)
 	{
 	case 0:
@@ -726,9 +727,9 @@ void CQualityTargetValueView::UpdateView()
 	SetDlgItemText(IDC_STATIC0, item_temp);
 	GetDlgItem(IDC_STATIC0)->SetFont(&textfont);
 	GetQcFile();
-	
+
 }
-	
+
 //int CQualityTargetValueView::GetEditFileCount(int controlType, int fileNum)
 //{
 //	CString getEditFileCount;
@@ -778,3 +779,123 @@ void CQualityTargetValueView::UpdateView()
 //	CloseDataBase(m_pDB, m_pRs);
 //	return rownum;
 //}
+
+void CQualityTargetValueView::OnBnClickedQualitytargetPrint()
+{
+	CString table2[26] = { "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
+		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
+	CString table_units[26] = { "10^9/L", "%", "%", "%", "%", "%", "%", "%", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L",
+		"10^12/L", "g/L", "%", "fL", "pg", "g/L", "%", "10^9/L", "fL", "fL", "%" };
+	CString file;
+	CTime time;
+	UpdateData();
+	file.Format(L"./rpt/X.rpt");
+	TRACE(file + "\n");
+	m_TargetReportGenerator.New();
+	if (m_TargetReportGenerator.SetReportfile(file))
+	{
+		int max = m_TargetReportGenerator.GetTemplateSize(0);
+		for (int t = 0; t < max; t++)
+		{
+			CString name = m_TargetReportGenerator.GetFieldName(t);
+			if (name.GetLength());
+			{
+				int type = m_TargetReportGenerator.GetFieldType(name);
+				if (type == FIELD_TYPE_FIELD)
+				{
+					CString data;
+					if (name.Compare(L"title") == 0)
+					{
+						data.Empty();
+						data += "L-J靶值编辑（文件 03）";
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Number") == 0)
+					{
+						data.Empty();
+						data = "批号: " + tempLjNumber;
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Deadline") == 0)
+					{
+						data.Empty();
+						data = "有效期: " + tempLjDeadline;
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Project") == 0)
+					{
+						data.Empty();
+						data += "项目";
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Lowerlimit") == 0)
+					{
+						data.Empty();
+
+						data += "下限";
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Target") == 0)
+					{
+						data.Empty();
+
+						data += "靶值";
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"upperlimit") == 0)
+					{
+						data.Empty();
+
+						data += "上限";
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Units") == 0)
+					{
+						data.Empty();
+
+						data += "单位";
+						m_TargetReportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"time") == 0)
+					{
+						data.Empty();
+						time = CTime::GetCurrentTime();
+						data = time.Format("%Y-%m-%d");
+						m_TargetReportGenerator.Add(name, data);
+					}
+				}
+				else if (type == FIELD_TYPE_GRID)
+				{
+					int columns = m_TargetReportGenerator.GetFieldColumns(name);
+					if (columns > 0)
+					{
+						CStringArray arr;
+						CString line;
+						CString col;
+						int itemCounter = 26;
+						for (int i = 0; i < itemCounter; i++)
+						{
+							line.Empty();
+							col.Empty();
+
+							col.Format(L" %s|%.1f|%s|%.1f|%s|",
+								table2[i],
+								_wtof(Qctarget[i]) - _wtof(TargetLimit[i]),
+								Qctarget[i],
+								_wtof(Qctarget[i]) + _wtof(TargetLimit[i]),
+								table_units[i]);
+							line += col;
+							arr.Add(line);
+						}
+						m_TargetReportGenerator.Add(name, arr);
+						arr.RemoveAll();
+
+					}
+				}
+			}
+		}
+		m_TargetReportGenerator.Print();
+	}
+	else
+		MessageBox(m_TargetReportGenerator.GetErrorMessage());
+}

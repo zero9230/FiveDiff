@@ -10,8 +10,8 @@ class CQcXrListView : public CDialogEx
 public:
 	CQcXrListView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQcXrListView();
-	void CQcXrListView::Update_InitListList();
-// 对话框数据
+
+	// 对话框数据
 	enum { IDD = IDD_QC_XR_LIST };
 
 protected:
@@ -37,8 +37,8 @@ public:
 	double			qcRan[26];				//总平均极差
 
 	double			data[26][62];				//质控结果,包含平均值和极差
-	CString			qcResDate[31];			//质控日期
-	CString			qcResTime[31];			//质控时间
+	CString			qcResDate[62];			//质控日期
+	CString			qcResTime[62];			//质控时间
 
 	void			setQcAveRan();
 	void			InitListList();
@@ -56,4 +56,5 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg LRESULT OnRedraw(WPARAM, LPARAM);
 
+	afx_msg void OnBnClickedPrintXList();
 };

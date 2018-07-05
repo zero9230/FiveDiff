@@ -1,6 +1,6 @@
 #pragma once
 #include "CMyBCGPListCtrl.h"
-
+#include "ReportGenerator\ReportGenerator.h"
 
 // CQualityTargetValueView 对话框
 extern qc_edit_data_info qcLjEditData;
@@ -12,7 +12,7 @@ public:
 	CQualityTargetValueView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQualityTargetValueView();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_QUALITY_TARGETVALUE };
 
 protected:
@@ -20,6 +20,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	CReportGenerator m_TargetReportGenerator;
 	CMyBCGPListCtrl m_TargetValueList;
 	void			InitTargetValueList();
 	afx_msg void	OnPaint();
@@ -42,7 +43,7 @@ public:
 	CString			Qctarget[26];
 	CString			TargetLimit[26];	//偏差限
 	unsigned char	QcLjFileExist;		//0:文件未使用，1:文件已使用
-	
+
 
 	//char			Qctype;
 	void			GetQcLimitData();
@@ -51,8 +52,9 @@ public:
 	bool			JudgmentValid(CString Content);
 	bool			GetQcFile();
 	void			UpdateView();//更新界面中的数据
-//	int			GetEditFileCount(int controlType,int fileNum);
+	//	int			GetEditFileCount(int controlType,int fileNum);
 
 	CFont			textfont;
 
+	afx_msg void OnBnClickedQualitytargetPrint();
 };

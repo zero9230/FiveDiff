@@ -50,6 +50,7 @@ BEGIN_MESSAGE_MAP(CCalibrationView, CBCGPChartExampleView)
 	ON_BN_CLICKED(IDC_AUTO_TESTMODE_RADIO2, &CCalibrationView::OnBnClickedAutoTestmodeRadio2)
 	ON_BN_CLICKED(IDC_CALIBRATION_TEST, &CCalibrationView::OnCalibrationTest)
 	ON_BN_CLICKED(IDC_MANUAL_CALIBRATION_SAVE, &CCalibrationView::OnBnClickedManualCalibrationSave)
+	ON_BN_CLICKED(IDC_PRINT_CALI, &CCalibrationView::OnBnClickedPrintCali)
 END_MESSAGE_MAP()
 
 
@@ -792,3 +793,101 @@ void CCalibrationView::initData(){
 }
 
 
+
+
+void CCalibrationView::OnBnClickedPrintCali()
+{
+	PRINTDLG pd;
+	// Initialize PRINTDLG
+	ZeroMemory(&pd, sizeof(PRINTDLG));
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.hwndOwner = NULL;
+	pd.hDevMode = NULL;     // Don't forget to free or store hDevMode
+	pd.hDevNames = NULL;     // Don't forget to free or store hDevNames
+	pd.Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+	pd.nCopies = 1;
+	pd.nFromPage = 0xFFFF;
+	pd.nToPage = 0xFFFF;
+	pd.nMinPage = 1;
+	pd.nMaxPage = 0xFFFF;
+
+	//PrintDlg(&pd);
+	if (PrintDlg(&pd) == TRUE)
+	{
+		// GDI calls to render output. 
+		DOCINFO di;
+		ZeroMemory(&di, sizeof(DOCINFO));
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = _T("NewDoc");
+
+		StartDoc(pd.hDC, &di);
+		CTime time;
+		CDC pDC;
+		CPen penBlack;
+		CString str;
+		CFont font;
+		CString cs[5];
+		//CFont *poldfont;
+		pDC.Attach(pd.hDC);
+		font.CreateFont(150, 60, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+		penBlack.CreatePen(PS_SOLID, 15, RGB(0, 0, 0));
+		StartPage(pd.hDC);
+		CFont *poldfont = pDC.SelectObject(&font);
+		pDC.TextOutW(1900, 250, L"定 标 因 子 参 数");
+		pDC.SelectObject(poldfont);
+		CPen *poldPen = pDC.SelectObject(&penBlack);
+		pDC.MoveTo(500, 500);
+		pDC.LineTo(4500, 500);
+		pDC.SelectObject(poldPen);
+
+		pDC.TextOutW(2000, 1500, L"模式");
+		pDC.TextOutW(2500, 1500, L"参数");
+		pDC.TextOutW(2000, 1750, L"WBC:");
+		pDC.TextOutW(2000, 2250, L"RBC:");
+		pDC.TextOutW(2000, 2750, L"HGB:");
+		pDC.TextOutW(2000, 3250, L"MCV:");
+		pDC.TextOutW(2000, 3750, L"PLT:");
+		for (int i = 0; i < 5; i++)
+		{
+			cs[i].Format(L"%.2f", systemcfg.calibration[systemcfg.mode][i]);
+			pDC.TextOutW(2500, 1750 + 500 * i, cs[i]);
+		}
+		if (systemcfg.mode == 0)
+		{
+			pDC.TextOutW(500, 750, L"模式:");
+			pDC.TextOutW(1000, 750, L"全血");
+			pDC.TextOutW(500, 1000, L"观测模式:");
+			pDC.TextOutW(1000, 1000, L"CBC+5DIFF");
+		}
+		else if (systemcfg.mode == 1)
+		{
+			pDC.TextOutW(1000, 750, L"模式:");
+			pDC.TextOutW(1250, 750, L"全血");
+			pDC.TextOutW(1000, 1000, L"观测模式:");
+			pDC.TextOutW(1250, 1000, L"CBC");
+		}
+		else if (systemcfg.mode == 2)
+		{
+			pDC.TextOutW(1000, 750, L"模式:");
+			pDC.TextOutW(1250, 750, L"预稀释");
+			pDC.TextOutW(1000, 1000, L"观测模式:");
+			pDC.TextOutW(1250, 1000, L"CBC+5DIFF");
+		}
+		else
+		{
+			pDC.TextOutW(1000, 750, L"模式:");
+			pDC.TextOutW(1250, 750, L"预稀释");
+			pDC.TextOutW(1000, 1000, L"观测模式:");
+			pDC.TextOutW(1250, 1000, L"CBC");
+		}
+		str.Empty();
+		time = CTime::GetCurrentTime();
+		str = time.Format("%Y-%m-%d");
+		pDC.TextOutW(3500, 6000, str);
+		EndPage(pd.hDC);
+		EndDoc(pd.hDC);
+
+		// Delete DC when done.
+		DeleteDC(pd.hDC);
+	}
+}

@@ -2,11 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "afxwin.h"
 #include "BCGPChartExample.h"
 #include "QualityListView.h"
 #include "afxdialogex.h"
-
 
 
 // CQualityListView 对话框
@@ -14,9 +12,8 @@
 IMPLEMENT_DYNAMIC(CQualityListView, CDialogEx)
 
 CQualityListView::CQualityListView(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CQualityListView::IDD, pParent)
-	, pageNum(_T(""))
-	, m_nDrawType(0)
+: CDialogEx(CQualityListView::IDD, pParent)
+, pageNum(_T(""))
 {
 	for (int i = 0; i < 26; i++)
 	{
@@ -57,11 +54,7 @@ BEGIN_MESSAGE_MAP(CQualityListView, CDialogEx)
 	ON_MESSAGE(UM_REDRAW, OnRedraw)
 	ON_BN_CLICKED(IDC_QUALITY_LIST_UP_BUTTON, &CQualityListView::OnBnClickedQualityListUpButton)
 	ON_BN_CLICKED(IDC_QUALITY_LIST_DOWN_BUTTON, &CQualityListView::OnBnClickedQualityListDownButton)
-	ON_WM_PAINT()
-//	ON_WM_ERASEBKGND()
-//ON_WM_SYSCOMMAND()
-//ON_WM_SIZE()
-ON_WM_SIZE()
+	ON_BN_CLICKED(IDC_PRINT_LJ_LIST, &CQualityListView::OnBnClickedPrintLjList)
 END_MESSAGE_MAP()
 
 
@@ -94,14 +87,14 @@ BOOL CQualityListView::OnInitDialog()
 
 	GetDlgItem(IDC_QUALITY_LIST_NUMBER)->EnableWindow(false);//此处锁定批号和有效期的输入框
 	GetDlgItem(IDC_QUALITY_LIST_DEADLINE)->EnableWindow(false);
-	
+
 	InitListList();
 	GetQcLjEditData();
 	itemCount = GetQcLjResultData(Controltype, Controlfile);
 	UpdateListResultList();
-	maxPage = itemCount % 5 == 0 ? itemCount / 5 -1: itemCount / 5 ;
-	
-	pageNum.Format(L"第 %d/%d 页", curpage+1, maxPage+1);
+	maxPage = itemCount % 5 == 0 ? itemCount / 5 - 1 : itemCount / 5;
+
+	pageNum.Format(L"第 %d/%d 页", curpage + 1, maxPage + 1);
 	UpdateData(false);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -111,22 +104,21 @@ void CQualityListView::InitListList()
 {
 	/***************初始化表格**************/
 	CRect rect;
-	CString table[28] = { "日期","时间","WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
+	CString table[28] = { "日期", "时间", "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
 		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
 	/*	CString unit[] = { _T("10^9/L"), _T("%"), _T("%"), _T("%"), _T("%"),
-		_T("%"), _T("%"), _T("%"), _T("10^9/L"), _T("10^9/L"),
-		_T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"),_T("10^12/L"), _T("g/L"), _T("%"), _T("fL"),
-		_T("pg"), _T("g/L"), _T("%"), _T("fL"), _T("10^9/L"), _T("fL"), _T("fL"), _T("%") };
+	_T("%"), _T("%"), _T("%"), _T("10^9/L"), _T("10^9/L"),
+	_T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"), _T("10^9/L"),_T("10^12/L"), _T("g/L"), _T("%"), _T("fL"),
+	_T("pg"), _T("g/L"), _T("%"), _T("fL"), _T("10^9/L"), _T("fL"), _T("fL"), _T("%") };
 	*/
-
-
 	// 获取编程语言列表视图控件的位置和大小   
 	m_ListList.GetClientRect(&rect);
 	m_ListList.SetRowHeigt(20);
 	// 为列表视图控件添加全行选中和栅格风格   
 	m_ListList.SetExtendedStyle(m_ListList.GetExtendedStyle() | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
-		// 为列表视图控件添加四列;
+
+	// 为列表视图控件添加四列;
 	m_ListList.InsertColumn(0, _T(""), LVCFMT_CENTER, rect.Width() * 1 / 9, 0);
 	m_ListList.InsertColumn(1, _T("靶值"), LVCFMT_CENTER, rect.Width() * 1 / 8, 1);
 	m_ListList.InsertColumn(2, _T("偏差限"), LVCFMT_CENTER, rect.Width() * 1 / 8, 2);
@@ -148,7 +140,6 @@ void CQualityListView::InitListList()
 	{
 		m_ListList.InsertItem(i, table[i]);
 	}
-	
 	/***************填充初始化数据**************/
 	//m_ListList.SetItemText(0, 4, L"10^9/L");
 	//m_ListList.SetItemText(1, 4, L"%");
@@ -176,7 +167,6 @@ void CQualityListView::InitListList()
 	//m_ListList.SetItemText(23, 4, L"fL");
 	//m_ListList.SetItemText(24, 4, L"fL");
 	//m_ListList.SetItemText(25, 4, L"%");
-
 
 }
 
@@ -260,14 +250,14 @@ bool CQualityListView::GetQcLjEditData(){
 			{
 				var = m_pRs->GetFields()->GetItem((long)j + 5)->Value;//读取当前记录质控26个项目的靶值
 				Qctarget[j] = var;
-				m_ListList.SetItemText(j+2, 1, Qctarget[j]);
+				m_ListList.SetItemText(j + 2, 1, Qctarget[j]);
 			}
 			//填入上限和下限
 			for (int j = 0; j < 26; j++)
 			{
 				var = m_pRs->GetFields()->GetItem((long)j + 26 + 5)->Value;//读取当前记录质控26个项目的偏差值
 				TargetLimit[j] = var;
-				m_ListList.SetItemText(j+2, 2, TargetLimit[j]);
+				m_ListList.SetItemText(j + 2, 2, TargetLimit[j]);
 
 				//double lowLimit = _wtof(Qctarget[j]) - _wtof(TargetLimit[j]);
 				//double highimit = _wtof(Qctarget[j]) + _wtof(TargetLimit[j]);
@@ -305,13 +295,13 @@ int CQualityListView::GetQcLjResultData(int controltype, int controlfile){
 	CString ssTemp;
 	int k = 0;
 	for (int i = 0; i < 31; i++){//将数据容器data初始清空
-		qcResDate[i].Format(L"%s","");
+		qcResDate[i].Format(L"%s", "");
 		qcResTime[i].Format(L"%s", "");
 		for (int j = 0; j < 26; j++){
 			data[j][i] = -5.0;
 		}
 	}
-//
+	//
 	select_detail.Format(L"select * from qcresultdata where qctype = '%d' and filenum = '%d' order by date,time;", controltype, controlfile);
 
 	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
@@ -343,7 +333,7 @@ int CQualityListView::GetQcLjResultData(int controltype, int controlfile){
 			{
 				qcResTime[k] = m_pRs->GetCollect("time");
 				hhTemp = qcResTime[k].Left(2);
-				mmTemp = qcResTime[k].Mid(2,2);
+				mmTemp = qcResTime[k].Mid(2, 2);
 				ssTemp = qcResTime[k].Right(2);
 				qcResTime[k].Format(L"%s:%s:%s", hhTemp, mmTemp, ssTemp);
 			}
@@ -375,7 +365,7 @@ void CQualityListView::UpdateListResultList(){
 	startIndex = curpage * 5;
 	endIndex = curpage * 5 + 4;
 	CString strData;
-	
+
 	for (int i = startIndex; i <= endIndex; i++){	//外循环，遍历每一页中的记录，从0~4
 		if (i > 30){								//总共显示31条数据，多出来的显示空白
 			m_ListList.SetItemText(0, i + 3 - curpage * 5, L"");
@@ -475,101 +465,146 @@ afx_msg LRESULT CQualityListView::OnRedraw(WPARAM, LPARAM){
 	UpdateView();
 	return 0;
 }
-void CQualityListView::Update_InitListList()
+
+void CQualityListView::OnBnClickedPrintLjList()
 {
-	/***************初始化表格**************/
-	CRect rect;
 	CString table[28] = { "日期", "时间", "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
-		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };	
-	
-
-
-	LVCOLUMN m_vcolumn;
-	CString strText[8] = { "", "靶值", "偏差限", "1" ,"2","3","4","5"};
-
-	// 获取编程语言列表视图控件的位置和大小   
-	m_ListList.GetClientRect(&rect);
-	m_ListList.SetRowHeigt(20);
-	// 为列表视图控件添加全行选中和栅格风格   
-	m_ListList.SetExtendedStyle(m_ListList.GetExtendedStyle() | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
-
-	for (int i = 0; i < 8; i++)
+		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
+	int page_num;//打印的页数
+	int finally_page_num;//最后一页的数据数
+	PRINTDLG pd;
+	// Initialize PRINTDLG
+	ZeroMemory(&pd, sizeof(PRINTDLG));
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.hwndOwner = NULL;
+	pd.hDevMode = NULL;     // Don't forget to free or store hDevMode
+	pd.hDevNames = NULL;     // Don't forget to free or store hDevNames
+	pd.Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+	pd.nCopies = 1;
+	pd.nFromPage = 0xFFFF;
+	pd.nToPage = 0xFFFF;
+	pd.nMinPage = 1;
+	pd.nMaxPage = 0xFFFF;
+	//PrintDlg(&pd);
+	if (PrintDlg(&pd) == TRUE)
 	{
-		m_vcolumn.mask = LVCF_TEXT;
-		m_vcolumn.pszText = strText[i].GetBuffer(0);
-		m_vcolumn.cchTextMax = strText[i].GetLength();
-		m_ListList.SetColumn(i, &m_vcolumn);
+		// GDI calls to render output. 
+		DOCINFO di;
+		ZeroMemory(&di, sizeof(DOCINFO));
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = _T("NewDoc");
+
+		StartDoc(pd.hDC, &di);
+		CDC pDC;
+		CFont font;
+		CPen penBlack;
+		CString str;
+		CFont *poldfont;
+		pDC.Attach(pd.hDC);
+		font.CreateFont(80, 30, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+		penBlack.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+
+		finally_page_num = itemCount % 5;
+		if (finally_page_num == 0)
+			page_num = itemCount / 5;
+		else
+			page_num = itemCount / 5 + 1;
+		for (int m_page = 0; m_page < page_num; m_page++)
+		{
+			StartPage(pd.hDC);
+			pDC.TextOutW(2200, 300, L"L-J靶值编辑(文件03)");
+			if (m_page == 0)
+				poldfont = pDC.SelectObject(&font);
+			else
+				pDC.SelectObject(&font);
+			pDC.TextOutW(500, 350, L"批号:");
+			pDC.TextOutW(500, 500, L"有效期:");
+			pDC.TextOutW(800, 350, number);
+			pDC.TextOutW(800, 500, deadline);
+			pDC.SetViewportOrg(500, 700);
+			pDC.Rectangle(0, 0, 4000, 5800);
+			for (int j = 0; j < 28; j++)
+			{
+				pDC.TextOutW(20, (j + 1) * 200, table[j]);
+			}
+			pDC.TextOutW(500, 30, L"靶值");
+			pDC.TextOutW(1000, 30, L"偏差限");
+			pDC.TextOutW(1650, 30, L"1");
+			pDC.TextOutW(2150, 30, L"2");
+			pDC.TextOutW(2650, 30, L"3");
+			pDC.TextOutW(3150, 30, L"4");
+			pDC.TextOutW(3650, 30, L"5");
+
+			if (m_page < page_num - 1)
+			{
+				//写时间和日期
+				for (int i = 0; i < 5; i++)
+				{
+					pDC.TextOutW(1500 + i * 500, 200, qcResDate[i + m_page * 5]);
+					pDC.TextOutW(1500 + i * 500, 400, qcResTime[i + m_page * 5]);
+				}
+				//写入质控数据
+				for (int i = 0; i < 5; i++)
+				{
+					for (int j = 0; j < 26; j++)
+					{
+						str.Format(L"%.2f", data[j][i + m_page * 5]);
+						pDC.TextOutW(1500 + i * 500, 600 + j * 200, str);
+					}
+				}
+			}
+			else
+			{
+				if (finally_page_num != 0)
+				{
+					//写时间和日期
+					for (int i = 0; i < finally_page_num; i++)
+					{
+						pDC.TextOutW(1500 + i * 500, 200, qcResDate[i + m_page * 5]);
+						pDC.TextOutW(1500 + i * 500, 400, qcResTime[i + m_page * 5]);
+					}
+					//写入质控数据
+					for (int i = 0; i < finally_page_num; i++)
+					{
+						for (int j = 0; j < 26; j++)
+						{
+							str.Format(L"%.2f", data[j][i + m_page * 5]);
+							pDC.TextOutW(1500 + i * 500, 600 + j * 200, str);
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; i < 5; i++)
+					{
+						pDC.TextOutW(1500 + i * 500, 200, qcResDate[i + m_page * 5]);
+						pDC.TextOutW(1500 + i * 500, 400, qcResTime[i + m_page * 5]);
+					}
+					//写入质控数据
+					for (int i = 0; i < 5; i++)
+					{
+						for (int j = 0; j < 26; j++)
+						{
+							str.Format(L"%.2f", data[j][i + m_page * 5]);
+							pDC.TextOutW(1500 + i * 500, 600 + j * 200, str);
+						}
+					}
+				}
+
+			}
+			//写靶值和偏差限
+			for (int i = 0; i < 26; i++)
+			{
+				pDC.TextOutW(500, 600 + i * 200, Qctarget[i]);
+				pDC.TextOutW(1000, 600 + i * 200, TargetLimit[i]);
+			}
+			pDC.SelectObject(poldfont);
+
+			EndPage(pd.hDC);
+		}
+		EndDoc(pd.hDC);
+
+		// Delete DC when done.
+		DeleteDC(pd.hDC);
 	}
-
-	for (int i = 0; i < 28; i++)
-	{
-		m_ListList.SetItemText(i,0, table[i]);
-	}
-	m_ListList.SetItemText(0, 1, _T(""));
-	m_ListList.SetItemText(0, 2, _T(""));
-	m_ListList.SetItemText(1, 1, _T(""));
-	m_ListList.SetItemText(1, 2, _T(""));
-
-}
-
-void CQualityListView::OnPaint()
-{
-	CPaintDC dc(this);	
-	//CRect rect;
-	//GetClientRect(rect);
-	//dc.FillSolidRect(rect, RGB(255, 255, 255));
-	//dc.FillPath();
-
-	//CDialogEx::OnPaint();
-	Update_InitListList();
-
-
-	UpdateView();
-	// device context for painting
-	// TODO:  在此处添加消息处理程序代码
-	// 不为绘图消息调用 CDialogEx::OnPaint()
-}
-
-
-
-
-
-//BOOL CQualityListView::OnEraseBkgnd(CDC* pDC)
-//{
-//	// TODO:  在此添加消息处理程序代码和/或调用默认值
-//
-//	return CDialogEx::OnEraseBkgnd(pDC);
-//}
-
-//
-//void CQualityListView::OnSysCommand(UINT nID, LPARAM lParam)
-//{
-//	// TODO:  在此添加消息处理程序代码和/或调用默认值
-//
-//	//if ((nID & 0xFFF0) == IDD_QUALITY_LIST)
-//	//{
-//	//	CQualityListView dlgAbout;
-//	//	dlgAbout.DoModal();
-//	//}
-//	//else if (nID == SC_MINIMIZE)
-//	//{
-//	//	ShowWindow(SW_HIDE);
-//	//}
-//	//else if (nID == SC_RESTORE)
-//	//{
-//	//	ShowWindow(SW_SHOW);
-//	//}
-//	//else
-//	//{
-//	//	CQualityListView::OnSysCommand(nID, lParam);
-//	//}
-//}
-
-
-
-static int i=0;
-void CQualityListView::OnSize(UINT nType, int cx, int cy)
-{
-
-	// TODO:  在此处添加消息处理程序代码
 }

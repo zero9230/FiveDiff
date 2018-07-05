@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "ReportGenerator\ReportGenerator.h"
 // CQcXTargetValueView 对话框
 
 class CQcXTargetValueView : public CDialogEx
@@ -11,14 +11,14 @@ public:
 	CQcXTargetValueView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQcXTargetValueView();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_QC_X_TARGETVALUE };
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
 	DECLARE_MESSAGE_MAP()
-public :
+public:
 	CMyBCGPListCtrl m_QcXTargetValueList;
 	void			InitTargetValueList();
 	afx_msg void	OnPaint();
@@ -53,5 +53,6 @@ public :
 	//	int			GetEditFileCount(int controlType,int fileNum);
 
 	CFont			textfont;
-
+	CReportGenerator m_XreportGenerator;
+	afx_msg void OnBnClickedPrintTarget();
 };

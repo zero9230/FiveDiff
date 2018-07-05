@@ -146,6 +146,7 @@
 #define IDD_RESULT_MANAGE               307
 #define IDD_LANGUAGE_CHOOSE             308
 #define IDD_MULTILANG_TEST              309
+#define IDD_ABOUT_DLG                   310
 #define IDC_COMPANY_URL                 1041
 #define IDC_CHART_COLUMN                1054
 #define IDC_CHART_LINE                  1055
@@ -333,6 +334,7 @@
 #define IDC_AS_10_RESET                 1318
 #define IDC_CHVALVES_V10                1318
 #define IDC_CLEAN_EXTERNNEEDLE          1318
+#define IDC_QUALITYTARGET_PRINT         1318
 #define IDC_CHANGE_D_STARTDATE          1319
 #define IDC_CHANGE_R_STARTDATE          1320
 #define IDC_CHANGE_HGB_STARTDATE        1321
@@ -1137,6 +1139,19 @@
 #define IDC_RADIO_SPANISH               2019
 #define IDC_DOCT_PAGE_SELECT            2020
 #define IDC_DOCT_PAGE_COUNT             2021
+#define IDC_STRUCTURE_NOPUNCTURE        2023
+#define IDC_STRUCTURE_PUNCTURE          2024
+#define IDC_STRUCTURE_AUTOSAMPLE        2025
+#define IDC_DEVELOPERSET_DILUENT_20UL   2026
+#define IDC_DEVELOPERSET_DILUENT_50UL   2027
+#define IDC_APPLY                       2028
+#define IDC_MFCLINK1                    2030
+#define IDC_MFCLINK2                    2031
+#define IDC_PRINT_LJ_LIST               2032
+#define IDC_PRINT_TARGET                2033
+#define IDC_PRINT_X                     2034
+#define IDC_PRINT_X_LIST                2035
+#define IDC_PRINT_CALI                  2036
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1312,9 +1327,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        310
+#define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         33014
-#define _APS_NEXT_CONTROL_VALUE         2022
+#define _APS_NEXT_CONTROL_VALUE         2037
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

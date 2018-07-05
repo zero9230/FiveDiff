@@ -21,6 +21,7 @@
 //#include "BCGPChartExampleView.h"
 #include "LoginDlg.h"
 //#include "Includes_app.h"
+#include "AboutDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -258,7 +259,13 @@ BOOL CBCGPChartExampleApp::InitInstance()
 // App command to run the dialog
 void CBCGPChartExampleApp::OnAppAbout()
 {
-	BCGPShowAboutDlg (AFX_IDS_APP_TITLE);
+	//BCGPShowAboutDlg (AFX_IDS_APP_TITLE);
+	CAboutDlg m_aboutDlg;
+	if (!m_aboutDlg.DoModal())
+	{				
+		return;
+	}
+	return;
 }
 
 void CBCGPChartExampleApp::PreLoadState ()

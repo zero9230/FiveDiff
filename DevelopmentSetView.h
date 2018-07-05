@@ -20,4 +20,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnPaint();
+
+	afx_msg void OnBnClickedApply();
+	int m_structureRadio;
+	int m_diluentRadio;
+	virtual BOOL OnInitDialog();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

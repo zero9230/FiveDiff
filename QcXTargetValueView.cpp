@@ -24,7 +24,7 @@ CQcXTargetValueView::CQcXTargetValueView(CWnd* pParent /*=NULL*/)
 	}
 
 	VERIFY(textfont.CreateFont(
-		15,                        // nHeight
+		15,                    // nHeight
 		0,                         // nWidth
 		0,                         // nEscapement
 		0,                         // nOrientation
@@ -57,6 +57,7 @@ BEGIN_MESSAGE_MAP(CQcXTargetValueView, CDialogEx)
 	ON_NOTIFY(NM_CLICK, IDC_QC_X_TARGETVALUE_LIST, &CQcXTargetValueView::OnNMClickQcXTargetvalueList)
 	ON_BN_CLICKED(IDC_QC_X_TARGET_CONFIRM, &CQcXTargetValueView::OnQcXTargetConfirm)
 	ON_BN_CLICKED(IDC_QC_X_RANGE_CONFIRM, &CQcXTargetValueView::OnQcXRangeConfirm)
+	ON_BN_CLICKED(IDC_PRINT_TARGET, &CQcXTargetValueView::OnBnClickedPrintTarget)
 END_MESSAGE_MAP()
 
 
@@ -583,7 +584,7 @@ bool CQcXTargetValueView::GetQcFile()
 				double lowLimit = _wtof(Qctarget[j]) - _wtof(TargetLimit[j]);
 				double highimit = _wtof(Qctarget[j]) + _wtof(TargetLimit[j]);
 				CString str;
-				
+
 				str.Format(L"%.2lf", lowLimit);
 				m_QcXTargetValueList.SetItemText(j, 1, str);
 				str.Format(L"%.2lf", highimit);
@@ -760,3 +761,123 @@ void CQcXTargetValueView::UpdateView()
 //	CloseDataBase(m_pDB, m_pRs);
 //	return rownum;
 //}
+
+void CQcXTargetValueView::OnBnClickedPrintTarget()
+{
+	CString table2[26] = { "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
+		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
+	CString table_units[26] = { "10^9/L", "%", "%", "%", "%", "%", "%", "%", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L", "10^9/L",
+		"10^12/L", "g/L", "%", "fL", "pg", "g/L", "%", "10^9/L", "fL", "fL", "%" };
+	CString file;
+	CTime time;
+	UpdateData();
+	file.Format(L"./rpt/X.rpt");
+	TRACE(file + "\n");
+	m_XreportGenerator.New();
+	if (m_XreportGenerator.SetReportfile(file))
+	{
+		int max = m_XreportGenerator.GetTemplateSize(0);
+		for (int t = 0; t < max; t++)
+		{
+			CString name = m_XreportGenerator.GetFieldName(t);
+			if (name.GetLength());
+			{
+				int type = m_XreportGenerator.GetFieldType(name);
+				if (type == FIELD_TYPE_FIELD)
+				{
+					CString data;
+					if (name.Compare(L"title") == 0)
+					{
+						data.Empty();
+						data += "X靶值编辑（文件 03）";
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Number") == 0)
+					{
+						data.Empty();
+						data = "批号: " + tempXNumber;
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Deadline") == 0)
+					{
+						data.Empty();
+						data = "有效期: " + tempXDeadline;
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Project") == 0)
+					{
+						data.Empty();
+						data += "项目";
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Lowerlimit") == 0)
+					{
+						data.Empty();
+
+						data += "下限";
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Target") == 0)
+					{
+						data.Empty();
+
+						data += "靶值";
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"upperlimit") == 0)
+					{
+						data.Empty();
+
+						data += "上限";
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"Units") == 0)
+					{
+						data.Empty();
+
+						data += "单位";
+						m_XreportGenerator.Add(name, data);
+					}
+					if (name.Compare(L"time") == 0)
+					{
+						data.Empty();
+						time = CTime::GetCurrentTime();
+						data = time.Format("%Y-%m-%d");
+						m_XreportGenerator.Add(name, data);
+					}
+				}
+				else if (type == FIELD_TYPE_GRID)
+				{
+					int columns = m_XreportGenerator.GetFieldColumns(name);
+					if (columns > 0)
+					{
+						CStringArray arr;
+						CString line;
+						CString col;
+						int itemCounter = 26;
+						for (int i = 0; i < itemCounter; i++)
+						{
+							line.Empty();
+							col.Empty();
+
+							col.Format(L" %s|%.1f|%s|%.1f|%s|",
+								table2[i],
+								_wtof(Qctarget[i]) - _wtof(TargetLimit[i]),
+								Qctarget[i],
+								_wtof(Qctarget[i]) + _wtof(TargetLimit[i]),
+								table_units[i]);
+							line += col;
+							arr.Add(line);
+						}
+						m_XreportGenerator.Add(name, arr);
+						arr.RemoveAll();
+
+					}
+				}
+			}
+		}
+		m_XreportGenerator.Print();
+	}
+	else
+		MessageBox(m_XreportGenerator.GetErrorMessage());
+}

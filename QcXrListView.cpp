@@ -12,10 +12,10 @@
 IMPLEMENT_DYNAMIC(CQcXrListView, CDialogEx)
 
 CQcXrListView::CQcXrListView(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CQcXrListView::IDD, pParent)
+: CDialogEx(CQcXrListView::IDD, pParent)
 {
 	for (int i = 0; i < 26; i++){
-		for (int j = 0; j < 31*2; j++){
+		for (int j = 0; j < 31 * 2; j++){
 			data[i][j] = -5.0;
 		}
 	}
@@ -55,54 +55,16 @@ BEGIN_MESSAGE_MAP(CQcXrListView, CDialogEx)
 	ON_BN_CLICKED(IDC_QC_XR_LIST_DOWN_BUTTON, &CQcXrListView::OnBnClickedQcXrListDownButton)
 	ON_WM_PAINT()
 	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(IDC_PRINT_X_LIST, &CQcXrListView::OnBnClickedPrintXList)
 END_MESSAGE_MAP()
 
 
 // CQcXrListView 消息处理程序
-void CQcXrListView::Update_InitListList()
-{
-	/***************初始化表格**************/
-	CRect rect;
-	CString table[28] = { "日期", "时间", "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
-		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
 
-
-
-	LVCOLUMN m_vcolumn;
-	CString strText[8] = { "", "靶值", "偏差限", "1", "2", "3", "4", "5" };
-
-	// 获取编程语言列表视图控件的位置和大小   
-	m_ListList.GetClientRect(&rect);
-	m_ListList.SetRowHeigt(20);
-	// 为列表视图控件添加全行选中和栅格风格   
-	m_ListList.SetExtendedStyle(m_ListList.GetExtendedStyle() | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
-
-	for (int i = 0; i < 8; i++)
-	{
-		m_vcolumn.mask = LVCF_TEXT;
-		m_vcolumn.pszText = strText[i].GetBuffer(0);
-		m_vcolumn.cchTextMax = strText[i].GetLength();
-		m_ListList.SetColumn(i, &m_vcolumn);
-	}
-
-	for (int i = 0; i < 28; i++)
-	{
-		m_ListList.SetItemText(i, 0, table[i]);
-	}
-	m_ListList.SetItemText(0, 1, _T(""));
-	m_ListList.SetItemText(0, 2, _T(""));
-	m_ListList.SetItemText(1, 1, _T(""));
-	m_ListList.SetItemText(1, 2, _T(""));
-
-}
 
 void CQcXrListView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
-	Update_InitListList();
-
-
-	UpdateView();
 	// TODO:  在此处添加消息处理程序代码
 	// 不为绘图消息调用 CDialogEx::OnPaint()
 }
@@ -124,7 +86,7 @@ BOOL CQcXrListView::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-	CString item_temp,done_temp;
+	CString item_temp, done_temp;
 	switch (Controltype)
 	{
 	case 0:
@@ -186,7 +148,7 @@ void CQcXrListView::InitListList()
 	m_ListList.InsertColumn(5, _T("2"), LVCFMT_CENTER, rect.Width() * 1 / 9, 5);
 	m_ListList.InsertColumn(6, _T(""), LVCFMT_CENTER, rect.Width() * 1 / 9, 6);
 	m_ListList.InsertColumn(7, _T("3"), LVCFMT_CENTER, rect.Width() * 1 / 9, 7);
-	m_ListList.InsertColumn(8, _T(""), LVCFMT_CENTER, rect.Width() * 1 / 9, 7); 
+	m_ListList.InsertColumn(8, _T(""), LVCFMT_CENTER, rect.Width() * 1 / 9, 7);
 
 	// 在列表视图控件中插入列表项，并设置列表子项文本
 	//m_ListList.InsertItem(0, _T("WBC"));
@@ -550,4 +512,151 @@ void CQcXrListView::UpdateView(){
 afx_msg LRESULT CQcXrListView::OnRedraw(WPARAM, LPARAM){
 	UpdateView();
 	return 0;
+}
+
+
+void CQcXrListView::OnBnClickedPrintXList()
+{
+	CString table[28] = { "日期", "时间", "WBC", "LYM%", "NEU%", "MONO%", "EOS%", "BASO", "ALY%", "LIC%", "LYM#", "NEU#", "MONO#", "EOS#", "BASO#", "ALY#",
+		"LIC#", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "RDW", "PLT", "MPV", "PDW", "PCT" };
+	PRINTDLG pd;
+	int num;
+	// Initialize PRINTDLG
+	ZeroMemory(&pd, sizeof(PRINTDLG));
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.hwndOwner = NULL;
+	pd.hDevMode = NULL;     // Don't forget to free or store hDevMode
+	pd.hDevNames = NULL;     // Don't forget to free or store hDevNames
+	pd.Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+	pd.nCopies = 1;
+	pd.nFromPage = 0xFFFF;
+	pd.nToPage = 0xFFFF;
+	pd.nMinPage = 1;
+	pd.nMaxPage = 0xFFFF;
+	//PrintDlg(&pd);
+	if (PrintDlg(&pd) == TRUE)
+	{
+		// GDI calls to render output. 
+		DOCINFO di;
+		ZeroMemory(&di, sizeof(DOCINFO));
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = _T("NewDoc");
+		StartDoc(pd.hDC, &di);
+		CDC pDC;
+		CFont font;
+		CPen penBlack;
+		CString str;
+		CFont *poldfont;
+		int page_num;
+		int finally_page_num;
+
+		pDC.Attach(pd.hDC);
+		font.CreateFont(80, 30, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+		penBlack.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+
+
+		finally_page_num = itemCount % 6;
+		if (finally_page_num == 0)
+			page_num = itemCount / 6;
+		else
+			page_num = itemCount / 6 + 1;
+
+		for (int m_page = 0; m_page < page_num; m_page++)
+		{
+			StartPage(pd.hDC);
+			pDC.TextOutW(2200, 300, L"	X-R靶值编辑(文件03)");
+			if (m_page == 0)
+				poldfont = pDC.SelectObject(&font);
+			else
+				pDC.SelectObject(&font);
+
+			pDC.TextOutW(500, 350, L"批号:");
+			pDC.TextOutW(500, 500, L"有效期:");
+			pDC.TextOutW(800, 350, number);
+			pDC.TextOutW(800, 500, deadline);
+			pDC.SetViewportOrg(500, 700);
+			pDC.Rectangle(0, 0, 4000, 5800);
+			for (int j = 0; j < 28; j++)
+			{
+				pDC.TextOutW(20, (j + 1) * 200, table[j]);
+			}
+			pDC.TextOutW(400, 30, L"总平均值");
+			pDC.TextOutW(800, 30, L"平均极差");
+			pDC.TextOutW(1350, 30, L"1");
+			pDC.TextOutW(2250, 30, L"2");
+			pDC.TextOutW(3150, 30, L"3");
+			if (m_page < page_num - 1)
+			{
+				//写时间和日期
+				for (int i = 0; i < 6; i++)
+				{
+					pDC.TextOutW(1200 + i * 450, 200, qcResDate[i + m_page * 6]);
+					pDC.TextOutW(1200 + i * 450, 400, qcResTime[i + m_page * 6]);
+				}
+				//写入质控数据
+				for (int i = 0; i < 6; i++)
+				{
+					for (int j = 0; j < 26; j++)
+					{
+						str.Format(L"%.2f", data[j][i + m_page * 6]);
+						pDC.TextOutW(1200 + i * 450, 600 + j * 200, str);
+					}
+				}
+			}
+			else
+			{
+				if (finally_page_num != 0)
+				{
+					//写时间和日期
+					for (int i = 0; i < finally_page_num; i++)
+					{
+						pDC.TextOutW(1200 + i * 450, 200, qcResDate[i + m_page * 6]);
+						pDC.TextOutW(1200 + i * 450, 400, qcResTime[i + m_page * 6]);
+					}
+					//写入质控数据
+					for (int i = 0; i < finally_page_num; i++)
+					{
+						for (int j = 0; j < 26; j++)
+						{
+							str.Format(L"%.2f", data[j][i + m_page * 6]);
+							pDC.TextOutW(1200 + i * 450, 600 + j * 200, str);
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; i < 6; i++)
+					{
+						pDC.TextOutW(1200 + i * 450, 200, qcResDate[i + m_page * 6]);
+						pDC.TextOutW(1200 + i * 450, 400, qcResTime[i + m_page * 6]);
+					}
+					//写入质控数据
+					for (int i = 0; i < 6; i++)
+					{
+						for (int j = 0; j < 26; j++)
+						{
+							str.Format(L"%.2f", data[j][i + m_page * 6]);
+							pDC.TextOutW(1200 + i * 450, 600 + j * 200, str);
+						}
+					}
+				}
+
+			}
+			//写总平均值和极差
+			for (int i = 0; i < 26; i++)
+			{
+				str.Format(L"%.2f", qcAve[i]);
+				pDC.TextOutW(400, 600 + i * 200, str);
+				str.Format(L"%.2f", qcRan[i]);
+				pDC.TextOutW(800, 600 + i * 200, str);
+			}
+
+			pDC.SelectObject(poldfont);
+			EndPage(pd.hDC);
+		}
+		EndDoc(pd.hDC);
+
+		// Delete DC when done.
+		DeleteDC(pd.hDC);
+	}
 }

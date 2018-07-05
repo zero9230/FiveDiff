@@ -113,6 +113,7 @@ public:
 
 
 	afx_msg void OnBnClickedManualCalibrationSave();
+	afx_msg void OnBnClickedPrintCali();
 };
 
 

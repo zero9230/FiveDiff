@@ -6,14 +6,13 @@
 
 class CQualityListView : public CDialogEx
 {
-	
 	DECLARE_DYNAMIC(CQualityListView)
 
 public:
 	CQualityListView(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQualityListView();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_QUALITY_LIST };
 
 	CFont			textfont;
@@ -41,8 +40,8 @@ public:
 	void			UpdateView();
 	bool			GetQcLjEditData();
 	int			GetQcLjResultData(int controltype, int controlfile);
-	
-	
+
+
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
@@ -53,12 +52,7 @@ public:
 	afx_msg void OnBnClickedQualityListDownButton();
 	afx_msg LRESULT OnRedraw(WPARAM, LPARAM);
 	virtual BOOL OnInitDialog();
-	
-	afx_msg void OnPaint();
-	unsigned int m_nDrawType;
-	void  CQualityListView::Update_InitListList();
-//	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-//	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
-//	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
+
+	afx_msg void OnBnClickedPrintLjList();
+	void Draw_LJ(int num);
 };
