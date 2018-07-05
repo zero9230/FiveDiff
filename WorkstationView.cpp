@@ -19,7 +19,7 @@ char studyPara2[8][6];//研究参数:Blasts(%),Blasts(#),LEFT(%),LEFT(#),NRBC(%),NRB
 
 static unsigned char 	AlertMotorShow;	//电机错误显示为1，其它为0
 static unsigned char 	NumOverwashfrequency;	//测试满washfrequency需要自动清洗  满为1，不满为0
-static unsigned char 	DataBaseFull;	//数据库满(955-999)  955-999为1，其它为0
+static unsigned char 	DataBaseFull;	//数据库满为1，其它为0
 static unsigned char 	ReagentEmpty;	//试剂不足为1，其它为0
 
 

@@ -3236,7 +3236,18 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//----------------------------------------
 			//是否需暂停自动进样系统工作进行维护操作
 			DataBaseFull = 0;
-			if (sampledata.row >= 995 && sampledata.row <= 999)//数据库995,996,997,998,999提示数据库备份，连续提示5次
+
+
+
+			ULONGLONG size;
+			CString strFilePath = "appdata.accdb";
+			CFileStatus fileStatus;
+
+			if (CFile::GetStatus(strFilePath, fileStatus))
+			{
+				size = fileStatus.m_size / 1024 / 1024;
+			}
+			if (size > 20)//数据库容量超过（size)M ,则判断为容量满			
 			{
 				DataBaseFull = 1;
 			}//else 未满995组数据则可以连续做第二次   满1000的时候就不提示数据库操作了，直接顶出一个row最小的记录可以连续做第二次	
@@ -3398,7 +3409,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 					MessageBox(_T("数据库已满，请备份。否则以前数据丢失!"), _T("提示"), MB_OK | MB_ICONINFORMATION);
 				else if (systemcfg.language == ENGLISH)
 					//CreateWarningBoxNonCHDlg(hDlg, "Database is full,Please backup database.Otherwise,Previous database will be lost!", "Presentation");
-					MessageBox(_T("数据库已满，请备份。否则以前数据丢失!"), _T("提示"), MB_OK | MB_ICONINFORMATION);
+					MessageBox(_T("Database is full,Please backup database.Otherwise,Previous database will be lost!"), _T("Presentation"), MB_OK | MB_ICONINFORMATION);
 				//CreateEmptyDatabaseDlg(hDlg);
 			}
 			if (1 == ReagentEmpty)	//检查试剂
@@ -3430,7 +3441,7 @@ afx_msg LRESULT CTestmainView::OnAckspi(WPARAM wParam, LPARAM lParam)
 				ASCur_EN = TRUE;	//不需要做自动清洗的时候，可以使能自动进样系统(只有自动进样系统用到)
 			}
 		}
-		if (TimesofTest >= 500)   //Add:20150430
+		if (TimesofTest >= 500)   //Add:20150430PUNCTURE
 		{
 			int 		response;
 			MesBox	Message;

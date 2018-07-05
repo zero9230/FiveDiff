@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(CQcXChartView, CDialogEx)
 
 CQcXChartView::CQcXChartView(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CQcXChartView::IDD, pParent)
+: CDialogEx(CQcXChartView::IDD, pParent)
 {
 	curpage = 0;
 	isQcXEditExist = 0;
@@ -43,7 +43,6 @@ CQcXChartView::CQcXChartView(CWnd* pParent /*=NULL*/)
 		for (int j = 0; j < 31; j++)
 			data[i][j] = -5.0;//初始化为负数，以便让图像只显示有效数据
 }
-
 CQcXChartView::~CQcXChartView()
 {
 }
@@ -64,6 +63,7 @@ BEGIN_MESSAGE_MAP(CQcXChartView, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_QC_X_GRAPH_UP, &CQcXChartView::OnQcXGraphUp)
 	ON_BN_CLICKED(IDC_QC_X_GRAPH_DOWN, &CQcXChartView::OnQcXGraphDown)
+	ON_BN_CLICKED(IDC_PRINTT_X, &CQcXChartView::OnBnClickedPrinttX)
 END_MESSAGE_MAP()
 
 
@@ -137,6 +137,7 @@ BOOL CQcXChartView::OnInitDialog()
 	InitLineChart4();
 	InitQcXMaterialInfoList();
 	UpdateMSC();
+	Compute_MSC();
 	GetDlgItem(IDC_QC_X_GRAPH_UP)->EnableWindow(false);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -270,10 +271,10 @@ void CQcXChartView::InitLineChart2()
 
 	CArray <double, double> m_upperarray, m_lowerarray, m_dataarray;
 	for (int i = 0; i < 31; i++){
-		if (data[curpage * 4][i] >= 0)
-			pSeries1->AddDataPoint(data[curpage * 4][i]);
-		pSeries2->AddDataPoint(upperlimit[curpage * 4]);
-		pSeries3->AddDataPoint(lowerlimit[curpage * 4]);
+		if (data[curpage * 4 + 1][i] >= 0)
+			pSeries1->AddDataPoint(data[curpage * 4 + 1][i]);
+		pSeries2->AddDataPoint(upperlimit[curpage * 4 + 1]);
+		pSeries3->AddDataPoint(lowerlimit[curpage * 4 + 1]);
 	}
 
 	CBCGPChartAxis* pYAxis = pChart2->GetChartAxis(BCGP_CHART_Y_PRIMARY_AXIS);
@@ -322,10 +323,10 @@ void CQcXChartView::InitLineChart3()
 
 		CArray <double, double> m_upperarray, m_lowerarray, m_dataarray;
 		for (int i = 0; i < 31; i++){
-			if (data[curpage * 4][i] >= 0)
-				pSeries1->AddDataPoint(data[curpage * 4][i]);
-			pSeries2->AddDataPoint(upperlimit[curpage * 4]);
-			pSeries3->AddDataPoint(lowerlimit[curpage * 4]);
+			if (data[curpage * 4 + 2][i] >= 0)
+				pSeries1->AddDataPoint(data[curpage * 4 + 2][i]);
+			pSeries2->AddDataPoint(upperlimit[curpage * 4 + 2]);
+			pSeries3->AddDataPoint(lowerlimit[curpage * 4 + 2]);
 		}
 
 		CBCGPChartAxis* pYAxis = pChart3->GetChartAxis(BCGP_CHART_Y_PRIMARY_AXIS);
@@ -380,10 +381,10 @@ void CQcXChartView::InitLineChart4()
 
 		CArray <double, double> m_upperarray, m_lowerarray, m_dataarray;
 		for (int i = 0; i < 31; i++){
-			if (data[curpage * 4][i] >= 0)
-				pSeries1->AddDataPoint(data[curpage * 4][i]);
-			pSeries2->AddDataPoint(upperlimit[curpage * 4]);
-			pSeries3->AddDataPoint(lowerlimit[curpage * 4]);
+			if (data[curpage * 4 + 3][i] >= 0)
+				pSeries1->AddDataPoint(data[curpage * 4 + 3][i]);
+			pSeries2->AddDataPoint(upperlimit[curpage * 4 + 3]);
+			pSeries3->AddDataPoint(lowerlimit[curpage * 4 + 3]);
 		}
 
 
@@ -874,4 +875,202 @@ void CQcXChartView::UpdateView()
 	UpdateQcXMaterialInfoList();
 	UpdateMSC();
 
+}
+
+void CQcXChartView::OnBnClickedPrinttX()
+{
+	PRINTDLG pd;
+	// Initialize PRINTDLG
+	ZeroMemory(&pd, sizeof(PRINTDLG));
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.hwndOwner = NULL;
+	pd.hDevMode = NULL;     // Don't forget to free or store hDevMode
+	pd.hDevNames = NULL;     // Don't forget to free or store hDevNames
+	pd.Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+	pd.nCopies = 1;
+	pd.nFromPage = 0xFFFF;
+	pd.nToPage = 0xFFFF;
+	pd.nMinPage = 1;
+	pd.nMaxPage = 0xFFFF;
+	//PrintDlg(&pd);
+	if (PrintDlg(&pd) == TRUE)
+	{
+		// GDI calls to render output. 
+		DOCINFO di;
+		ZeroMemory(&di, sizeof(DOCINFO));
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = _T("NewDoc");
+		StartDoc(pd.hDC, &di);
+		StartPage(pd.hDC);
+		CDC pDC;
+		pDC.Attach(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X质控图");
+		Draw_X(L"WBC", pDC, 450, 1300, 15.0, 0);
+		Draw_X(L"LYM%", pDC, 450, 2300, 30.0, 1);
+		Draw_X(L"NEU%", pDC, 450, 3300, 60.0, 2);
+		Draw_X(L"MONO%", pDC, 450, 4300, 60.0, 3);
+		Draw_X(L"EOS%", pDC, 450, 5300, 20.0, 4);
+		Draw_X(L"BASO%", pDC, 450, 6300, 60.0, 5);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X质控图");
+		Draw_X(L"ALY%", pDC, 450, 1300, 15.0, 6);
+		Draw_X(L"LIC%", pDC, 450, 2300, 15.0, 7);
+		Draw_X(L"LYM#", pDC, 450, 3300, 15.0, 8);
+		Draw_X(L"NEU#", pDC, 450, 4300, 15.0, 9);
+		Draw_X(L"MONO#", pDC, 450, 5300, 15.0, 10);
+		Draw_X(L"EOS#", pDC, 450, 6500, 15.0, 11);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X质控图");
+		Draw_X(L"BASO#", pDC, 450, 1300, 15.0, 12);
+		Draw_X(L"ALY#", pDC, 450, 2300, 15.0, 13);
+		Draw_X(L"LIC#", pDC, 450, 3300, 15.0, 14);
+		Draw_X(L"RBC", pDC, 450, 4300, 15.0, 15);
+		Draw_X(L"HGB", pDC, 450, 5300, 15.0, 16);
+		Draw_X(L"HCT", pDC, 450, 6300, 15.0, 17);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X质控图");
+		Draw_X(L"MCV", pDC, 450, 1300, 150.0, 18);
+		Draw_X(L"MCH", pDC, 450, 2300, 15.0, 19);
+		Draw_X(L"MCHC", pDC, 450, 3300, 15.0, 20);
+		Draw_X(L"RDW", pDC, 450, 4300, 60.0, 21);
+		Draw_X(L"PLT", pDC, 450, 5300, 15.0, 22);
+		Draw_X(L"MPV", pDC, 450, 6300, 15.0, 23);
+		EndPage(pd.hDC);
+
+		StartPage(pd.hDC);
+		pDC.TextOutW(2300, 200, L"X质控图");
+		Draw_X(L"PWD", pDC, 450, 1300, 15.0, 24);
+		Draw_X(L"PCT", pDC, 450, 2300, 15.0, 25);
+		EndPage(pd.hDC);
+		EndDoc(pd.hDC);
+
+		// Delete DC when done.
+		DeleteDC(pd.hDC);
+	}
+}
+void CQcXChartView::Compute_MSC()
+{
+	float sum = 0;
+	float square = 0;
+	for (int i = 0; i < 26; i++)
+	{
+		sum = 0;
+		for (int j = 0; j < qcXGraphNum; j++)
+		{
+			sum += data[i][j];
+		}
+		Mean[i] = sum / qcXGraphNum;
+		if (qcXGraphNum > 1)
+		{
+			square = 0;
+			for (int j = 0; j < qcXGraphNum; j++)
+			{
+				square += (data[i][j] - Mean[i])*(data[i][j] - Mean[i]);
+			}
+			SD[i] = sqrt(square / (qcXGraphNum - 1));
+			if (Mean[i] < 0.00001)
+			{
+				CV[i] = 0.00;
+			}
+			else
+			{
+				CV[i] = SD[i] / Mean[i] * 100;
+			}
+		}
+
+	}
+}
+void CQcXChartView::Draw_X(CString type, CDC &pDC, int Xorg, int Yorg, double y_max, int num)
+{
+	CPen penBlack;
+	LOGBRUSH redBrush, greenBrush;
+	CPen penData;
+	CFont font;
+	CString str;
+	CString S_Mean;
+	CString S_SD;
+	CString S_CV;
+	//pDC.Attach(hdc);
+	//创建虚线画笔用于绘制靶值上限和下限
+	redBrush.lbStyle = BS_SOLID;
+	redBrush.lbColor = RGB(255, 192, 203);
+	CPen penUpperlimit(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND, 10, &redBrush);
+
+	greenBrush.lbStyle = BS_SOLID;
+	greenBrush.lbColor = RGB(48, 128, 20);
+	CPen penLowerlimit(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND, 10, &greenBrush);
+	//字体
+	font.CreateFont(60, 25, 0, 0, 400, FALSE, FALSE, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_ROMAN, _T("Arial"));
+	//黑色画笔
+	penBlack.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+	//penUpperlimit.CreatePen(PS_DOT, 1, RGB(255, 192, 203));
+	//penLowerlimit.CreatePen(PS_DOT, 10, RGB(48, 128, 20));
+	penData.CreatePen(PS_SOLID, 10, RGB(30, 144, 255));
+	CFont *poldfont = pDC.SelectObject(&font);
+	CPen *pOldpen = pDC.SelectObject(&penBlack);
+
+	pDC.SetViewportOrg(Xorg, Yorg);
+	//绘制坐标轴
+	pDC.MoveTo(0, 0);
+	pDC.LineTo(3720, 0);
+	pDC.MoveTo(0, 0);
+	pDC.LineTo(0, -800);
+	//写横坐标刻度
+	for (int i = 0; i < 32; i++)
+	{
+		pDC.MoveTo(i * 120, -10);
+		pDC.LineTo(i * 120, 10);
+		str.Format(L"%d", i);
+		pDC.TextOutW(i * 119, 20, str);
+	}
+	//写纵坐标刻度
+	for (int i = 0; i < 3; i++)
+	{
+		pDC.MoveTo(-10, -i * 400);
+		pDC.LineTo(10, -i * 400);
+	}
+	str.Format(L"%.0f", y_max / 2);
+	pDC.TextOutW(-100, -400, str);
+	str.Format(L"%.0f", y_max);
+	pDC.TextOutW(-100, -800, str);
+	//质控项目类型
+	pDC.TextOutW(-350, -400, type);
+
+	S_Mean.Format(L"%.2f", Mean[num]);
+	S_SD.Format(L"%.2f", SD[num]);
+	S_CV.Format(L"%.2f", CV[num]);
+	//恢复原来的画笔
+	//	pDC.SelectObject(pOldpen);
+	pDC.SelectObject(poldfont);
+	//写均值，标准差等数据
+	pDC.TextOutW(3900, -700, L"Mean: " + S_Mean);
+	pDC.TextOutW(3900, -400, L"SD: " + S_SD);
+	pDC.TextOutW(3900, -100, L"CV%: " + S_CV);
+	//绘制靶值上限
+	pDC.SelectObject(&penUpperlimit);
+	pDC.MoveTo(120, -800.0 / y_max*upperlimit[num]);
+	pDC.LineTo(120 * 31, -800.0 / y_max*upperlimit[num]);
+	//绘制靶值下限
+	pDC.SelectObject(&penLowerlimit);
+	pDC.MoveTo(120, -800.0 / y_max*lowerlimit[num]);
+	pDC.LineTo(120 * 31, -800.0 / y_max*lowerlimit[num]);
+	//绘制靶值
+	pDC.SelectObject(&penData);
+	for (int i = 1; i < 31; i++)
+	{
+		if (data[num][i] >= 0)
+		{
+			pDC.MoveTo(i * 120, -800.0 / y_max*data[num][i - 1]);
+			pDC.LineTo((i + 1) * 120, -800.0 / y_max*data[num][i]);
+		}
+	}
+	pDC.SelectObject(pOldpen);
+	font.DeleteObject();
+	penBlack.DeleteObject();
 }
