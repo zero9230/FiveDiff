@@ -10,7 +10,7 @@
 // CPatientResultView2 ¶Ô»°¿ò
 
 IMPLEMENT_DYNAMIC(CPatientResultView2, CDialogEx)
-static int reserve_index = 0;
+ int reserve_index = 0;
 CPatientResultView2::CPatientResultView2(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CPatientResultView2::IDD, pParent)
 {

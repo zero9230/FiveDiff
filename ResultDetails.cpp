@@ -207,16 +207,18 @@ void CResultDetails::OnInitialUpdate()
 	InitForm(sampledata);
 	PrintChart(sampledata);
 	InitPaitientInfo(patientdata);
-	if (pThisResult->nownum == 0)
-	{
-		CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1);
-		pBtn->EnableWindow(FALSE);
-	}
-	if (pThisResult->nownum == (*pThisResult).totalnums - 1)
-	{
-		CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON2);
-		pBtn->EnableWindow(FALSE);
-	}
+	CButton *pBtn1 = (CButton *)GetDlgItem(IDC_BUTTON1);
+	CButton *pBtn2 = (CButton *)GetDlgItem(IDC_BUTTON2);
+
+	if (pThisResult->nownum == 0 && pThisResult->page_index == 0)
+		pBtn1->EnableWindow(FALSE);
+	else
+		pBtn1->EnableWindow(TRUE);
+
+	if (pThisResult->nownum == (*pThisResult).totalnums - 1 && pThisResult->page_index == pThisResult->page_count-1)
+		pBtn2->EnableWindow(FALSE);
+	else
+		pBtn2->EnableWindow(TRUE);
 	//m_Result_sex.SetCurSel(0);
 	//GernerateLMNEBGP();
 }
@@ -2033,7 +2035,7 @@ int CResultDetails::LoadChoseRecord(pResultToDisplay pThisResult)
 void CResultDetails::OnViewBack()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	if (pThisResult->nownum > 0);
+	if (pThisResult->nownum > 0)
 	{
 		pThisResult->nownum--;
 		LoadChoseRecord(pThisResult);
@@ -2041,24 +2043,67 @@ void CResultDetails::OnViewBack()
 		UpdatePrintChart(sampledata);
 		UpdatePrintChart(sampledata);
 		InitPaitientInfo(patientdata);
-		if (pThisResult->nownum == 0)
-		{
-			CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1);
-			pBtn->EnableWindow(FALSE);
-		}
-		CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON2);
-		pBtn->EnableWindow(TRUE);
+
+		UpdateData(FALSE);
+	}
+	else
+	{
+		pThisResult->nownum = pThisResult->page_num - 1;
+
+		pThisResult->page_index = (pThisResult->page_index>0) ? pThisResult->page_index-1
+			: 0;
+		reserve_index = pThisResult->page_index;
+		UpdatePatientResultForm();
+
+		LoadChoseRecord(pThisResult);
+		UpdateForm(sampledata);
+		UpdatePrintChart(sampledata);
+		UpdatePrintChart(sampledata);
+		InitPaitientInfo(patientdata);
+
 		UpdateData(FALSE);
 	}
 
+
+	CButton *pBtn1 = (CButton *)GetDlgItem(IDC_BUTTON1);
+	CButton *pBtn2 = (CButton *)GetDlgItem(IDC_BUTTON2);
+
+	if (pThisResult->nownum == 0 && pThisResult->page_index == 0)
+		pBtn1->EnableWindow(FALSE);
+	else
+		pBtn1->EnableWindow(TRUE);
+
+	if (pThisResult->nownum == (*pThisResult).totalnums - 1 && pThisResult->page_index == pThisResult->page_count - 1)
+		pBtn2->EnableWindow(FALSE);
+	else
+		pBtn2->EnableWindow(TRUE);
 }
 
 void CResultDetails::OnViewForward()
 {
 	// TODO:  在此添加控件通知处理程序代码
+
 	if (pThisResult->nownum  < (*pThisResult).totalnums - 1)//record_cur范围[0 , ResultsList_nRow-1]
 	{
 		pThisResult->nownum++;
+
+		LoadChoseRecord(pThisResult);
+		UpdateForm(sampledata);
+		UpdatePrintChart(sampledata);
+		//PrintChart(sampledata);//此句之前需要加入原图像擦除，否则会产生图像覆盖
+		UpdatePrintChart(sampledata);
+		InitPaitientInfo(patientdata);
+
+		UpdateData(FALSE);
+	}
+	else
+	{
+		pThisResult->nownum = 0;
+		pThisResult->page_index = (pThisResult->page_index<pThisResult->page_count-1) ? pThisResult->page_index+1
+			: pThisResult->page_count-1;
+
+		reserve_index = pThisResult->page_index;
+		UpdatePatientResultForm();
 		LoadChoseRecord(pThisResult);
 		UpdateForm(sampledata);
 		UpdatePrintChart(sampledata);
@@ -2074,6 +2119,20 @@ void CResultDetails::OnViewForward()
 		pBtn->EnableWindow(TRUE);
 		UpdateData(FALSE);
 	}
+
+
+	CButton *pBtn1 = (CButton *)GetDlgItem(IDC_BUTTON1);
+	CButton *pBtn2 = (CButton *)GetDlgItem(IDC_BUTTON2);
+
+	if (pThisResult->nownum == 0 && pThisResult->page_index == 0)
+		pBtn1->EnableWindow(FALSE);
+	else
+		pBtn1->EnableWindow(TRUE);
+
+	if (pThisResult->nownum == (*pThisResult).totalnums - 1 && pThisResult->page_index == pThisResult->page_count - 1)
+		pBtn2->EnableWindow(FALSE);
+	else
+		pBtn2->EnableWindow(TRUE);
 }
 
 BOOL CResultDetails::OnPreparePrinting(CPrintInfo* pInfo)
@@ -3727,4 +3786,72 @@ void CResultDetails::OnBnClickedButton3()
 
 	AddPatientRecord(patientdata);
 	MessageBox(L"  保存成功！");
+}
+
+
+BOOL CResultDetails::UpdatePatientResultForm()
+{
+	CRect rect;
+	int i = 0;
+
+
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+
+	CString strNum = "";
+	pThisResult->numofrs.clear();
+
+
+
+
+	// 在CRP列表视图控件中插入列表项，并设置列表子项文本
+	_variant_t var;
+
+	CString filename;
+	filename.Format(L"appdata.accdb");
+
+	//select top 20 * from 表 where Id not in(select top 9*20 Id from 表 order by id desc) order by Id desc
+	CString pagenum;
+	pagenum.Format(_T("%d"), pThisResult->page_num);
+	CString pageindex;
+	pageindex.Format(_T("%d"), pThisResult->page_num*(pThisResult->page_index));
+
+
+	CString select_name_sample;//排除第一页的情况
+	select_name_sample = (pThisResult->page_index > 0) ? (_T("select top ") + pagenum + " * from patientdata where ID not in(select top " + pageindex + " ID from patientdata " + " order by ID ) " + " order by ID ") :
+		(_T("select top ") + pagenum + " * from patientdata " );
+
+
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)//作用为打开数据库
+		return FALSE;
+	ExeSql(m_pDB, m_pRs, select_name_sample);     //执行数据库
+	try
+	{
+		if (!m_pRs->BOF){
+			m_pRs->MoveFirst();
+		}
+		else
+		{
+			TRACE("表内数据为空");
+			return FALSE;
+		}
+		while (!m_pRs->adoEOF)
+		{
+			var = m_pRs->GetCollect("number");
+			if (var.vt != VT_NULL)
+				strNum = (LPCSTR)_bstr_t(var);
+			pThisResult->numofrs.push_back(strNum);
+
+			i++;
+			m_pRs->MoveNext();
+		}
+		pThisResult->totalnums = i;
+
+	}
+	catch (_com_error &e)
+	{
+		TRACE("UpdateResultList异常");
+	}
+	return TRUE;
+
 }

@@ -4,7 +4,7 @@
 #include "Includes_app.h"
 #include "afxwin.h"
 #include "ResultDetails.h"
-
+extern int reserve_index;
 // CPatientResultView2 ¶Ô»°¿ò
 extern ResultToDisplay 	ThisResult;
 class CPatientResultView2 : public CDialogEx
