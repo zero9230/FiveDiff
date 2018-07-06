@@ -351,7 +351,8 @@ BOOL CReportGenerator::Print()
 	// Create default printer CDC
 	CPrintDialog printer( FALSE );
 
-	if( printer.GetDefaults() )
+	//if( printer.GetDefaults() )
+	if (printer.DoModal() )
 	{
 
 		HDC hdcPrinter = printer.GetPrinterDC();
