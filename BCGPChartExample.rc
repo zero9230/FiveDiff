@@ -150,7 +150,7 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CLIENTEDGE
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_DOCTOR_LIST,"SysListView32",LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,49,38,694,162
+    CONTROL         "",IDC_DOCTOR_LIST,"SysListView32",LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,49,38,694,139
     LTEXT           "No.",IDC_STATIC,60,236,12,8
     EDITTEXT        IDC_No,98,233,113,14,ES_AUTOHSCROLL
     LTEXT           "医师姓名：",IDC_STATIC,55,264,41,8
@@ -165,6 +165,8 @@ BEGIN
     PUSHBUTTON      "跳转",IDC_DOCT_PAGE_JUMP,400,206,50,14
     EDITTEXT        IDC_DOCT_PAGE_SELECT,300,206,65,14,ES_RIGHT | ES_AUTOHSCROLL
     LTEXT           "No.",IDC_DOCT_PAGE_COUNT,374,209,12,8
+    PUSHBUTTON      "删除",IDC_DELETE,171,305,50,14
+    PUSHBUTTON      "添加",IDC_ADD,243,305,50,14
 END
 
 IDD_LOG DIALOGEX 0, 0, 814, 369
@@ -3075,6 +3077,44 @@ IDR_TEXTURE3            PNG                     "res\\texture3.png"
 IDR_TEXTURE4            PNG                     "res\\texture4.png"
 IDR_TEXTURE5            PNG                     "res\\texture5.png"
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "BCGPChartExample BCGControlBar Sample Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "BCGPChartExample"
+            VALUE "LegalCopyright", "Copyright (C) BCGSoft Co Ltd. 1998-2014. All rights reserved"
+            VALUE "OriginalFilename", "BCGPChartExample.EXE"
+            VALUE "ProductName", "BCGPChartExample Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -3151,44 +3191,6 @@ IDR_TOOLBAR_TREE TOOLBAR 16, 16
 BEGIN
     BUTTON      ID_TREE_EXPAND_ALL
     BUTTON      ID_TREE_COLLAPSE_ALL
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904b0"
-        BEGIN
-            VALUE "FileDescription", "BCGPChartExample BCGControlBar Sample Application"
-            VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "BCGPChartExample"
-            VALUE "LegalCopyright", "Copyright (C) BCGSoft Co Ltd. 1998-2014. All rights reserved"
-            VALUE "OriginalFilename", "BCGPChartExample.EXE"
-            VALUE "ProductName", "BCGPChartExample Application"
-            VALUE "ProductVersion", "1, 0, 0, 1"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
 END
 
 

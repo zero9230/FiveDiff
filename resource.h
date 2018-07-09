@@ -1152,6 +1152,7 @@
 #define IDC_PRINT_X                     2034
 #define IDC_PRINT_X_LIST                2035
 #define IDC_PRINT_CALI                  2036
+#define IDC_ADD                         2037
 #define IDC_EDIT_CREATEID               20000
 #define ID_VIEW_CUSTOMIZE               32770
 #define ID_VIEW_TOOLBARS                32771
@@ -1329,7 +1330,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         33014
-#define _APS_NEXT_CONTROL_VALUE         2037
+#define _APS_NEXT_CONTROL_VALUE         2038
 #define _APS_NEXT_SYMED_VALUE           109
 #endif
 #endif

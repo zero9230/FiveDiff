@@ -87,7 +87,9 @@ void CDoctorInfoView::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDoctorInfoView, CFormView)
 	ON_WM_ERASEBKGND()
 	ON_COMMAND(ID_MANUAL_ADD, &CDoctorInfoView::OnManualAdd)
+	ON_COMMAND(IDC_ADD, &CDoctorInfoView::OnManualAdd)
 	ON_COMMAND(ID_Delete, &CDoctorInfoView::OnDelete)
+	ON_COMMAND(IDC_DELETE, &CDoctorInfoView::OnDelete)
 	ON_NOTIFY(NM_DBLCLK, IDC_DOCTOR_LIST, &CDoctorInfoView::OnDblclkDoctorList)
 	ON_BN_CLICKED(IDC_SAVE, &CDoctorInfoView::OnBnClickedSave)
 	ON_BN_CLICKED(IDC_DOCT_PAGE_HOME, &CDoctorInfoView::OnBnClickedDoctPageHome)
@@ -570,7 +572,7 @@ void CDoctorInfoView::OnBnClickedSave()//update one info
 	BOOL bValid = std::regex_match(strPassword, regPattern);
 	if (!bValid)
 	{
-		MessageBox(L"Please enter into the number!");
+		MessageBox(L"Please enter the number!");
 		return ;
 	}
 		

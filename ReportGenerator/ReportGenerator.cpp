@@ -352,7 +352,7 @@ BOOL CReportGenerator::Print()
 	CPrintDialog printer( FALSE );
 
 	//if( printer.GetDefaults() )
-	if (printer.DoModal() )
+	if (printer.DoModal() == IDOK )
 	{
 
 		HDC hdcPrinter = printer.GetPrinterDC();
