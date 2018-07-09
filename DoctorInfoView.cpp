@@ -562,12 +562,8 @@ void CDoctorInfoView::OnBnClickedSave()//update one info
 	CString filename;
 	_variant_t var;
 	CString strTemp;
-
-	
-
 	CT2CA tempPassword(doctor_num);
 	std::string strPassword(tempPassword);
-
 	std::regex regPattern("[0-9]*"); // <span style = "white-space:pre">	< / span>// at least 6 charaters of digit or letter
 	BOOL bValid = std::regex_match(strPassword, regPattern);
 	if (!bValid)
@@ -575,10 +571,6 @@ void CDoctorInfoView::OnBnClickedSave()//update one info
 		MessageBox(L"Please enter the number!");
 		return ;
 	}
-		
-
-
-
 	POSITION pos = m_DoctorInfoList.GetFirstSelectedItemPosition(); // getting current position of list
 	if (pos == NULL)
 		TRACE("No items were selected!\n");
@@ -586,7 +578,7 @@ void CDoctorInfoView::OnBnClickedSave()//update one info
 	{
 		int nItem = m_DoctorInfoList.GetNextSelectedItem(pos);
 		CString doct_id;
-		doct_id.Format(_T("%d"), ThisResult.numofrs[nItem]);
+		doct_id = ThisResult.numofrs[nItem];
 		filename.Format(L"appdata.accdb");
 
 		if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
