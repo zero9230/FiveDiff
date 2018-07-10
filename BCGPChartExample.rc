@@ -2033,7 +2033,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,252,156,50,14
     LTEXT           "HB7501血液分析仪管理软件",IDC_STATIC,97,26,98,8
     LTEXT           "HB7501 version 1.0",IDC_STATIC,121,51,64,8
-    LTEXT           "Copyright? 2018-2028 Sinnowa Co Ltd. All rights reserved",IDC_STATIC,63,76,190,8
+    LTEXT           "Copyright? 2018-2028 Sinnowa Co Ltd. All rights reserved",IDC_COPYRIGHT,63,76,190,8
     LTEXT           "Web site:",IDC_STATIC,101,97,32,8
     CONTROL         "www.sinnowa.com",IDC_MFCLINK1,"MfcLink",WS_TABSTOP,157,96,82,12
     LTEXT           "E-mail:",IDC_STATIC,101,122,22,8

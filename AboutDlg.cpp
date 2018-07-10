@@ -1,4 +1,4 @@
-// AboutDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// AboutDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,14 +7,14 @@
 #include "afxdialogex.h"
 
 
-// CAboutDlg ¶Ô»°¿ò
+// CAboutDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CAboutDlg, CDialogEx)
 
 CAboutDlg::CAboutDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAboutDlg::IDD, pParent)
 {
-
+	
 }
 
 CAboutDlg::~CAboutDlg()
@@ -31,26 +31,27 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_WM_PAINT()
 	ON_WM_ERASEBKGND()
+	ON_BN_CLICKED(IDOK, &CAboutDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
-// CAboutDlg ÏûÏ¢´¦Àí³ÌĞò
+// CAboutDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 HBRUSH CAboutDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
-	// TODO:  ÔÚ´Ë¸ü¸Ä DC µÄÈÎºÎÌØĞÔ
+	// TODO:  åœ¨æ­¤æ›´æ”¹ DC çš„ä»»ä½•ç‰¹æ€§
 	if (nCtlColor == CTLCOLOR_STATIC || nCtlColor== CTLCOLOR_BTN)
 	{
 		pDC->SetTextColor(RGB(0, 0, 0));
 		//pDC->SelectObject(&m_Font);
-		pDC->SetBkColor(RGB(255, 255, 255));//ÎÄ×Ö±³¾°É«
-		HBRUSH b = CreateSolidBrush(RGB(255, 255, 255));//¿Ø¼ş±³¾°É«   
+		pDC->SetBkColor(RGB(255, 255, 255));//æ–‡å­—èƒŒæ™¯è‰²
+		HBRUSH b = CreateSolidBrush(RGB(255, 255, 255));//æ§ä»¶èƒŒæ™¯è‰²   
 		return b;
 	}
-	// TODO:  Èç¹ûÄ¬ÈÏµÄ²»ÊÇËùĞè»­±Ê£¬Ôò·µ»ØÁíÒ»¸ö»­±Ê
+	// TODO:  å¦‚æœé»˜è®¤çš„ä¸æ˜¯æ‰€éœ€ç”»ç¬”ï¼Œåˆ™è¿”å›å¦ä¸€ä¸ªç”»ç¬”
 	return hbr;
 }
 
@@ -58,8 +59,8 @@ HBRUSH CAboutDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CAboutDlg::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
-	// TODO:  ÔÚ´Ë´¦Ìí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂë
-	// ²»Îª»æÍ¼ÏûÏ¢µ÷ÓÃ CDialogEx::OnPaint()
+	// TODO:  åœ¨æ­¤å¤„æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç 
+	// ä¸ä¸ºç»˜å›¾æ¶ˆæ¯è°ƒç”¨ CDialogEx::OnPaint()
 	CRect rect;
 	GetClientRect(rect);
 	dc.FillSolidRect(rect, RGB(255, 255, 255));
@@ -68,7 +69,25 @@ void CAboutDlg::OnPaint()
 
 BOOL CAboutDlg::OnEraseBkgnd(CDC* pDC)
 {
-	// TODO:  ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO:  åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 
 	return CDialogEx::OnEraseBkgnd(pDC);
+}
+
+
+void CAboutDlg::OnBnClickedOk()
+{
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	CDialogEx::OnOK();
+}
+
+
+BOOL CAboutDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+	GetDlgItem(IDC_COPYRIGHT)->SetWindowText(L"CopyrightÂ© 2018-2028 Sinnowa Co Ltd. All rights reserved");
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// å¼‚å¸¸:  OCX å±æ€§é¡µåº”è¿”å› FALSE
 }

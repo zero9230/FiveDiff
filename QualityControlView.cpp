@@ -146,7 +146,6 @@ void CQualityControlView::OnInitialUpdate()
 	//m_QualityTestPage.MoveWindow(&rc);
 	//m_QualityListPage.MoveWindow(&rc);
 	//m_QcXTargetPage.MoveWindow(&rc);
-
 	//m_QualityTab.InsertItem(0,_T("À×´ïÍ¼"));
 	//m_QualityTab.InsertItem(1,_T("ÖÊ¿ØÍ¼"));
 	//m_QualityTab.InsertItem(2,_T("°ÐÖµ"));
