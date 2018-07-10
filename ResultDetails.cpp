@@ -3610,7 +3610,7 @@ void CResultDetails::OnDeleteRecord()
 	number = pThisResult->numofrs[pThisResult->nownum];
 	CString delete_patientdata = "delete from patientdata where number= '" + number + "'";
 	CString delete_sampledata = "delete from sampledata where number= '" + number + "'";
-	if (IDOK == MessageBox(L"确认删除？", L"提示", MB_YESNO | MB_ICONINFORMATION));
+	if (IDYES == MessageBox(L"确认删除？", L"提示", MB_YESNO | MB_ICONINFORMATION))
 	{
 		filename.Format(_T("appdata.accdb"));
 		_ConnectionPtr m_pDB;
@@ -3627,6 +3627,9 @@ void CResultDetails::OnDeleteRecord()
 		}
 		MessageBox(L"删除成功！");
 	//	OnViewBack();
+	}
+	else{
+		return;
 	}
 	pThisResult->data_count--;//对于数据总量进行递减
 	if (pThisResult->page_index == pThisResult->page_count && pThisResult->totalnums == 1)

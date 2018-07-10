@@ -17,6 +17,7 @@
 #define IDB_WORKSPACE                   147
 #define IDB_TOOLBAR_HC                  151
 #define IDR_MENU_VIEW                   164
+#define IDR_MAINFRAME1                  165
 #define IDR_TOOLBAR_TREE                168
 #define IDR_MENU_IMAGES                 170
 #define IDB_MENUIMAGES24                172
@@ -1317,6 +1318,7 @@
 #define ID_LANGUAGE_CHOOSE              33011
 #define ID_33012                        33012
 #define ID_MULTILANG_TEST               33013
+#define ID_33014                        33014
 #define IDS_PROGRESS                    59142
 #define ID_INDICATOR_DATE               61447
 #define ID_INDICATOR_CLOCK              61448
@@ -1329,7 +1331,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         33014
+#define _APS_NEXT_COMMAND_VALUE         33015
 #define _APS_NEXT_CONTROL_VALUE         2038
 #define _APS_NEXT_SYMED_VALUE           109
 #endif

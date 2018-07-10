@@ -41,8 +41,8 @@ BEGIN_MESSAGE_MAP(CBCGPChartExampleApp, CBCGPWinApp)
 		//    DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG_MAP
 	// Standard file based document commands
-	ON_COMMAND(ID_FILE_NEW, CBCGPWinApp::OnFileNew)
-	ON_COMMAND(ID_FILE_OPEN, CBCGPWinApp::OnFileOpen)
+	//ON_COMMAND(ID_FILE_NEW, CBCGPWinApp::OnFileNew)
+	//ON_COMMAND(ID_FILE_OPEN, CBCGPWinApp::OnFileOpen)
 	// Standard print setup command
 	ON_COMMAND(ID_FILE_PRINT_SETUP, CBCGPWinApp::OnFilePrintSetup)
 END_MESSAGE_MAP()

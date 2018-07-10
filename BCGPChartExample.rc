@@ -2770,6 +2770,82 @@ IDB_CONTROLTYPE         PNG                     "res\\controltype.png"
 
 IDR_MAINFRAME MENUEX
 BEGIN
+    POPUP "&主菜单",                           65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "测试\tF1",                      ID_32913,MFT_STRING,MFS_ENABLED
+        MENUITEM "空白测试\tF2",                    ID_32912,MFT_STRING | MFT_RIGHTJUSTIFY,MFS_ENABLED
+        MENUITEM "质控测试\tF3",                    ID_32978,MFT_STRING | MFT_RIGHTJUSTIFY,MFS_ENABLED
+        MENUITEM "清洗\tF4",                      ID_32911,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "锁定键盘鼠标",                      ID_LOCK_KEYBOARD,MFT_STRING,MFS_ENABLED
+        MENUITEM "解锁键盘鼠标",                      ID_UNLOCK_KEYBOARD,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        POPUP "数据库管理",                          65535,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "导入数据库",                       ID_DATABASE_IMPORT,MFT_STRING,MFS_ENABLED
+            MENUITEM "备份数据库",                       ID_DATABASE_BACKUP,MFT_STRING,MFS_ENABLED
+            MENUITEM "清空数据库",                       ID_DATABASE_CLEARUP,MFT_STRING,MFS_ENABLED
+        END
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "退出",                          ID_APP_EXIT,MFT_STRING,MFS_ENABLED
+    END
+    POPUP "设定",                             65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "分析预定",                        ID_32898,MFT_STRING,MFS_ENABLED
+        MENUITEM "用户管理",                        ID_32899,MFT_STRING,MFS_ENABLED
+        MENUITEM "设置",                          ID_32914,MFT_STRING,MFS_ENABLED
+        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP,MFT_STRING,MFS_ENABLED
+    END
+    POPUP "维护",                             65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        POPUP "机械系统",                           65535,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "自检",                          ID_SELFTEST,MFT_STRING,MFS_ENABLED
+            MENUITEM "检测电机",                        ID_MOTORCHECK,MFT_STRING,MFS_ENABLED
+            MENUITEM "检测阀",                         ID_VALVECHECK,MFT_STRING,MFS_ENABLED
+        END
+        POPUP "液路系统",                           65535,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "灌注",                          ID_PERFUSION,MFT_STRING,MFS_ENABLED
+            MENUITEM "清洗",                          ID_CLEAN,MFT_STRING,MFS_ENABLED
+            MENUITEM "排空",                          ID_EMPTY,MFT_STRING,MFS_ENABLED
+            MENUITEM "浓缩清洗",                        ID_CONCENTRATEDCLEAN,MFT_STRING,MFS_ENABLED
+            MENUITEM "反冲",                          ID_RECOIL,MFT_STRING,MFS_ENABLED
+            MENUITEM "微灌注",                         ID_MICRO_PERFUSION,MFT_STRING,MFS_ENABLED
+            MENUITEM "自动清洗",                        ID_AUTOCLEAN,MFT_STRING,MFS_ENABLED
+        END
+        MENUITEM "保养\tCtrl+D",                  ID_MAINTENANCE,MFT_STRING,MFS_ENABLED
+        POPUP "工程师服务",                          65535,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "恒流源管理",                       ID_SOURCE_MANAGEMENT,MFT_STRING,MFS_ENABLED
+            MENUITEM "HGB测试",                       ID_HGB_TEST,MFT_STRING,MFS_ENABLED
+            MENUITEM "LMNE测试",                      ID_LMNE_TEST,MFT_STRING,MFS_ENABLED
+            MENUITEM "清洗储液罐",                       ID_CLEAN_TANK,MFT_STRING,MFS_ENABLED
+            MENUITEM "定位与定量",                       ID_LOCATION_QUANTITATIVE,MFT_STRING,MFS_ENABLED
+            MENUITEM "图形调试",                        ID_GRAPHIC_DEBUG,MFT_STRING,MFS_ENABLED
+            MENUITEM "故障统计",                        ID_FAULT_STATISTICS,MFT_STRING,MFS_ENABLED
+            MENUITEM "语言选择",                        ID_LANGUAGE_CHOOSE,MFT_STRING,MFS_ENABLED
+            MENUITEM "试剂报警设置",                      ID_REAGENT_ALARM_SET,MFT_STRING,MFS_ENABLED
+            MENUITEM "温度控制",                        ID_TEMPERATURE_CONTROL,MFT_STRING,MFS_ENABLED
+            MENUITEM "BASO界标设置（质控）",                ID_BASO_LANDMARK_SET,MFT_STRING,MFS_ENABLED
+            MENUITEM "LMNE界标模式",                    ID_LMNE_LANDMARK_PATTERN,MFT_STRING,MFS_ENABLED
+        END
+    END
+    POPUP "帮助",                             65535,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "关于SINNOWA...",                ID_APP_ABOUT,MFT_STRING,MFS_ENABLED
+        MENUITEM "分析仪帮助",                       ID_HELP_32910,MFT_STRING,MFS_ENABLED
+        MENUITEM "多语言测试",                       ID_MULTILANG_TEST,MFT_STRING,MFS_ENABLED
+    END
+END
+
+IDR_MENU_VIEW MENU
+BEGIN
+    MENUITEM "&状态栏",                        ID_VIEW_STATUS_BAR
+END
+
+IDR_MAINFRAME1 MENUEX
+BEGIN
     POPUP "&文件",                            65535,MFT_STRING,MFS_ENABLED
     BEGIN
         MENUITEM "新建\tCtrl+N",                  ID_FILE_NEW,MFT_STRING,MFS_ENABLED
@@ -2800,10 +2876,7 @@ BEGIN
     END
     POPUP "视图",                             65535,MFT_STRING,MFS_ENABLED
     BEGIN
-        POPUP "工具栏",                            65535,MFT_STRING,MFS_ENABLED
-        BEGIN
-            MENUITEM "",                            ID_VIEW_TOOLBARS,MFT_STRING,MFS_ENABLED
-        END
+        MENUITEM "工具栏",                         ID_33014,MFT_STRING,MFS_ENABLED
         MENUITEM "状态栏",                         ID_VIEW_STATUS_BAR,MFT_STRING,MFS_ENABLED
         MENUITEM "菜单",                          ID_32873,MFT_STRING,MFS_ENABLED
         MENUITEM "质控",                          ID_32874,MFT_STRING,MFS_ENABLED
@@ -2888,11 +2961,6 @@ BEGIN
         MENUITEM "分析仪帮助",                       ID_HELP_32910,MFT_STRING,MFS_ENABLED
         MENUITEM "多语言测试",                       ID_MULTILANG_TEST,MFT_STRING,MFS_ENABLED
     END
-END
-
-IDR_MENU_VIEW MENU
-BEGIN
-    MENUITEM "&状态栏",                        ID_VIEW_STATUS_BAR
 END
 
 
