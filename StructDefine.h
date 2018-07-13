@@ -76,7 +76,7 @@ struct qc_plt_data
 	 char pdw[6]; 		//血小板体积分布宽度 正常范围：15.0-18.0 fl  	
 };
 
-//L-J测试结果
+//质控测试结果
 struct qc_result_data
 {
 	unsigned int row;		//记录号
