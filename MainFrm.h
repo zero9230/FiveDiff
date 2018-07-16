@@ -276,6 +276,7 @@ protected:
 public:
 	afx_msg void OnLanguageChoose();
 	afx_msg void OnMultilangTest();
+	afx_msg void OnMainDiluentsample();
 };
 
 /////////////////////////////////////////////////////////////////////////////

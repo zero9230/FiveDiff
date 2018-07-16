@@ -158,7 +158,7 @@ void CQcXTargetValueView::InitTargetValueList()
 	// 为列表视图控件添加四列
 	m_QcXTargetValueList.InsertColumn(0, _T("项目"), LVCFMT_CENTER, rect.Width() * 1 / 8, 0);
 	m_QcXTargetValueList.InsertColumn(1, _T("下限"), LVCFMT_CENTER, rect.Width() * 1 / 4, 1);
-	m_QcXTargetValueList.InsertColumn(2, _T("靶值"), LVCFMT_CENTER, rect.Width() * 1 / 4, 2);
+	m_QcXTargetValueList.InsertColumn(2, _T("靶值  （请在表格中输入靶值）"), LVCFMT_CENTER, rect.Width() * 1 / 4, 2);
 	m_QcXTargetValueList.InsertColumn(3, _T("上限"), LVCFMT_CENTER, rect.Width() * 1 / 4, 3);
 	m_QcXTargetValueList.InsertColumn(4, _T("单位"), LVCFMT_CENTER, rect.Width() * 1 / 8, 4);
 

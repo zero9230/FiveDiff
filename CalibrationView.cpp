@@ -174,7 +174,7 @@ BOOL CCalibrationView::InitCoeffcientForm()
 	m_CoefficientList.InsertColumn(5, _T("PLT"), LVCFMT_CENTER, rect.Width() * 1 / 8, 5);
 
 	// 在PLT列表视图控件中插入列表项，并设置列表子项文本
-	m_CoefficientList.InsertItem(0, _T("靶值"));
+	m_CoefficientList.InsertItem(0, _T("靶值  (请在表格中输入靶值)"));
 	//m_CoefficientList.InsertItem(0, _T(""));
 	m_CoefficientList.InsertItem(1, _T("平均值"));
 	m_CoefficientList.InsertItem(2, _T("CV值"));

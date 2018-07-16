@@ -2590,11 +2590,11 @@ void CTestmainView::Generatetask(task_info* ptaskdata)
 //TODO: 使视图上控件不可用
 afx_msg LRESULT CTestmainView::OnDisableview(WPARAM wParam, LPARAM lParam)
 {
-	GetDlgItem(IDC_EDIT1)->EnableWindow(FALSE);
-	GetDlgItem(IDC_EDIT2)->EnableWindow(FALSE);
-	GetDlgItem(IDC_EDIT3)->EnableWindow(FALSE);
-	GetDlgItem(IDC_EDIT4)->EnableWindow(FALSE);
-	GetDlgItem(IDC_EDIT5)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_EDIT1)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_EDIT2)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_EDIT3)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_EDIT4)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_EDIT5)->EnableWindow(FALSE);
 
 	GetDlgItem(IDC_COMBO_SEX)->EnableWindow(FALSE);
 	GetDlgItem(IDC_COMBO_DOCTOR)->EnableWindow(FALSE);

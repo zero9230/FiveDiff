@@ -145,7 +145,8 @@ void CQualityControlView::OnInitialUpdate()
 		m_QualityTab.AddTab(&m_QcXrListPage, L"Xr÷ øÿ¡–±Ì", 4);
 	}
 
-
+	//OnPaint();
+	PostMessage(WM_PAINT, 0, 0);
 
 
 	//m_RadarPage.MoveWindow(&rc);

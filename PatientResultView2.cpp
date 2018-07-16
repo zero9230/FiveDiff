@@ -141,7 +141,7 @@ BOOL CPatientResultView2::OnInitDialog()
 	GetDlgItem(IDC_EDIT_NAME)->GetWindowText(name);
 	GetDlgItem(IDC_EDIT6)->GetWindowText(age);
 	GetDlgItem(IDC_EDIT_ID)->GetWindowText(ID);
-	ID.Delete(0, 2);
+//	ID.Delete(0, 2);
 	sex_1 = patient_gender.GetCurSel();
 	if (sex_1 < 3 && sex_1 >= 0)
 	{
@@ -397,7 +397,7 @@ BOOL CPatientResultView2::UpdatePatientResultForm()
 	GetDlgItem(IDC_EDIT_NAME)->GetWindowText(name);
 	GetDlgItem(IDC_EDIT6)->GetWindowText(age);
 	GetDlgItem(IDC_EDIT_ID)->GetWindowText(ID);
-	ID.Delete(0, 2);
+	//ID.Delete(0, 2);
 	sex_1 = patient_gender.GetCurSel();
 	if (sex_1 < 3 && sex_1 >= 0)
 	{
