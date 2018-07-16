@@ -71,13 +71,13 @@ BOOL CQcXListView::OnInitDialog()
 	switch (Controltype)
 	{
 	case 0:
-		item_temp.Format(L"L-J靶值编辑（文件 %02u）", Controlfile + 1);
+		item_temp.Format(L"L-J质控结果列表（文件 %02u）", Controlfile + 1);
 		break;
 	case 1:
-		item_temp.Format(L"X靶值编辑（文件 %02u）", Controlfile + 1);
+		item_temp.Format(L"X质控结果列表（文件 %02u）", Controlfile + 1);
 		break;
 	case 2:
-		item_temp.Format(L"X-R靶值编辑（文件 %02u）", Controlfile + 1);
+		item_temp.Format(L"X-R质控结果列表（文件 %02u）", Controlfile + 1);
 		break;
 	default:
 		break;

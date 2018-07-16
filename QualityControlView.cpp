@@ -79,6 +79,11 @@ void CQualityControlView::OnInitialUpdate()
 {
 	CBCGPChartExampleView::OnInitialUpdate();
 
+	GetDlgItem(IDC_QUALITY_SAVE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_QUALITY_SET)->EnableWindow(FALSE);
+	GetDlgItem(IDC_QUALITY_RECOVER)->EnableWindow(FALSE);
+
+
 	CRect rectTab;
 	GetDlgItem(IDC_QUALITYCONTROL_TAB)->GetWindowRect(&rectTab);
 	ScreenToClient(&rectTab);
