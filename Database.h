@@ -13,6 +13,7 @@ int ExeSql(_ConnectionPtr  &m_pDB, _RecordsetPtr   &m_pRs, CString sql);
 int AddSampleRecord(sample_info *psampledata);
 int AddPatientRecord(patient_info *ppatientdata);
 int QcLjXXrEditFileAdd(qc_edit_data_info *pqcLjXXrEditData);
+int QcLjXXrEditFileAdd2(qc_edit_data_info *pqcLjXXrEditData);
 int AddQcLjXXrResult(qcresult_info *qcresultdata);
 int QcLjXXrEditFileExistReset(qc_edit_data_info *pqcLjXXrEditData);
 int DelQcLjXXrResult(unsigned int qctypeparam, unsigned int filenumparam, unsigned int rowparam);

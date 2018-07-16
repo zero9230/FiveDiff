@@ -1428,9 +1428,9 @@ int QcLjXXrEditFileAdd(qc_edit_data_info *pqcLjXXrEditData)
 	//filenum.Format((*pqcLjXXrEditData).filenum);
 	filenum = (*pqcLjXXrEditData).filenum;
 	CString Number;
-	Number = ChartsToCString((*pqcLjXXrEditData).Number, sizeof((*pqcLjXXrEditData).Number)/sizeof(char));
+	Number = ChartsToCString((*pqcLjXXrEditData).Number, sizeof((*pqcLjXXrEditData).Number) / sizeof(char));
 	CString Deadline;
-	Deadline = ChartsToCString((*pqcLjXXrEditData).Deadline, sizeof((*pqcLjXXrEditData).Deadline)/sizeof(char));
+	Deadline = ChartsToCString((*pqcLjXXrEditData).Deadline, sizeof((*pqcLjXXrEditData).Deadline) / sizeof(char));
 	CString wbctarget_wbc;
 	wbctarget_wbc = ChartsToCString((*pqcLjXXrEditData).wbctarget.wbc, sizeof((*pqcLjXXrEditData).wbctarget.wbc) / sizeof(char));
 	CString wbctarget_lymp;
@@ -1535,7 +1535,145 @@ int QcLjXXrEditFileAdd(qc_edit_data_info *pqcLjXXrEditData)
 	pltsd_pdw = ChartsToCString((*pqcLjXXrEditData).pltsd.pdw, sizeof((*pqcLjXXrEditData).pltsd.pdw) / sizeof(char));
 	CString pltsd_pct;
 	pltsd_pct = ChartsToCString((*pqcLjXXrEditData).pltsd.pct, sizeof((*pqcLjXXrEditData).pltsd.pct) / sizeof(char));
-	CString insertqceditdata = _T("insert into [qceditdata]([qctype],[filenum],[number],[deadline],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[WBC_SD],[LYMP_SD],[NEUP_SD],[MONOP_SD],[EOSP_SD],[BASOP_SD],[ALYP_SD],[LICP_SD],[LYM_SD],[NEU_SD],[MONO_SD],[EOS_SD],[BASO_SD],[ALY_SD],[LIC_SD],[RBC_SD],[HGB_SD],[HCT_SD],[MCV_SD],[MCH_SD],[MCHC_SD],[RDW_SD],[PLT_SD],[MPV_SD],[PDW_SD],[PCT_SD]) values('") + 
+	CString insertqceditdata = _T("insert into [qceditdata]([qctype],[filenum],[number],[deadline],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[WBC_SD],[LYMP_SD],[NEUP_SD],[MONOP_SD],[EOSP_SD],[BASOP_SD],[ALYP_SD],[LICP_SD],[LYM_SD],[NEU_SD],[MONO_SD],[EOS_SD],[BASO_SD],[ALY_SD],[LIC_SD],[RBC_SD],[HGB_SD],[HCT_SD],[MCV_SD],[MCH_SD],[MCHC_SD],[RDW_SD],[PLT_SD],[MPV_SD],[PDW_SD],[PCT_SD]) values('") +
+		qctype.Trim() + "' ,'" + filenum.Trim() + "' ,'" + Number.Trim() + "' ,'" + Deadline.Trim() + "' ,'" +
+		wbctarget_wbc.Trim() + "' ,'" + wbctarget_lymp.Trim() + "' ,'" + wbctarget_neup.Trim() + "' ,'" + wbctarget_monop.Trim() + "' ,'" + wbctarget_eosp.Trim() + "' ,'" +
+		wbctarget_basp.Trim() + "' ,'" + wbctarget_alyp.Trim() + "' ,'" + wbctarget_licp.Trim() + "' ,'" + wbctarget_lym.Trim() + "' ,'" + wbctarget_neu.Trim() + "' ,'" +
+		wbctarget_mono.Trim() + "' ,'" + wbctarget_eos.Trim() + "' ,'" + wbctarget_bas.Trim() + "' ,'" + wbctarget_aly.Trim() + "' ,'" + wbctarget_lic.Trim() + "' ,'" +
+		rbctarget_rbc.Trim() + "' ,'" + rbctarget_hgb.Trim() + "' ,'" + rbctarget_hct.Trim() + "' ,'" + rbctarget_mcv.Trim() + "' ,'" + rbctarget_mch.Trim() + "' ,'" +
+		rbctarget_mchc.Trim() + "' ,'" + rbctarget_rdw.Trim() + "' ,'" + plttarget_plt.Trim() + "' ,'" + plttarget_mpv.Trim() + "' ,'" + plttarget_pdw.Trim() + "' ,'" +
+		plttarget_pct.Trim() + "' ,'" + wbcsd_wbc.Trim() + "' ,'" + wbcsd_lymp.Trim() + "' ,'" + wbcsd_neup.Trim() + "' ,'" + wbcsd_monop.Trim() + "' ,'" + wbcsd_eosp.Trim() + "' ,'" +
+		wbcsd_basp.Trim() + "' ,'" + wbcsd_alyp.Trim() + "' ,'" + wbcsd_licp.Trim() + "' ,'" + wbcsd_lym.Trim() + "' ,'" + wbcsd_neu.Trim() + "' ,'" + wbcsd_mono.Trim() + "' ,'" + wbcsd_eos.Trim() + "' ,'" +
+		wbcsd_bas.Trim() + "' ,'" + wbcsd_aly.Trim() + "' ,'" + wbcsd_lic.Trim() + "' ,'" + rbcsd_rbc.Trim() + "' ,'" + rbcsd_hgb.Trim() + "' ,'" + rbcsd_hct.Trim() + "' ,'" + rbcsd_mcv.Trim() + "' ,'" +
+		rbcsd_mch.Trim() + "' ,'" + rbcsd_mchc.Trim() + "' ,'" + rbcsd_rdw.Trim() + "' ,'" + pltsd_plt.Trim() + "' ,'" + pltsd_mpv.Trim() + "' ,'" + pltsd_pdw.Trim() + "' ,'" + pltsd_pct.Trim() + "');";
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+		return -1;
+	ExeSql(m_pDB, m_pRs, insertqceditdata);
+	CloseDataBase(m_pDB, m_pRs);
+	return 0;
+}
+int QcLjXXrEditFileAdd2(qc_edit_data_info *pqcLjXXrEditData)
+{
+	CString filename;
+	filename.Format(_T("appdata.accdb"));
+	_ConnectionPtr m_pDB;
+	_RecordsetPtr m_pRs;
+	CString qctype;
+	//qctype.Format((*pqcLjXXrEditData).qctype);
+	qctype = (*pqcLjXXrEditData).qctype;
+	//TRACE("***###\nqctype=%s\n",qctype);
+	CString filenum;
+	//filenum.Format((*pqcLjXXrEditData).filenum);
+	filenum = (*pqcLjXXrEditData).filenum;
+	CString Number;
+	Number = ChartsToCString((*pqcLjXXrEditData).Number, sizeof((*pqcLjXXrEditData).Number) / sizeof(char));
+	CString Deadline;
+	Deadline = ChartsToCString((*pqcLjXXrEditData).Deadline, sizeof((*pqcLjXXrEditData).Deadline) / sizeof(char));
+	CString wbctarget_wbc;
+	wbctarget_wbc = ChartsToCString((*pqcLjXXrEditData).wbctarget.wbc, sizeof((*pqcLjXXrEditData).wbctarget.wbc) / sizeof(char));
+	CString wbctarget_lymp;
+	wbctarget_lymp = ChartsToCString((*pqcLjXXrEditData).wbctarget.lymp, sizeof((*pqcLjXXrEditData).wbctarget.lymp) / sizeof(char));
+	CString wbctarget_neup;
+	wbctarget_neup = ChartsToCString((*pqcLjXXrEditData).wbctarget.neup, sizeof((*pqcLjXXrEditData).wbctarget.neup) / sizeof(char));
+	CString wbctarget_monop;
+	wbctarget_monop = ChartsToCString((*pqcLjXXrEditData).wbctarget.monop, sizeof((*pqcLjXXrEditData).wbctarget.monop) / sizeof(char));
+	CString wbctarget_eosp;
+	wbctarget_eosp = ChartsToCString((*pqcLjXXrEditData).wbctarget.eosp, sizeof((*pqcLjXXrEditData).wbctarget.eosp) / sizeof(char));
+	CString wbctarget_basp;
+	wbctarget_basp = ChartsToCString((*pqcLjXXrEditData).wbctarget.basp, sizeof((*pqcLjXXrEditData).wbctarget.basp) / sizeof(char));
+	CString wbctarget_alyp;
+	wbctarget_alyp = ChartsToCString((*pqcLjXXrEditData).wbctarget.alyp, sizeof((*pqcLjXXrEditData).wbctarget.alyp) / sizeof(char));
+	CString wbctarget_licp;
+	wbctarget_licp = ChartsToCString((*pqcLjXXrEditData).wbctarget.licp, sizeof((*pqcLjXXrEditData).wbctarget.licp) / sizeof(char));
+	CString wbctarget_lym;
+	wbctarget_lym = ChartsToCString((*pqcLjXXrEditData).wbctarget.lym, sizeof((*pqcLjXXrEditData).wbctarget.lym) / sizeof(char));
+	CString wbctarget_neu;
+	wbctarget_neu = ChartsToCString((*pqcLjXXrEditData).wbctarget.neu, sizeof((*pqcLjXXrEditData).wbctarget.neu) / sizeof(char));
+	CString wbctarget_mono;
+	wbctarget_mono = ChartsToCString((*pqcLjXXrEditData).wbctarget.mono, sizeof((*pqcLjXXrEditData).wbctarget.mono) / sizeof(char));
+	CString wbctarget_eos;
+	wbctarget_eos = ChartsToCString((*pqcLjXXrEditData).wbctarget.eos, sizeof((*pqcLjXXrEditData).wbctarget.eos) / sizeof(char));
+	CString wbctarget_bas;
+	wbctarget_bas = ChartsToCString((*pqcLjXXrEditData).wbctarget.bas, sizeof((*pqcLjXXrEditData).wbctarget.bas) / sizeof(char));
+	CString wbctarget_aly;
+	wbctarget_aly = ChartsToCString((*pqcLjXXrEditData).wbctarget.aly, sizeof((*pqcLjXXrEditData).wbctarget.aly) / sizeof(char));
+	CString wbctarget_lic;
+	wbctarget_lic = ChartsToCString((*pqcLjXXrEditData).wbctarget.lic, sizeof((*pqcLjXXrEditData).wbctarget.lic) / sizeof(char));
+	CString rbctarget_rbc;
+	rbctarget_rbc = ChartsToCString((*pqcLjXXrEditData).rbctarget.rbc, sizeof((*pqcLjXXrEditData).rbctarget.rbc) / sizeof(char));
+	CString rbctarget_hgb;
+	rbctarget_hgb = ChartsToCString((*pqcLjXXrEditData).rbctarget.hgb, sizeof((*pqcLjXXrEditData).rbctarget.hgb) / sizeof(char));
+	CString rbctarget_hct;
+	rbctarget_hct = ChartsToCString((*pqcLjXXrEditData).rbctarget.hct, sizeof((*pqcLjXXrEditData).rbctarget.hct) / sizeof(char));
+	CString rbctarget_mcv;
+	rbctarget_mcv = ChartsToCString((*pqcLjXXrEditData).rbctarget.mcv, sizeof((*pqcLjXXrEditData).rbctarget.mcv) / sizeof(char));
+	CString rbctarget_mch;
+	rbctarget_mch = ChartsToCString((*pqcLjXXrEditData).rbctarget.mch, sizeof((*pqcLjXXrEditData).rbctarget.mch) / sizeof(char));
+	CString rbctarget_mchc;
+	rbctarget_mchc = ChartsToCString((*pqcLjXXrEditData).rbctarget.mchc, sizeof((*pqcLjXXrEditData).rbctarget.mchc) / sizeof(char));
+	CString rbctarget_rdw;
+	rbctarget_rdw = ChartsToCString((*pqcLjXXrEditData).rbctarget.rdw, sizeof((*pqcLjXXrEditData).rbctarget.rdw) / sizeof(char));
+	CString plttarget_plt;
+	plttarget_plt = ChartsToCString((*pqcLjXXrEditData).plttarget.plt, sizeof((*pqcLjXXrEditData).plttarget.plt) / sizeof(char));
+	CString plttarget_mpv;
+	plttarget_mpv = ChartsToCString((*pqcLjXXrEditData).plttarget.mpv, sizeof((*pqcLjXXrEditData).plttarget.mpv) / sizeof(char));
+	CString plttarget_pdw;
+	plttarget_pdw = ChartsToCString((*pqcLjXXrEditData).plttarget.pdw, sizeof((*pqcLjXXrEditData).plttarget.pdw) / sizeof(char));
+	CString plttarget_pct;
+	plttarget_pct = ChartsToCString((*pqcLjXXrEditData).plttarget.pct, sizeof((*pqcLjXXrEditData).plttarget.pct) / sizeof(char));
+	CString wbcsd_wbc;
+	wbcsd_wbc = ChartsToCString((*pqcLjXXrEditData).wbcsd.wbc, sizeof((*pqcLjXXrEditData).wbcsd.wbc) / sizeof(char));
+	CString wbcsd_lymp;
+	wbcsd_lymp = ChartsToCString((*pqcLjXXrEditData).wbcsd.lymp, sizeof((*pqcLjXXrEditData).wbcsd.lymp) / sizeof(char));
+	CString wbcsd_neup;
+	wbcsd_neup = ChartsToCString((*pqcLjXXrEditData).wbcsd.neup, sizeof((*pqcLjXXrEditData).wbcsd.neup) / sizeof(char));
+	CString wbcsd_monop;
+	wbcsd_monop = ChartsToCString((*pqcLjXXrEditData).wbcsd.monop, sizeof((*pqcLjXXrEditData).wbcsd.monop) / sizeof(char));
+	CString wbcsd_eosp;
+	wbcsd_eosp = ChartsToCString((*pqcLjXXrEditData).wbcsd.eosp, sizeof((*pqcLjXXrEditData).wbcsd.eosp) / sizeof(char));
+	CString wbcsd_basp;
+	wbcsd_basp = ChartsToCString((*pqcLjXXrEditData).wbcsd.basp, sizeof((*pqcLjXXrEditData).wbcsd.basp) / sizeof(char));
+	CString wbcsd_alyp;
+	wbcsd_alyp = ChartsToCString((*pqcLjXXrEditData).wbcsd.alyp, sizeof((*pqcLjXXrEditData).wbcsd.alyp) / sizeof(char));
+	CString wbcsd_licp;
+	wbcsd_licp = ChartsToCString((*pqcLjXXrEditData).wbcsd.licp, sizeof((*pqcLjXXrEditData).wbcsd.licp) / sizeof(char));
+	CString wbcsd_lym;
+	wbcsd_lym = ChartsToCString((*pqcLjXXrEditData).wbcsd.lym, sizeof((*pqcLjXXrEditData).wbcsd.lym) / sizeof(char));
+	CString wbcsd_neu;
+	wbcsd_neu = ChartsToCString((*pqcLjXXrEditData).wbcsd.neu, sizeof((*pqcLjXXrEditData).wbcsd.neu) / sizeof(char));
+	CString wbcsd_mono;
+	wbcsd_mono = ChartsToCString((*pqcLjXXrEditData).wbcsd.mono, sizeof((*pqcLjXXrEditData).wbcsd.mono) / sizeof(char));
+	CString wbcsd_eos;
+	wbcsd_eos = ChartsToCString((*pqcLjXXrEditData).wbcsd.eos, sizeof((*pqcLjXXrEditData).wbcsd.eos) / sizeof(char));
+	CString wbcsd_bas;
+	wbcsd_bas = ChartsToCString((*pqcLjXXrEditData).wbcsd.bas, sizeof((*pqcLjXXrEditData).wbcsd.bas) / sizeof(char));
+	CString wbcsd_aly;
+	wbcsd_aly = ChartsToCString((*pqcLjXXrEditData).wbcsd.aly, sizeof((*pqcLjXXrEditData).wbcsd.aly) / sizeof(char));
+	CString wbcsd_lic;
+	wbcsd_lic = ChartsToCString((*pqcLjXXrEditData).wbcsd.lic, sizeof((*pqcLjXXrEditData).wbcsd.lic) / sizeof(char));
+	CString rbcsd_rbc;
+	rbcsd_rbc = ChartsToCString((*pqcLjXXrEditData).rbcsd.rbc, sizeof((*pqcLjXXrEditData).rbcsd.rbc) / sizeof(char));
+	CString rbcsd_hgb;
+	rbcsd_hgb = ChartsToCString((*pqcLjXXrEditData).rbcsd.hgb, sizeof((*pqcLjXXrEditData).rbcsd.hgb) / sizeof(char));
+	CString rbcsd_hct;
+	rbcsd_hct = ChartsToCString((*pqcLjXXrEditData).rbcsd.hct, sizeof((*pqcLjXXrEditData).rbcsd.hct) / sizeof(char));
+	CString rbcsd_mcv;
+	rbcsd_mcv = ChartsToCString((*pqcLjXXrEditData).rbcsd.mcv, sizeof((*pqcLjXXrEditData).rbcsd.mcv) / sizeof(char));
+	CString rbcsd_mch;
+	rbcsd_mch = ChartsToCString((*pqcLjXXrEditData).rbcsd.mch, sizeof((*pqcLjXXrEditData).rbcsd.mch) / sizeof(char));
+	CString rbcsd_mchc;
+	rbcsd_mchc = ChartsToCString((*pqcLjXXrEditData).rbcsd.mchc, sizeof((*pqcLjXXrEditData).rbcsd.mchc) / sizeof(char));
+	CString rbcsd_rdw;
+	rbcsd_rdw = ChartsToCString((*pqcLjXXrEditData).rbcsd.rdw, sizeof((*pqcLjXXrEditData).rbcsd.rdw) / sizeof(char));
+	CString pltsd_plt;
+	pltsd_plt = ChartsToCString((*pqcLjXXrEditData).pltsd.plt, sizeof((*pqcLjXXrEditData).pltsd.plt) / sizeof(char));
+	CString pltsd_mpv;
+	pltsd_mpv = ChartsToCString((*pqcLjXXrEditData).pltsd.mpv, sizeof((*pqcLjXXrEditData).pltsd.mpv) / sizeof(char));
+	CString pltsd_pdw;
+	pltsd_pdw = ChartsToCString((*pqcLjXXrEditData).pltsd.pdw, sizeof((*pqcLjXXrEditData).pltsd.pdw) / sizeof(char));
+	CString pltsd_pct;
+	pltsd_pct = ChartsToCString((*pqcLjXXrEditData).pltsd.pct, sizeof((*pqcLjXXrEditData).pltsd.pct) / sizeof(char));
+	CString insertqceditdata = _T("insert into [qceditdata]([qctype],[filenum],[number],[deadline],[WBC],[LYMP],[NEUP],[MONOP],[EOSP],[BASOP],[ALYP],[LICP],[LYM],[NEU],[MONO],[EOS],[BASO],[ALY],[LIC],[RBC],[HGB],[HCT],[MCV],[MCH],[MCHC],[RDW],[PLT],[MPV],[PDW],[PCT],[WBC_SD],[LYMP_SD],[NEUP_SD],[MONOP_SD],[EOSP_SD],[BASOP_SD],[ALYP_SD],[LICP_SD],[LYM_SD],[NEU_SD],[MONO_SD],[EOS_SD],[BASO_SD],[ALY_SD],[LIC_SD],[RBC_SD],[HGB_SD],[HCT_SD],[MCV_SD],[MCH_SD],[MCHC_SD],[RDW_SD],[PLT_SD],[MPV_SD],[PDW_SD],[PCT_SD]) values('") +
 		qctype.Trim() + "' ,'" + filenum.Trim() + "' ,'" + Number.Trim() + "' ,'" + Deadline.Trim() + "' ,'" +
 		wbctarget_wbc.Trim() + "' ,'" + wbctarget_lymp.Trim() + "' ,'" + wbctarget_neup.Trim() + "' ,'" + wbctarget_monop.Trim() + "' ,'" + wbctarget_eosp.Trim() + "' ,'" +
 		wbctarget_basp.Trim() + "' ,'" + wbctarget_alyp.Trim() + "' ,'" + wbctarget_licp.Trim() + "' ,'" + wbctarget_lym.Trim() + "' ,'" + wbctarget_neu.Trim() + "' ,'" +

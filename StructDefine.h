@@ -85,7 +85,7 @@ struct qc_result_data
 	struct qc_rbc_data rbcdata;
 	struct qc_plt_data pltdata;
 
-	unsigned char lmnegraph[MATRIX_DATA_MAX];
+	unsigned char lmnegraph[7500];
 	unsigned char basograph[256];
 	unsigned char rbcgraph[512];
 	unsigned char pltgraph[256];
