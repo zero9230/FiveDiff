@@ -253,7 +253,7 @@ BOOL CPatientResultView2::InitPatientResultForm()
 
 
 	CString strNum = "";
-	CString strtemp = "20";
+	
 	CString strSex[3] = { "空", "男", "女" };
 	_ConnectionPtr m_pDB;
 	_RecordsetPtr m_pRs;
@@ -317,7 +317,7 @@ BOOL CPatientResultView2::InitPatientResultForm()
 			if (var.vt != VT_NULL)
 				strNum = (LPCSTR)_bstr_t(var);
 			ThisResult2.numofrs.push_back(strNum);
-			strNum = strtemp + strNum;								//样本号读取正确，并在前面加上20
+										//样本号读取正确，并在前面加上20
 			m_PatientResultList.InsertItem(i, _T(""));              //显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
 			m_PatientResultList.SetItemText(i, 1, strNum);
 
@@ -501,7 +501,7 @@ BOOL CPatientResultView2::UpdatePatientResultForm()
 			if (var.vt != VT_NULL)
 				strNum = (LPCSTR)_bstr_t(var);
 			ThisResult2.numofrs.push_back(strNum);
-			strNum = strtemp + strNum;								//样本号读取正确，并在前面加上20
+			//strNum = strtemp + strNum;								//样本号读取正确，并在前面加上20
 			m_PatientResultList.InsertItem(i, _T(""));              //显示信息，第一个参数为行，第二个参数为列，第三个参数为内容
 			m_PatientResultList.SetItemText(i, 1, strNum);
 
@@ -672,7 +672,7 @@ void CPatientResultView2::OnBnClickedButtonSearch()
 	GetDlgItem(IDC_EDIT_NAME)->GetWindowText(name);
 	GetDlgItem(IDC_EDIT6)->GetWindowText(age);
 	GetDlgItem(IDC_EDIT_ID)->GetWindowText(ID);
-	ID.Delete(0, 2);
+	//ID.Delete(0, 2);
 	sex_1 = patient_gender.GetCurSel();
 	if (sex_1 < 3 && sex_1 >= 0)
 	{
