@@ -223,6 +223,7 @@
 #define IDC_ALERT_TNEMPTY               1225
 #define IDC_LIST11                      1226
 #define IDC_COMBO_DOCTOR                1227
+#define IDC_LIST12                      1228
 #define IDC_LIST6                       1229
 #define IDC_WORK_LIST                   1236
 #define IDC_COMBO1                      1237

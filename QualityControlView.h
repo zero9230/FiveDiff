@@ -23,7 +23,6 @@ class CQualityControlView : public CBCGPChartExampleView
 protected:
 	CQualityControlView();           // 动态创建所使用的受保护的构造函数
 	virtual ~CQualityControlView();
-
 public:
 	enum { IDD = IDD_QUALITY_CONTROL };
 #ifdef _DEBUG
@@ -41,9 +40,10 @@ public:
 	afx_msg void OnPaint();
 	virtual void OnInitialUpdate();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-
+	void CQualityControlView::DatabaseSave(vector<qc_edit_data> &qc_edit, vector<qc_result_data> &qc_result);
 	CBCGPTabWnd					m_QualityTab;
-
+	CString ChartsToCStringdata2(unsigned char * chart, int len);
+	CString ChartsToCString(char * chart, int len);
 	CQualityRadarView			m_RadarPage;
 
 	CQualityTargetValueView	m_QualityTargetPage;
@@ -54,15 +54,15 @@ public:
 
 	CQcXrEditView				m_QcXrEditPage;	
 
-
+	void DatabaseLoad(CString filename);
 	CDialog*					pDialog[4];  //用来保存对话框对象指针
 	afx_msg void				OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
 
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	afx_msg void OnBnClickedQualityFileinfo();
-	
+	afx_msg void OnBnClickedQualityLoad();
 };
 extern CQualityTestView			m_QualityTestPage;
 extern CQcXTestView				m_QcXTestPage;
-extern CQcXrTestView				m_QcXrTestPage;
+extern CQcXrTestView			m_QcXrTestPage;
 

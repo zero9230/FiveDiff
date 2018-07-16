@@ -84,10 +84,9 @@ BOOL CQualityListView::OnInitDialog()
 	}
 	SetDlgItemText(IDC_QUALITY_LIST_STATIC0, item_temp);
 	GetDlgItem(IDC_QUALITY_LIST_STATIC0)->SetFont(&textfont);
-
 	GetDlgItem(IDC_QUALITY_LIST_NUMBER)->EnableWindow(false);//此处锁定批号和有效期的输入框
 	GetDlgItem(IDC_QUALITY_LIST_DEADLINE)->EnableWindow(false);
-
+	curpage = 0;//防止多个文件数据之间切换时页面出错
 	InitListList();
 	GetQcLjEditData();
 	itemCount = GetQcLjResultData(Controltype, Controlfile);
@@ -95,6 +94,19 @@ BOOL CQualityListView::OnInitDialog()
 	maxPage = itemCount % 5 == 0 ? itemCount / 5 - 1 : itemCount / 5;
 
 	pageNum.Format(L"第 %d/%d 页", curpage + 1, maxPage + 1);
+
+	if (curpage == 0)
+	{
+		GetDlgItem(IDC_QUALITY_LIST_UP_BUTTON)->EnableWindow(false);
+	}
+	else
+		GetDlgItem(IDC_QUALITY_LIST_UP_BUTTON)->EnableWindow(true);
+	if (curpage == maxPage)
+	{
+		GetDlgItem(IDC_QUALITY_LIST_DOWN_BUTTON)->EnableWindow(false);
+	}
+	else
+		GetDlgItem(IDC_QUALITY_LIST_DOWN_BUTTON)->EnableWindow(true);
 	UpdateData(false);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -295,8 +307,8 @@ int CQualityListView::GetQcLjResultData(int controltype, int controlfile){
 	CString ssTemp;
 	int k = 0;
 	for (int i = 0; i < 31; i++){//将数据容器data初始清空
-		qcResDate[i].Format(L"%s", "");
-		qcResTime[i].Format(L"%s", "");
+		qcResDate[i]="";
+		qcResTime[i]="";
 		for (int j = 0; j < 26; j++){
 			data[j][i] = -5.0;
 		}
@@ -363,10 +375,10 @@ int CQualityListView::GetQcLjResultData(int controltype, int controlfile){
 //更新list控件中的数据，在初始化及翻页时调用
 void CQualityListView::UpdateListResultList(){
 	startIndex = curpage * 5;
-	endIndex = curpage * 5 + 4;
+	endIndex = curpage * 5 + 5;
 	CString strData;
 
-	for (int i = startIndex; i <= endIndex; i++){	//外循环，遍历每一页中的记录，从0~4
+	for (int i = startIndex; i < endIndex; i++){	//外循环，遍历每一页中的记录，从0~4
 		if (i > 30){								//总共显示31条数据，多出来的显示空白
 			m_ListList.SetItemText(0, i + 3 - curpage * 5, L"");
 			m_ListList.SetItemText(1, i + 3 - curpage * 5, L"");
@@ -403,7 +415,13 @@ void CQualityListView::OnBnClickedQualityListUpButton()
 	{
 		GetDlgItem(IDC_QUALITY_LIST_UP_BUTTON)->EnableWindow(false);
 	}
-	if (curpage != maxPage)
+	else
+		GetDlgItem(IDC_QUALITY_LIST_UP_BUTTON)->EnableWindow(true);
+	if (curpage == maxPage)
+	{
+		GetDlgItem(IDC_QUALITY_LIST_DOWN_BUTTON)->EnableWindow(false);
+	}
+	else
 		GetDlgItem(IDC_QUALITY_LIST_DOWN_BUTTON)->EnableWindow(true);
 	//UpdateData();
 	UpdateListResultList();
@@ -418,12 +436,18 @@ void CQualityListView::OnBnClickedQualityListDownButton()
 	{
 		curpage++;
 	}
+	if (curpage == 0)
+	{
+		GetDlgItem(IDC_QUALITY_LIST_UP_BUTTON)->EnableWindow(false);
+	}
+	else
+		GetDlgItem(IDC_QUALITY_LIST_UP_BUTTON)->EnableWindow(true);
 	if (curpage == maxPage)
 	{
 		GetDlgItem(IDC_QUALITY_LIST_DOWN_BUTTON)->EnableWindow(false);
 	}
-	if (curpage != 0)
-		GetDlgItem(IDC_QUALITY_LIST_UP_BUTTON)->EnableWindow(true);
+	else
+		GetDlgItem(IDC_QUALITY_LIST_DOWN_BUTTON)->EnableWindow(true);
 	//UpdateData();
 	UpdateListResultList();
 }

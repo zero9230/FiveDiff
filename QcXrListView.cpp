@@ -106,7 +106,7 @@ BOOL CQcXrListView::OnInitDialog()
 
 	GetDlgItem(IDC_QC_XR_LIST_NUMBER)->EnableWindow(false);//此处锁定批号和有效期的输入框
 	GetDlgItem(IDC_QC_XR_LIST_DEADLINE)->EnableWindow(false);
-
+	curpage = 0;
 	InitListList();
 	GetQcXrEditData();
 	itemCount = GetQcXrResultData(Controltype, Controlfile);
@@ -117,6 +117,16 @@ BOOL CQcXrListView::OnInitDialog()
 
 	pageNum.Format(L"第 %d/%d 页", curpage + 1, maxPage + 1);
 	UpdateData(false);
+	/****/
+	if (curpage == 0)
+		GetDlgItem(IDC_QC_XR_LIST_UP_BUTTON)->EnableWindow(false);
+	else
+		GetDlgItem(IDC_QC_XR_LIST_UP_BUTTON)->EnableWindow(true);
+	if (curpage == maxPage)
+		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(false);
+	else
+		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(true);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }
@@ -208,7 +218,7 @@ bool CQcXrListView::GetQcXrEditData(){
 	qcFileNumtemp.Format(L"%d", Controlfile);
 	CString inital_target = _T("select * from qceditdata where qctype ='") + qctypetemp + "'and filenum ='" + qcFileNumtemp + "';";
 
-	if (-1 == OpenDataBase(filename, m_pDB, m_pRs)){
+	if (OpenDataBase(filename, m_pDB, m_pRs) == -1){
 		//MessageBox(L"Open Failure!");
 		return false;
 	}
@@ -315,8 +325,8 @@ int CQcXrListView::GetQcXrResultData(int controltype, int controlfile){
 	CString ssTemp;
 	int k = 0;
 	for (int i = 0; i < 31; i++){//将数据容器data初始清空
-		qcResDate[i].Format(L"%s", "");
-		qcResTime[i].Format(L"%s", "");
+		qcResDate[i] = "";
+		qcResTime[i] = "";
 
 	}
 	//
@@ -447,12 +457,13 @@ void CQcXrListView::OnBnClickedQcXrListUpButton()
 		curpage--;
 	}
 	if (curpage == 0)
-	{
 		GetDlgItem(IDC_QC_XR_LIST_UP_BUTTON)->EnableWindow(false);
-	}
-	if (curpage != maxPage)
-		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(true);
-	//UpdateData();
+	else
+		GetDlgItem(IDC_QC_XR_LIST_UP_BUTTON)->EnableWindow(true);
+	if (curpage == maxPage)
+		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(false);
+	else
+		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(true);	//UpdateData();
 	UpdateListResultList();
 
 }
@@ -465,13 +476,14 @@ void CQcXrListView::OnBnClickedQcXrListDownButton()
 	{
 		curpage++;
 	}
-	if (curpage == maxPage)
-	{
-		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(false);
-	}
-	if (curpage != 0)
+	if (curpage == 0)
+		GetDlgItem(IDC_QC_XR_LIST_UP_BUTTON)->EnableWindow(false);
+	else
 		GetDlgItem(IDC_QC_XR_LIST_UP_BUTTON)->EnableWindow(true);
-	//UpdateData();
+	if (curpage == maxPage)
+		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(false);
+	else
+		GetDlgItem(IDC_QC_XR_LIST_DOWN_BUTTON)->EnableWindow(true);	//UpdateData();
 	UpdateListResultList();
 }
 

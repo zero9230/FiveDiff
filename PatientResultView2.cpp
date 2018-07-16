@@ -202,27 +202,30 @@ BOOL CPatientResultView2::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	InitPatientResultForm();
 
+
+
 	if (reserve_index == 0)
 	{
 		PatientResult_Page_Home.EnableWindow(false);
 		PatientResult_Page_Front.EnableWindow(false);
-		PatientResult_Page_Next.EnableWindow(true);
-		PatientResult_Page_Trailer.EnableWindow(true);
-	}
-	else if (reserve_index == ThisResult2.page_count - 1)
-	{
-		PatientResult_Page_Home.EnableWindow(true);
-		PatientResult_Page_Front.EnableWindow(true);
-		PatientResult_Page_Next.EnableWindow(false);
-		PatientResult_Page_Trailer.EnableWindow(false);
 	}
 	else
 	{
 		PatientResult_Page_Home.EnableWindow(true);
 		PatientResult_Page_Front.EnableWindow(true);
+	}
+	if (reserve_index == ThisResult2.page_count - 1)
+	{
+
+		PatientResult_Page_Next.EnableWindow(false);
+		PatientResult_Page_Trailer.EnableWindow(false);
+	}
+	else
+	{
 		PatientResult_Page_Next.EnableWindow(true);
 		PatientResult_Page_Trailer.EnableWindow(true);
 	}
+
 
 
 	CString count;
@@ -564,20 +567,20 @@ BOOL CPatientResultView2::UpdatePatientResultForm()
 	{
 		PatientResult_Page_Home.EnableWindow(false);
 		PatientResult_Page_Front.EnableWindow(false);
-		PatientResult_Page_Next.EnableWindow(true);
-		PatientResult_Page_Trailer.EnableWindow(true);
-	}
-	else if (reserve_index == ThisResult2.page_count - 1)
-	{
-		PatientResult_Page_Home.EnableWindow(true);
-		PatientResult_Page_Front.EnableWindow(true);
-		PatientResult_Page_Next.EnableWindow(false);
-		PatientResult_Page_Trailer.EnableWindow(false);
 	}
 	else
 	{
 		PatientResult_Page_Home.EnableWindow(true);
 		PatientResult_Page_Front.EnableWindow(true);
+	}
+	if (reserve_index == ThisResult2.page_count - 1)
+	{
+
+		PatientResult_Page_Next.EnableWindow(false);
+		PatientResult_Page_Trailer.EnableWindow(false);
+	}
+	else
+	{
 		PatientResult_Page_Next.EnableWindow(true);
 		PatientResult_Page_Trailer.EnableWindow(true);
 	}
