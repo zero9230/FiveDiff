@@ -1323,6 +1323,7 @@
 #define ID_33014                        33014
 #define ID_33015                        33015
 #define ID_MAIN_DILUENTSAMPLE           33016
+#define ID_ACCELERATOR33017             33017
 #define IDS_PROGRESS                    59142
 #define ID_INDICATOR_DATE               61447
 #define ID_INDICATOR_CLOCK              61448
@@ -1335,7 +1336,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         33017
+#define _APS_NEXT_COMMAND_VALUE         33019
 #define _APS_NEXT_CONTROL_VALUE         2039
 #define _APS_NEXT_SYMED_VALUE           109
 #endif

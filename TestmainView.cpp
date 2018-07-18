@@ -117,6 +117,7 @@ BEGIN_MESSAGE_MAP(CTestmainView, CBCGPChartExampleView)
 	ON_BN_CLICKED(IDC_BUTTON1, &CTestmainView::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CTestmainView::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CTestmainView::OnBnClickedButton3)
+	ON_COMMAND(ID_MAIN_DILUENTSAMPLE, &CTestmainView::OnMainDiluentsample)
 END_MESSAGE_MAP()
 
 
@@ -143,6 +144,7 @@ void CTestmainView::OnInitialUpdate()
 {
 	CBCGPChartExampleView::OnInitialUpdate();
 	// TODO:  在此添加专用代码和/或调用基类
+	
 	loadDoctors();
 	InitControl();
 	InitData();
@@ -181,7 +183,7 @@ void CTestmainView::OnInitialUpdate()
 			CreateThread(NULL, 0, ThreadPC, NULL, 0, &dw2);    		//创建联机软件线程
 		}
 	}
-
+	//hAccel = ::LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
 	DWORD TestmainThreadId1;
 	HANDLE   hThread;
 	TestmainEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -4076,3 +4078,15 @@ void CTestmainView::OnBnClickedButton3()
 	//PostMessage(WM_ACKSPI, rdata_state[0], 0);
 }
 /*******************************************************/
+
+void CTestmainView::OnMainDiluentsample()
+{
+	// TODO:  在此添加命令处理程序代码
+	TRACE("IDM_MAIN_DILUENTSAMPLE---------#\n");
+	//Standby_EN = false;     //DSP运动过程中不待机
+	key_status = false;
+	DSP_status = Busy;
+	sdata_cmd[0] = SPI_CMD_DILUENT_SAMPLE;
+	PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
+	SetTimer( POLLTIME2 , 3000 ,0);
+}

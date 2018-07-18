@@ -44,7 +44,7 @@ BEGIN_MESSAGE_MAP(CBCGPChartExampleApp, CBCGPWinApp)
 	//ON_COMMAND(ID_FILE_NEW, CBCGPWinApp::OnFileNew)
 	//ON_COMMAND(ID_FILE_OPEN, CBCGPWinApp::OnFileOpen)
 	// Standard print setup command
-	ON_COMMAND(ID_FILE_PRINT_SETUP, CBCGPWinApp::OnFilePrintSetup)
+	//ON_COMMAND(ID_FILE_PRINT_SETUP, CBCGPWinApp::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

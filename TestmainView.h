@@ -88,7 +88,7 @@ public:
 	unsigned char	BlockErrStore;
 	static	unsigned char		IsBlocking;
 	static unsigned char		EN_Repeat;
-
+	//HACCEL hAccel;
 
 	char 			SampNum[16] ;
 	bool 			NumChanged;
@@ -204,6 +204,7 @@ public:
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
 	CEdit TestMain_number;
+	afx_msg void OnMainDiluentsample();
 };
 
 
