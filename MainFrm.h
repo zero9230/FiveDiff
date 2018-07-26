@@ -195,6 +195,7 @@ protected:
 public:
 	
 	CSpi			         m_spidev;
+	//static int			connectionState;//连接状态，0，就绪；1，usb已连接，下位机心跳中；2，USB已连接，未检测到下位机；3，USB已断开
 	CProgressCtrl			 m_progress;
 	static int			     TimeClick;
 	static int				 progresstimes;
