@@ -363,7 +363,6 @@ void CQualityControlView::DatabaseLoad(CString filename)
 		else
 		{
 			TRACE("\n表内数据为空!\n");
-			return ;
 		}
 		while ((!m_pRs->adoEOF))
 		{
@@ -953,7 +952,7 @@ void CQualityControlView::DatabaseLoad(CString filename)
 		else
 		{
 			TRACE("\n表内数据为空!\n");
-			return;
+			
 		}
 		while ((!m_pRs->adoEOF))
 		{
@@ -1418,12 +1417,12 @@ void CQualityControlView::DatabaseSave(vector<qc_edit_data_info> &qc_edit, vecto
 	/*打开表格进行删除*/
 	ExeSql(m_pDB, m_pRs, select_qc_edit);
 	ExeSql(m_pDB, m_pRs, select_qc_result);
-	CloseDataBase(m_pDB, m_pRs);
+	//CloseDataBase(m_pDB, m_pRs);
 
-	CString filename;
-	filename.Format(_T("appdata.accdb"));
-	if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
-		return;
+	//CString filename;
+	//filename.Format(_T("appdata.accdb"));
+	//if (OpenDataBase(filename, m_pDB, m_pRs) == -1)
+	//	return;
 
 	for (int i = 0; i < qc_edit.size(); i++)
 	{
