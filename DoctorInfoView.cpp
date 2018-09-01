@@ -373,11 +373,11 @@ void CDoctorInfoView::OnManualAdd()
 		if (!m_pRs->BOF){
 			m_pRs->MoveFirst();
 		}
-		else
-		{
-			TRACE("表内数据为空");
-			return;
-		}
+		//else
+		//{
+		//	TRACE("表内数据为空");
+		//	return;
+		//}
 		while (!m_pRs->adoEOF)
 		{
 			var = m_pRs->GetCollect("doct_No");

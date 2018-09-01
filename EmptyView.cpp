@@ -49,6 +49,21 @@ END_MESSAGE_MAP()
 // CEmptyView 消息处理程序
 
 
+BOOL CEmptyView::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	if (DSP_status == Free){
+		SetWindowEnable();
+	}
+	else if(DSP_status == Busy){
+		SetWindowDisable();
+	}
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// 异常:  OCX 属性页应返回 FALSE
+}
 
 
 
@@ -75,7 +90,7 @@ void CEmptyView::OnBnClickedDrainWaste()
 void CEmptyView::DrainReagent(char * Mess, uchar CMD, unsigned int m_ntime)
 {
 	TRACE(Mess);
-	DSP_status = Busy;
+
 	sdata_cmd[0] = CMD;
 	PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 	if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
@@ -86,6 +101,7 @@ void CEmptyView::DrainReagent(char * Mess, uchar CMD, unsigned int m_ntime)
 		
 	else//命令发送成功
 	{
+		DSP_status = Busy;
 		SetTimer(POLLTIME2, m_ntime, 0);
 		SetWindowDisable();
 	}
@@ -173,7 +189,7 @@ void CEmptyView::OnTimer(UINT_PTR nIDEvent)
 		PC_RECEIVE_FRAME(rdata_state, SPI_TYPE_STATE);
 		SendMessage(WM_ACKSPI, rdata_state[0], 0);
 
-		SetWindowEnable();//使窗口使能
+		//SetWindowEnable();//使窗口使能
 		break;
 	//case POLLTIME3:
 	//	break;
@@ -190,22 +206,23 @@ afx_msg LRESULT CEmptyView::OnAckspi(WPARAM wParam, LPARAM lParam)
 	{
 		//排空完成
 	case SPI_STATE_INFO_END:
-				TRACE(_T("SPI_STATE_INFO_END"));
+		TRACE(_T("SPI_STATE_INFO_END"));
 		KillTimer(POLLTIME2);
 		DSP_status = Free;
+		SetWindowEnable();
 		statusShowMess = 0;
 		//InvalidateRect(hDlg, &STATUS, TRUE);
 		key_status = TRUE;
 		//Standby_EN = TRUE;
 		break;
-		case SPI_STATE_ERROR_DRM:
-				//	if(systemcfg.language == CHINESE)
-						MessageBox(L"排液超时,请关机检查",L"警告!",MB_OK | MB_ICONINFORMATION);
-				//	else if(systemcfg.language == ENGLISH)
-				//		CreateWarningBoxNonCHDlg(hDlg, "Drain over time,please shutdown and have a check", "Warning!");
-					while(1)
-						Sleep(100);
-					break;
+	case SPI_STATE_ERROR_DRM:
+		//	if(systemcfg.language == CHINESE)
+				MessageBox(L"排液超时,请关机检查",L"警告!",MB_OK | MB_ICONINFORMATION);
+		//	else if(systemcfg.language == ENGLISH)
+		//	CreateWarningBoxNonCHDlg(hDlg, "Drain over time,please shutdown and have a check", "Warning!");
+			while(1)
+				Sleep(100);
+			break;
 	default:
 		break;
 	}

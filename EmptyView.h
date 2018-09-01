@@ -38,4 +38,5 @@ protected:
 public:
 	void SetWindowDisable();
 	void SetWindowEnable();
+	virtual BOOL OnInitDialog();
 };

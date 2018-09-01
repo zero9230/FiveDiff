@@ -37,10 +37,27 @@ BEGIN_MESSAGE_MAP(CPerfusionView, CDialogEx)
 	ON_BN_CLICKED(IDC_PRIME_REVERSEDPRIME, &CPerfusionView::OnPrimeReversedprime)
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_ACKSPI, &CPerfusionView::OnAckspi)
+	ON_BN_CLICKED(ID_PERFUSION_RETURN, &CPerfusionView::OnBnClickedPerfusionReturn)
 END_MESSAGE_MAP()
 
 
 // CPerfusionView 消息处理程序
+
+BOOL CPerfusionView::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	if (DSP_status == Busy){
+		SetWindowDisable();
+	}
+	else if (DSP_status == Free){
+		SetWindowEnable();
+	}
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// 异常:  OCX 属性页应返回 FALSE
+}
 
 
 void CPerfusionView::OnPrimeDiluent()
@@ -97,7 +114,7 @@ void CPerfusionView::PrimeReagent(char* Mess, uchar CMD)
 {
 	TRACE(Mess);
 	key_status = FALSE;
-	DSP_status = Busy;
+	
 	sdata_cmd[0] = CMD;
 	if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
 	{
@@ -106,6 +123,7 @@ void CPerfusionView::PrimeReagent(char* Mess, uchar CMD)
 	else
 	{
 		SetTimer(POLLTIME, 1000, 0);
+		DSP_status = Busy;
 		SetWindowDisable();
 		
 	}
@@ -120,8 +138,8 @@ void CPerfusionView::SetWindowEnable(){
 	GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
 	GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-	GetDlgItem(IDOK)->EnableWindow(TRUE);
-	GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+	GetDlgItem(ID_PERFUSION_RETURN)->EnableWindow(TRUE);
+
 }
 
 void CPerfusionView::SetWindowDisable(){
@@ -132,8 +150,8 @@ void CPerfusionView::SetWindowDisable(){
 	GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(FALSE);
 	GetDlgItem(IDC_PRIME_ALL)->EnableWindow(FALSE);
 	GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(FALSE);
-	GetDlgItem(IDOK)->EnableWindow(FALSE);
-	GetDlgItem(IDCANCEL)->EnableWindow(FALSE);
+	GetDlgItem(ID_PERFUSION_RETURN)->EnableWindow(FALSE);
+	
 }
 
 
@@ -149,7 +167,7 @@ void CPerfusionView::OnTimer(UINT_PTR nIDEvent)
 		PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 		PC_RECEIVE_FRAME(rdata_state, SPI_TYPE_STATE);
 		SendMessage(WM_ACKSPI, rdata_state[0], 0);
-		SetWindowEnable();
+		//SetWindowEnable();
 		break;
 	}
 	default:
@@ -159,8 +177,12 @@ void CPerfusionView::OnTimer(UINT_PTR nIDEvent)
 }
 
 
+
 afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 {
+	if (DSP_status == Busy){
+		SetWindowEnable();
+	}
 	switch (wParam)
 	{
 		//灌注完成
@@ -170,26 +192,10 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 		switch (RinseMode)
 		{
 		case 0:
-			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-			GetDlgItem(IDOK)->EnableWindow(TRUE);
-			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+			
 			break;
 		case 1:
-			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-			GetDlgItem(IDOK)->EnableWindow(TRUE);
-			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 			/*if (systemcfg2.warn_rinse)
 			{
 
@@ -203,15 +209,7 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//}
 			break;
 		case 2:
-			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-			GetDlgItem(IDOK)->EnableWindow(TRUE);
-			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 		/*	if (systemcfg2.warn_fix)
 			{
 				if (systemcfg2.warn_fix)
@@ -224,15 +222,7 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//}
 			break;
 		case 3:
-			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-			GetDlgItem(IDOK)->EnableWindow(TRUE);
-			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 		/*	if (systemcfg2.warn_baso)
 			{
 				if (systemcfg2.warn_baso)
@@ -246,15 +236,7 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//}
 			break;
 		case 4:
-			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-			GetDlgItem(IDOK)->EnableWindow(TRUE);
-			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 			/*if (systemcfg2.warn_hgb)
 			{
 				if (systemcfg2.warn_hgb)
@@ -268,15 +250,7 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//}
 			break;
 		case 5:
-			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-			GetDlgItem(IDOK)->EnableWindow(TRUE);
-			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 			/*if (systemcfg2.warn_diluent || systemcfg2.warn_baso || systemcfg2.warn_fix || systemcfg2.warn_hgb
 				|| systemcfg2.warn_rinse || systemcfg2.warn_waste)
 			{
@@ -313,15 +287,7 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			//}
 			break;
 		case 6:
-			GetDlgItem(IDC_PRIME_DILUENT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_RINSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_LMNEFIX)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_WBCLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_HGBLYSE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_ALL)->EnableWindow(TRUE);
-			GetDlgItem(IDC_PRIME_REVERSEDPRIME)->EnableWindow(TRUE);
-			GetDlgItem(IDOK)->EnableWindow(TRUE);
-			GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+
 			break;
 
 		}
@@ -332,10 +298,18 @@ afx_msg LRESULT CPerfusionView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			WriteLogFile();
 		}
 		DSP_status = Free;
+		SetWindowEnable();
 		key_status = TRUE;
 		break;
 	default:
 		break;
 	}
 	return 0;
+}
+
+
+void CPerfusionView::OnBnClickedPerfusionReturn()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CDialog::OnCancel();
 }

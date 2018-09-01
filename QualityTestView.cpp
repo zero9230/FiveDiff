@@ -2091,7 +2091,7 @@ BOOL CQualityTestView::OnEraseBkgnd(CDC* pDC)
 
 afx_msg LRESULT CQualityTestView::OnQualitytest(WPARAM wParam, LPARAM lParam)
 {
-	MessageBox(L"QC test in QualityTestView");
+	//MessageBox(L"QC test in QualityTestView");
 	{
 		if (0 == QcLjFileExistEdit)
 		{

@@ -7,6 +7,7 @@
 #define IDM_MIAN_HYDR_AUTOCLEAN         100
 #define IDC_SFPIPECHECK_QUERY           100
 #define IDC_TMCTRL_TMSET_OK             100
+#define ID_PERFUSION_RETURN             100
 #define IDD_CHART_TYPES                 101
 #define IDD_CHART                       103
 #define IDC_MYVIEW                      108

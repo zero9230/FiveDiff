@@ -101,13 +101,14 @@ void CHgbtestView::OnPaint()
 void CHgbtestView::OnBnClickedHgbtestOk()
 {
 	//           ARM_GPIOCMD(EN_RED);
+
 					TRACE("HGB Test----------#\n");
 					key_status = FALSE ;
 					DSP_status = Busy;
 					sdata_cmd[0] = SPI_CMD_HGB_MAINTAIN;
 				 	PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 					if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == -1)
-		                MessageBox(L"命令发送不成功！", L"ERROR", MB_OKCANCEL);
+		                MessageBox(L"命令发送不成功！", L"ERROR", MB_OK);
 	              else{
 	                     //GetDlgItem(IDC_MICROPERFUSION)->SetWindowText(L"正在执行HGB测试！");//**##此处有异常
 		                 SetTimer(POLLTIME, SPI_POLL_TIME1000,0);
@@ -124,7 +125,7 @@ void CHgbtestView::OnTimer(UINT_PTR nIDEvent)
 	switch (nIDEvent)
 	{
 	case POLLTIME:
-		       TRACE("MSG_TIMER:POLLTIME is due -------------#\n");
+		       TRACE("WM_TIMER:POLLTIME is due -------------#\n");
 					sdata_cmd[0] = SPI_CMD_REQDSP_STATUS;	
 				 	PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD);
 					PC_RECEIVE_FRAME(rdata_state,SPI_TYPE_STATE);	
@@ -148,7 +149,7 @@ afx_msg LRESULT CHgbtestView::OnAckspi(WPARAM wParam, LPARAM lParam)
 				case SPI_STATE_INFO_END:
 				{
 					unsigned char buff[8] = {0}; 
-					int HGB_Background_int = 0;
+					int HGB_Background_int = 0;   
 					int HGB_Blank_int = 0;
 					float HGB_Background = 0.0;
 					float HGB_Blank = 0.0;
@@ -179,9 +180,9 @@ afx_msg LRESULT CHgbtestView::OnAckspi(WPARAM wParam, LPARAM lParam)
 						printf("HGB TEST is not Normal----------#\n");
 					}
                         		//SetDlgItemText(IDC_HGBTEST_BACKGD,HGB_Background_str);	
-					GetDlgItem(IDC_HGBTEST_BACKGD)->SetWindowText((LPCTSTR)HGB_Background_str);
+					GetDlgItem(IDC_HGBTEST_BACKGD)->SetWindowText(HGB_Background_str);
 					//SetDlgItemText(IDC_HGBTEST_BLANK,HGB_Blank_str);
-					GetDlgItem(IDC_HGBTEST_BLANK)->SetWindowText((LPCTSTR)HGB_Blank_str);
+					GetDlgItem(IDC_HGBTEST_BLANK)->SetWindowText(HGB_Blank_str);
 					key_status = TRUE;
 					break;
 				}

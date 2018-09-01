@@ -59,6 +59,13 @@ BOOL CCleanView::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	GetDlgItem(IDC_CLEAN_RINSEBASO)->EnableWindow(FALSE);
 	GetDlgItem(IDC_CLEAN_EXTERNNEEDLE)->EnableWindow(FALSE);
+	if (DSP_status == Free){
+		SetWindowEnabled();
+	}
+	else if (DSP_status == Busy){
+		SetWindowDisabled();
+	}
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }
@@ -109,25 +116,16 @@ void CCleanView::CleanChannel(char* Mess, uchar CMD)
 {
 
 	TRACE(Mess);
-	key_status = FALSE;
-	DSP_status = Busy;
+	
+	
 	sdata_cmd[0] = CMD;
 	if (PC_SEND_FRAME(sdata_cmd, SPI_TYPE_CMD) == 0)
 	{
-		GetDlgItem(IDC_CLEAN_CYTO)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CLEAN_CHAMBERS)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CLEAN_DILUENTINTINE)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CLEAN_DILUENTEXTINE)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CLEAN_GEM)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CLEAN_SHEATFLOWPIPE)->EnableWindow(FALSE);
-		//GetDlgItem(IDC_CLEAN_RINSEBASO)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CLEAN_RINSEINTINE)->EnableWindow(FALSE);
-		GetDlgItem(IDC_CLEAN_RINSEEXTINE)->EnableWindow(FALSE);
-		//GetDlgItem(IDC_CLEAN_EXTERNNEEDLE)->EnableWindow(FALSE);
-		GetDlgItem(IDOK)->EnableWindow(FALSE);
-		GetDlgItem(IDCANCEL)->EnableWindow(FALSE);
+		DSP_status = Busy;
+		SetWindowDisabled();
+		key_status = FALSE;
+		((CMainFrame*)AfxGetMainWnd())->StartProgress(30);
 		SetTimer(POLLTIME, 3000, 0);
-
 	}
 
 }
@@ -135,7 +133,7 @@ void CCleanView::CleanChannel(char* Mess, uchar CMD)
 void CCleanView::OnCleanCyto()//鞘流池
 {
 	// TODO:  在此添加控件通知处理程序代码
-	((CMainFrame*)AfxGetMainWnd())->StartProgress(30);
+	
 	CleanChannel("Clean SHEATHFLOWPOOL---------#\n", SPI_CMD_CLEAN_SHEATHFLOWPOOL);
 	
 }
@@ -236,12 +234,18 @@ afx_msg LRESULT CCleanView::OnAckspi(WPARAM wParam, LPARAM lParam)
 			KillTimer(POLLTIME);
 			DSP_status = Free;
 			key_status = TRUE;
+			SetWindowEnabled();
 		}
 
 		break;
 	default:
 		break;
 	}
+	//SetWindowEnabled();
+	return 0;
+}
+
+void CCleanView::SetWindowEnabled(){
 	GetDlgItem(IDC_CLEAN_CYTO)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CLEAN_CHAMBERS)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CLEAN_DILUENTINTINE)->EnableWindow(TRUE);
@@ -254,6 +258,19 @@ afx_msg LRESULT CCleanView::OnAckspi(WPARAM wParam, LPARAM lParam)
 	//GetDlgItem(IDC_CLEAN_EXTERNNEEDLE)->EnableWindow(TRUE);
 	GetDlgItem(IDOK)->EnableWindow(TRUE);
 	GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
+}
 
-	return 0;
+void CCleanView::SetWindowDisabled(){
+	GetDlgItem(IDC_CLEAN_CYTO)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CLEAN_CHAMBERS)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CLEAN_DILUENTINTINE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CLEAN_DILUENTEXTINE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CLEAN_GEM)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CLEAN_SHEATFLOWPIPE)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_CLEAN_RINSEBASO)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CLEAN_RINSEINTINE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CLEAN_RINSEEXTINE)->EnableWindow(FALSE);
+	//GetDlgItem(IDC_CLEAN_EXTERNNEEDLE)->EnableWindow(FALSE);
+	GetDlgItem(IDOK)->EnableWindow(FALSE);
+	GetDlgItem(IDCANCEL)->EnableWindow(FALSE);
 }

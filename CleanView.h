@@ -25,6 +25,9 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
 	void CleanChannel(char* Mess, uchar CMD);
+	void SetWindowEnabled();
+	void SetWindowDisabled();
+
 	CSpi m_spidev;
 	afx_msg void OnCleanCyto();
 	afx_msg void OnCleanChambers();

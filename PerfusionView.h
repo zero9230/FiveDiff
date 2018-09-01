@@ -35,4 +35,7 @@ public:
 protected:
 	afx_msg LRESULT OnAckspi(WPARAM wParam, LPARAM lParam);
 	int RinseMode;
+public:
+	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedPerfusionReturn();
 };
